@@ -2,6 +2,7 @@
 
 ## Words
 
+```
 xs
     値のリスト.
     Ex. '(a a b c c c)
@@ -21,9 +22,11 @@ encoded-run
 encoded-runs
     encoded-run のリスト.
     Ex. '((a . 2) (b . 1) (c . 3))
+```
 
 ## Procedures
 
+```
 encode xs => encoded-runs
     値のリストを Run-Length Encoding でエンコードする.
     Ex. '(a a b c c c) => '((a . 2) (b . 1) (c . 3))
@@ -55,4 +58,5 @@ encoded-run->run encoded-run => run
 runs->xs runs => xs
     runs を xs に変換する.
     Ex. '((a a) (b) (c c c)) => '(a a b c c c)
+```
 
