@@ -13,3 +13,18 @@
 
     bash scripts/generate-bashrc-snippet.sh
 
+## 各種手順
+
+### 日別のディレクトリに移動する
+
+    # 当日のディレクトリに移動する.
+    daily-coding.enter-daily-directory
+
+    # 1 日前のディレクトリに移動する.
+    daily-coding.enter-daily-directory -1
+
+### 空メッセージで git commit する
+
+    bash scripts/git-commit-with-empty-message.sh
+    bash scripts/git-commit-with-empty-message.sh --amend
+
