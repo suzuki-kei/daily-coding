@@ -30,6 +30,6 @@ function daily-coding.enter-daily-directory
     if [[ ${n_days} -eq 0 ]]; then
         mkdir -p "${target_dir}"
     fi
-    cd "${target_dir}"
+    cd "${target_dir}" && pwd
 }
 
