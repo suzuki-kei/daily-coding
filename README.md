@@ -6,7 +6,6 @@
 
 .bashrc に以下を追加します.
 
-    # in .bashrc
     source /PATH-TO-REPOSITORY-DIR/bashrc/daily-coding.bashrc
 
 ## 各種手順
