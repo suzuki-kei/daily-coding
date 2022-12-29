@@ -10,7 +10,7 @@
 
 ## 各種手順
 
-### 日別のディレクトリに移動する
+### daily-coding による操作
 
     # daily-coding の使い方を表示する.
     daily-coding -h
