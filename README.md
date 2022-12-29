@@ -8,6 +8,7 @@
 
     # in .bashrc
     source /PATH-TO-REPOSITORY-DIR/functions/enter-daily-directory.sh
+    source /PATH-TO-REPOSITORY-DIR/functions/list.sh
 
 .bashrc に追加するコードは以下のスクリプトで生成できます.
 
@@ -22,6 +23,9 @@
 
     # 1 日前のディレクトリに移動する.
     daily-coding.enter-daily-directory -1
+
+    # 日別ディレクトリの直下にあるファイルを一覧表示する.
+    daily-coding.list
 
 ### 空メッセージで git commit する
 

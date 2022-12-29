@@ -11,13 +11,12 @@ cat <<EOS | sed -r 's/^ {4}//'
     function _setup-daily-coding-functions
     {
         declare -r root_dir='${ROOT_DIR}'
-        declare -r file_path="\${root_dir}/functions/enter-daily-directory.sh"
+        declare -r functions_dir="\${root_dir}/functions"
 
-        if [[ -f "\${file_path}" ]]; then
-            source "\${file_path}"
-        else
-            echo "No such file: \${file_path}" >&2
-        fi
+        for file in \$(find "\${functions_dir}" -type f -name '*.sh')
+        do
+            source "\${file}"
+        done
     }
     _setup-daily-coding-functions
 EOS
