@@ -108,12 +108,12 @@ function _daily-coding.enter-daily-directory
 
 function _daily-coding.diff
 {
-    declare -r file="$(basename "$1")"
+    declare -r file_name="$(basename "$1")"
     declare -r name_dir="$(cd "$(dirname "$1")" && basename "$(pwd)")"
     declare -r date_dir="$(cd "$(dirname "$1")/.." && basename "$(pwd)")"
 
     vimdiff "$1" "$(
-        ls -1 "$(dirname "$1")"/../../*/"${name_dir}/${file}" |
+        ls -1 "$(dirname "$1")"/../../*/"${name_dir}/${file_name}" |
             sed -n "1,/${date_dir}/p" |
             head -n -1 |
             tail -1
