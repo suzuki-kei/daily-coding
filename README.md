@@ -13,19 +13,19 @@
 ### daily-coding による操作
 
     # daily-coding の使い方を表示する.
-    daily-coding -h
+    daily-coding help
 
     # 今日の作業ディレクトリに移動する.
-    daily-coding
+    daily-coding cd
 
     # 昨日の作業ディレクトリに移動する.
-    daily-coding -1
+    daily-coding cd -1
 
     # 各作業ディレクトリの直下に存在するファイルを表示する.
-    daily-coding -l
+    daily-coding ls
 
     # 直近の同じ実装ファイルと比較する.
-    daily-coding --diff FILE
+    daily-coding diff FILE
 
 ### 空メッセージで git commit する
 
