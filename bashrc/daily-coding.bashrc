@@ -14,7 +14,7 @@ function daily-coding
                 _daily-coding.help
                 return
             fi
-            _daily-coding.diff "$2"
+            _daily-coding.diff "$2" "${3:--1}"
             ;;
         "" | -+([0-9]))
             _daily-coding.enter-daily-directory "$1"
@@ -47,7 +47,7 @@ function _daily-coding.help
 
         SYNOPSIS
             ${name} [-N]
-            ${name} [--diff FILE|diff FILE]
+            ${name} [--diff FILE N|diff FILE N]
             ${name} [-h|--help|help]
             ${name} [-l|--list|list]
 
@@ -72,8 +72,11 @@ function _daily-coding.help
                 N 日前の作業ディレクトリに移動します (デフォルトは N=0).
                 N=0 の場合に限り, ディレクトリが存在しなければ作成します.
 
-            --diff FILE | diff FILE
-                FILE に指定したファイルを直近の同じ実装ファイルと比較します.
+            --diff FILE N | diff FILE N
+                FILE を直近の実装ファイルと比較します.
+
+                別日の作業ディレクトリから FILE と同一のファイルを探し,
+                N 個前後のファイルと vimdiff によって比較します (デフォルトは N=-1).
 
             -h | --help | help
                 このヘルプを表示します.
@@ -112,10 +115,13 @@ function _daily-coding.diff
     declare -r name_dir="$(cd "$(dirname "$1")" && basename "$(pwd)")"
     declare -r date_dir="$(cd "$(dirname "$1")/.." && basename "$(pwd)")"
 
+    declare -r nth=$2
+
     vimdiff "$1" "$(
         ls -1 "$(dirname "$1")"/../../*/"${name_dir}/${file_name}" |
+            sort $(test $nth -ge 0 && echo '-r') |
             sed -n "1,/${date_dir}/p" |
-            head -n -1 |
+            head -n -$((nth < 0 ? -nth : nth)) |
             tail -1
     )"
 }
