@@ -62,14 +62,18 @@ function _daily-coding.diff
     declare -r date_dir="$(cd "$(dirname "$1")/.." && basename "$(pwd)")"
 
     declare -r nth=$2
-
-    vimdiff "$1" "$(
+    declare -r target_file_path="$(
         ls -1 "$(dirname "$1")"/../../*/"${name_dir}/${file_name}" |
             sort $(test $nth -ge 0 && echo '-r') |
             sed -n "1,/${date_dir}/p" |
             head -n -$((nth < 0 ? -nth : nth)) |
             tail -1
     )"
+    if [[ "${target_file_path}" = '' ]]; then
+        echo 'same file is not found in other working directory.' >&2
+        return 1
+    fi
+    vimdiff "$1" "${target_file_path}"
 }
 
 function _daily-coding.help
