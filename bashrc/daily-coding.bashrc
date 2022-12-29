@@ -23,7 +23,7 @@ function daily-coding
             if [[ "$2" = '' ]]; then
                 echo 'Invalid option: FILE is required.' >&2
                 _daily-coding.help
-                return
+                return 1
             fi
             _daily-coding.diff "$2" "${3:--1}"
             ;;
