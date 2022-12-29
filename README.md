@@ -24,6 +24,9 @@
     # 各作業ディレクトリの直下に存在するファイルを表示する.
     daily-coding -l
 
+    # 直近の同じ実装ファイルと比較する.
+    daily-coding --diff FILE
+
 ### 空メッセージで git commit する
 
     bash scripts/git-commit-with-empty-message.sh
