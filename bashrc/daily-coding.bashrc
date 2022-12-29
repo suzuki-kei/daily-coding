@@ -31,27 +31,29 @@ function daily-coding
 
 function _daily-coding.help
 {
+    declare -r name="${FUNCNAME[1]}"
+
     cat <<EOS | sed -r 's/^ {8}//'
         NAME
-            daily-coding
+            ${name}
 
         SYNOPSIS
-            daily-coding [-N]
-            daily-coding [-h|--help|help]
-            daily-coding [-l|--list|list]
+            ${name} [-N]
+            ${name} [-h|--help|help]
+            ${name} [-l|--list|list]
 
         EXAMPLES
-            # daily-coding の使い方を表示する.
-            daily-coding -h
+            # ${name} の使い方を表示する.
+            ${name} -h
 
             # 今日の作業ディレクトリに移動する.
-            daily-coding
+            ${name}
 
             # 昨日の作業ディレクトリに移動する.
-            daily-coding -1
+            ${name} -1
 
             # 各作業ディレクトリの直下に存在するファイルを表示する.
-            daily-coding -l
+            ${name} -l
 
         OPTIONS
             -N
