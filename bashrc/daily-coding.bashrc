@@ -6,18 +6,18 @@ function daily-coding
 {
     case "${1:-}" in
         -l | --list | list)
-            _daily-coding.list "$@"
+            _daily-coding.list
             ;;
         --diff | diff)
             if [[ "$2" = '' ]]; then
                 echo 'Invalid option: target file is required.' >&2
-                _daily-coding.help "$@"
+                _daily-coding.help
                 return
             fi
             _daily-coding.diff "$2"
             ;;
         "" | -+([0-9]))
-            _daily-coding.enter-daily-directory "$@"
+            _daily-coding.enter-daily-directory "$1"
             ;;
         +([0-9]) | ++([0-9]))
             # 正の数を指定してこの分岐に入ると, 後続処理で必ず失敗する.
@@ -25,14 +25,14 @@ function daily-coding
             # 未来の作業ディレクトリに移動しようと cd するところで失敗する.
             # 無効なオプションとして "Invalid option" を出力されるより,
             # 後続処理の cd で失敗した方が状況を理解しやすいという理由で分岐している.
-            _daily-coding.enter-daily-directory "$@"
+            _daily-coding.enter-daily-directory "$1"
             ;;
         -h | --help | help)
-            _daily-coding.help "$@"
+            _daily-coding.help
             ;;
         *)
             echo "Invalid option: [$1]" >&2
-            _daily-coding.help "$@"
+            _daily-coding.help
             ;;
     esac
 }
