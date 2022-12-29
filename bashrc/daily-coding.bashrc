@@ -4,9 +4,6 @@ shopt -s extglob
 
 function daily-coding
 {
-    declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE:-0}")"/.. && pwd)"
-    declare -r source_dir="${root_dir}/src"
-
     case "${1:-}" in
         -l | --list | list)
             _daily-coding.list "$@"
