@@ -48,7 +48,7 @@ function _daily-coding.cd
     declare -r n_days="${1:-0}"
     declare -r target_date="$(date --date "${n_days} days" '+%Y-%m-%d')"
 
-    declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE:-0}")"/.. && pwd)"
+    declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE:-0}")"/../.. && pwd)"
     declare -r workspace_dir="${root_dir}/workspace"
     declare -r target_dir="${workspace_dir}/${target_date}"
 
@@ -162,7 +162,7 @@ EOS
 
 function _daily-coding.ls
 {
-    declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE:-0}")"/.. && pwd)"
+    declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE:-0}")"/../.. && pwd)"
     declare -r workspace_dir="${root_dir}/workspace"
 
     find "${workspace_dir}" -mindepth 2 -maxdepth 2 -printf '%P\n' | sort

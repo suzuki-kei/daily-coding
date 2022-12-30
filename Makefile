@@ -7,5 +7,5 @@ clean:
 
 .PHONY: test
 test:
-	bash test/daily-coding.bashrc.test.sh
+	bash src/test/daily-coding.bashrc.test.sh
 
