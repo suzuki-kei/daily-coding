@@ -19,6 +19,9 @@ function daily-coding
         cd | --cd)
             _daily-coding.cd "${2:-0}"
             ;;
+        commit)
+            _daily-coding.commit "${2:-}"
+            ;;
         diff | --diff)
             if [[ "$2" = '' ]]; then
                 echo 'Invalid option: FILE is required.' >&2
@@ -53,6 +56,22 @@ function _daily-coding.cd
         mkdir -p "${target_dir}"
     fi
     cd "${target_dir}" && pwd
+}
+
+function _daily-coding.commit
+{
+    case "$1" in
+        '')
+            git commit --allow-empty-message --m ''
+            ;;
+        --amend)
+            git commit --allow-empty-message --m '' --amend
+            ;;
+        *)
+            echo "Invalid option: $1" >&2
+            return 1
+            ;;
+    esac
 }
 
 function _daily-coding.diff
@@ -105,6 +124,9 @@ function _daily-coding.help
                 N 日前後の作業ディレクトリに移動します (デフォルトは N=0).
                 N=0 の場合に限り, ディレクトリが存在しなければ作成します.
 
+            ${name} commit [--amend]
+                空メッセージで git commit します.
+
             ${name} diff FILE [N]|--diff FILE [N]
                 FILE を直近の実装ファイルと比較します.
 
@@ -132,6 +154,9 @@ function _daily-coding.help
 
             # 直近の同じ実装ファイルと比較する.
             ${name} diff FILE
+
+            # 空メッセージで git commit する.
+            ${name} commit
 EOS
 }
 

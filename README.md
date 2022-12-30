@@ -33,6 +33,9 @@
     # 直近の同じ実装ファイルと比較する.
     daily-coding diff FILE
 
+    # 空メッセージで git commit する.
+    daily-coding commit
+
 ## その他の手順
 
     # 空メッセージで git commit する.
