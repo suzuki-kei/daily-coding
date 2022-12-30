@@ -15,12 +15,7 @@ function daily-coding
             _daily-coding.commit "${2:-}"
             ;;
         diff | --diff)
-            if [[ "${2:-}" = '' ]]; then
-                echo 'Invalid option: FILE is required.' >&2
-                _daily-coding.help
-                return 1
-            fi
-            _daily-coding.diff "$2" "${3:--1}"
+            _daily-coding.diff "${2:-}" "${3:--1}"
             ;;
         help | --help | -h)
             _daily-coding.help
@@ -30,7 +25,7 @@ function daily-coding
             ;;
         *)
             echo "Invalid option: [$1]" >&2
-            _daily-coding.help
+            return 1
             ;;
     esac
 }
@@ -71,7 +66,7 @@ function _daily-coding.commit
             git commit --allow-empty-message --m '' --amend
             ;;
         *)
-            echo "Invalid option: $1" >&2
+            echo "Invalid option: [$1]" >&2
             return 1
             ;;
     esac
@@ -79,8 +74,12 @@ function _daily-coding.commit
 
 function _daily-coding.diff
 {
+    if [[ "${1:-}" == '' ]]; then
+        echo 'Invalid option: FILE is required.' >&2
+        return 1
+    fi
     if [[ ! -f "$1" ]]; then
-        echo "file not found: $1" >&2
+        echo "Invalid option: file [$1] not found." >&2
         return 1
     fi
 
