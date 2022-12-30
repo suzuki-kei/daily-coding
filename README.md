@@ -18,26 +18,7 @@
 
 ## daily-coding による操作方法
 
-    # daily-coding の使い方を表示する.
+daily-coding のヘルプを参照してください.
+
     daily-coding help
-
-    # 今日の作業ディレクトリに移動する.
-    daily-coding cd
-
-    # 昨日の作業ディレクトリに移動する.
-    daily-coding cd -1
-
-    # 各作業ディレクトリに含まれるコレクションを表示する.
-    daily-coding ls
-
-    # 直近の同じ実装ファイルと比較する.
-    daily-coding diff FILE
-
-    # 各作業ディレクトリに含まれるソースコードの行数を表示する.
-    daily-coding stats
-    daily-coding stats -v
-    daily-coding stats -vv
-
-    # 空メッセージで git commit する.
-    daily-coding commit
 
