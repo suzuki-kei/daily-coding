@@ -3,7 +3,7 @@
 # daily-coding.bashrc.sh のテスト.
 #
 
-set -eu
+set -eu -o errtrace
 trap 'echo "Assertion failed at line ${LINENO}: ${BASH_COMMAND}"' ERR
 
 declare -r REPOSITORY_PATH="$(cd "$(dirname "$0")/../.." && pwd)"
