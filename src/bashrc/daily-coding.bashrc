@@ -49,6 +49,10 @@ function _daily-coding.cd
             fi
             cd "${target_dir}" && pwd
             ;;
+        --root)
+            declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+            cd "${root_dir}" && pwd
+            ;;
         *)
             echo "Invalid option: [$1]" >&2
             return 1
@@ -125,6 +129,9 @@ function _daily-coding.help
             ${name} cd [N]|--cd [N]
                 N 日前後の作業ディレクトリに移動します (デフォルトは N=0).
                 N=0 の場合に限り, ディレクトリが存在しなければ作成します.
+
+            ${name} cd --root
+                リポジトリのルートディレクトリに移動します.
 
             ${name} commit [--amend]
                 空メッセージで git commit します.
