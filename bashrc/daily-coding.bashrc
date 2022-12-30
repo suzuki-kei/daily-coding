@@ -57,22 +57,38 @@ function _daily-coding.cd
 
 function _daily-coding.diff
 {
+    if [[ ! -f "$1" ]]; then
+        echo "file not found: $1" >&2
+        return 1
+    fi
+
+    declare -r target_file_path="$(_daily-coding._locate-file "$1" "$2")"
+    if [[ "${target_file_path}" = '' ]]; then
+        echo 'same file is not found in other working directory.' >&2
+        return 1
+    fi
+    vimdiff "$1" "${target_file_path}"
+}
+
+function _daily-coding._locate-file
+{
     declare -r file_name="$(basename "$1")"
     declare -r name_dir="$(cd "$(dirname "$1")" && basename "$(pwd)")"
     declare -r date_dir="$(cd "$(dirname "$1")/.." && basename "$(pwd)")"
 
     declare -r nth=$2
     declare -r target_file_path="$(
-        ls -1 "$(dirname "$1")"/../../*/"${name_dir}/${file_name}" |
+        ls -1 "$(cd "$(dirname "$1")"/../.. && pwd)"/*/"${name_dir}/${file_name}" |
             ([[ $nth -ge 0 ]] && cat || tac) |
             sed -n "/${date_dir}/,$ p" |
             sed -n "$((nth < 0 ? -nth+1 : nth+1)) p"
     )"
-    if [[ "${target_file_path}" = '' ]]; then
-        echo 'same file is not found in other working directory.' >&2
-        return 1
+
+    if [[ ! -f "${target_file_path}" ]]; then
+        echo ''
+    else
+        echo "$(realpath "${target_file_path}" --relative-to "$(pwd)")"
     fi
-    vimdiff "$1" "${target_file_path}"
 }
 
 function _daily-coding.help

@@ -8,9 +8,15 @@
 
     source /PATH-TO-REPOSITORY-DIR/bashrc/daily-coding.bashrc
 
-## 各種手順
+## daily-coding 自体の開発に関する操作手順
 
-### daily-coding による操作
+    # テストを実行する.
+    make test
+
+    # 作業ファイルを削除する.
+    make clean
+
+## daily-coding による操作方法
 
     # daily-coding の使い方を表示する.
     daily-coding help
@@ -27,8 +33,9 @@
     # 直近の同じ実装ファイルと比較する.
     daily-coding diff FILE
 
-### 空メッセージで git commit する
+## その他の手順
 
+    # 空メッセージで git commit する.
     bash scripts/git-commit-with-empty-message.sh
     bash scripts/git-commit-with-empty-message.sh --amend
 
