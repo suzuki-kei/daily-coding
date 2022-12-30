@@ -41,20 +41,20 @@ function _daily-coding.cd
             # 無効なオプションとして "Invalid option" と表示されるよりも,
             # cd に失敗した時のエラーメッセージの方が状況を理解しやすいため.
             declare -r n_days="${1:-0}"
-            declare -r target_date="$(date --date "${n_days} days" '+%Y-%m-%d')"
+            declare -r date_name="$(date --date "${n_days} days" '+%Y-%m-%d')"
 
-            declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-            declare -r workspace_dir="${root_dir}/workspace"
-            declare -r target_dir="${workspace_dir}/${target_date}"
+            declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+            declare -r workspace_path="${repository_path}/workspace"
+            declare -r date_path="${workspace_path}/${date_name}"
 
             if [[ ${n_days} -eq 0 ]]; then
-                mkdir -p "${target_dir}"
+                mkdir -p "${date_path}"
             fi
-            cd "${target_dir}" && pwd
+            cd "${date_path}" && pwd
             ;;
         --root)
-            declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-            cd "${root_dir}" && pwd
+            declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+            cd "${repository_path}" && pwd
             ;;
         *)
             echo "Invalid option: [$1]" >&2
@@ -98,20 +98,21 @@ function _daily-coding.diff
         echo 'same file is not found in other working directory.' >&2
         return 1
     fi
-    vimdiff "$1" "${target_file_path}"
+    vimdiff "${file}" "${target_file_path}"
 }
 
 function _daily-coding._locate-file
 {
+    declare -r workspace_path="$(cd "$(dirname "$1")"/../.. && pwd)"
+    declare -r date_name="$(cd "$(dirname "$1")"/.. && basename "$(pwd)")"
+    declare -r collection_name="$(cd "$(dirname "$1")" && basename "$(pwd)")"
     declare -r file_name="$(basename "$1")"
-    declare -r name_dir="$(cd "$(dirname "$1")" && basename "$(pwd)")"
-    declare -r date_dir="$(cd "$(dirname "$1")/.." && basename "$(pwd)")"
 
     declare -r nth=$2
     declare -r target_file_path="$(
-        ls -1 "$(cd "$(dirname "$1")"/../.. && pwd)"/*/"${name_dir}/${file_name}" |
+        ls -1 "${workspace_path}"/*/"${collection_name}/${file_name}" |
             ([[ $nth -ge 0 ]] && cat || tac) |
-            sed -n "/${date_dir}/,$ p" |
+            sed -n "/${date_name}/,$ p" |
             sed -n "$((nth < 0 ? -nth+1 : nth+1)) p"
     )"
 
@@ -129,6 +130,25 @@ function _daily-coding.help
     cat <<EOS | sed -r 's/^ {8}//'
         NAME
             ${name}
+
+        DESCRIPTION
+            ${name} は日々のコーディング練習を支援する機能を提供します.
+
+            日々作成するソースコードは以下のディレクトリ構成に従って保存します.
+
+                <repository_path>/workspace/<date_name>/<collection_name>/
+
+        WORDS
+            ワークスペース
+                <repository_path>/workspace/ のことです.
+                日々作成するソースコードを保存する場所のルートディレクトリです.
+
+            作業ディレクトリ
+                <repository_path>/workspace/<date_name>/ のことです.
+
+            コレクション
+                <repository_path>/workspace/<date_name>/<collection_name>/ のことです.
+                コレクションは日別の作業ディレクトリ内をさらに分けるために作成します.
 
         SYNOPSIS
             ${name} --root
@@ -156,10 +176,10 @@ function _daily-coding.help
                 このヘルプを表示します.
 
             ${name} ls|list|--ls|--list|-l
-                各作業ディレクトリの直下に存在するファイルを表示します.
+                各作業ディレクトリに含まれるコレクションを表示します.
 
             ${name} stats|--stats [-v|-vv]
-                各作業ディレクトリのコード行数を表示します.
+                各作業ディレクトリに含まれるソースコードの行数を表示します.
                 -v を指定すると作業ディレクトリの 1 階層下のディレクトリごと,
                 -vv を指定すると作業ディレクトリの 2 階層下のディレクトリごとに表示します.
 
@@ -173,13 +193,13 @@ function _daily-coding.help
             # 昨日の作業ディレクトリに移動する.
             ${name} cd -1
 
-            # 各作業ディレクトリの直下に存在するファイルを表示する.
+            # 各作業ディレクトリに含まれるコレクションを表示する.
             ${name} ls
 
             # 直近の同じ実装ファイルと比較する.
             ${name} diff FILE
 
-            # 各作業ディレクトリのコード行数を表示する.
+            # 各作業ディレクトリに含まれるソースコードの行数を表示する.
             ${name} stats
             ${name} stats -v
             ${name} stats -vv
@@ -191,16 +211,16 @@ EOS
 
 function _daily-coding.ls
 {
-    declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-    declare -r workspace_dir="${root_dir}/workspace"
+    declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+    declare -r workspace_path="${repository_path}/workspace"
 
-    find "${workspace_dir}" -mindepth 2 -maxdepth 2 -printf '%P\n' | sort
+    find "${workspace_path}" -mindepth 2 -maxdepth 2 -printf '%P\n' | sort
 }
 
 function _daily-coding.stats
 {
-    declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-    declare -r workspace_dir="${root_dir}/workspace"
+    declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+    declare -r workspace_path="${repository_path}/workspace"
 
     case "${1:-}" in
         '')
@@ -220,7 +240,7 @@ function _daily-coding.stats
 
     # カレントシェルの作業ディレクトリを変更したくないのでサブシェルで実行する.
     (
-        cd "${workspace_dir}"
+        cd "${workspace_path}"
 
         for path in ${glob}
         do

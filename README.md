@@ -27,13 +27,13 @@
     # 昨日の作業ディレクトリに移動する.
     daily-coding cd -1
 
-    # 各作業ディレクトリの直下に存在するファイルを表示する.
+    # 各作業ディレクトリに含まれるコレクションを表示する.
     daily-coding ls
 
     # 直近の同じ実装ファイルと比較する.
     daily-coding diff FILE
 
-    # 各作業ディレクトリのコード行数を表示する.
+    # 各作業ディレクトリに含まれるソースコードの行数を表示する.
     daily-coding stats
     daily-coding stats -v
     daily-coding stats -vv

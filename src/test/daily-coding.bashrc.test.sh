@@ -6,10 +6,10 @@
 set -eu
 trap 'echo "Assertion failed at line ${LINENO}: ${BASH_COMMAND}"' ERR
 
-declare -r ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-declare -r TEST_DATA_DIR="${ROOT_DIR}/target/workspace"
+declare -r REPOSITORY_PATH="$(cd "$(dirname "$0")/../.." && pwd)"
+declare -r TEST_DATA_DIR="${REPOSITORY_PATH}/target/workspace"
 
-source "${ROOT_DIR}/src/bashrc/daily-coding.bashrc"
+source "${REPOSITORY_PATH}/src/bashrc/daily-coding.bashrc"
 
 function test._daily-coding._locate-file
 {
