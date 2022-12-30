@@ -41,9 +41,3 @@
     # 空メッセージで git commit する.
     daily-coding commit
 
-## その他の手順
-
-    # 空メッセージで git commit する.
-    bash scripts/git-commit-with-empty-message.sh
-    bash scripts/git-commit-with-empty-message.sh --amend
-
