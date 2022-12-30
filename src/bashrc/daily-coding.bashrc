@@ -23,6 +23,9 @@ function daily-coding
         ls | list | --ls | --list | -l)
             _daily-coding.ls
             ;;
+        stats | --stats)
+            _daily-coding.stats "${2:-}"
+            ;;
         *)
             echo "Invalid option: [$1]" >&2
             return 1
@@ -148,6 +151,11 @@ function _daily-coding.help
             ${name} ls|list|--ls|--list|-l
                 各作業ディレクトリの直下に存在するファイルを表示します.
 
+            ${name} stats|--stats [-v|-vv]
+                各作業ディレクトリのコード行数を表示します.
+                -v を指定すると作業ディレクトリの 1 階層下のディレクトリごと,
+                -vv を指定すると作業ディレクトリの 2 階層下のディレクトリごとに表示します.
+
         EXAMPLES
             # ${name} の使い方を表示する.
             ${name} help
@@ -164,6 +172,11 @@ function _daily-coding.help
             # 直近の同じ実装ファイルと比較する.
             ${name} diff FILE
 
+            # 各作業ディレクトリのコード行数を表示する.
+            ${name} stats
+            ${name} stats -v
+            ${name} stats -vv
+
             # 空メッセージで git commit する.
             ${name} commit
 EOS
@@ -175,5 +188,38 @@ function _daily-coding.ls
     declare -r workspace_dir="${root_dir}/workspace"
 
     find "${workspace_dir}" -mindepth 2 -maxdepth 2 -printf '%P\n' | sort
+}
+
+function _daily-coding.stats
+{
+    declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+    declare -r workspace_dir="${root_dir}/workspace"
+
+    case "${1:-}" in
+        '')
+            declare glob='*'
+            ;;
+        -v)
+            declare glob='*/*'
+            ;;
+        -vv)
+            declare glob='*/*/*'
+            ;;
+        *)
+            echo "Invalid option: [$1]" >&2
+            return 1
+            ;;
+    esac
+
+    # カレントシェルの作業ディレクトリを変更したくないのでサブシェルで実行する.
+    (
+        cd "${workspace_dir}"
+
+        for path in ${glob}
+        do
+            declare lines=$(find "${path}" -type f | xargs cat | wc -l)
+            echo "${path} ${lines} lines"
+        done
+    )
 }
 

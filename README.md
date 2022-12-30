@@ -33,6 +33,11 @@
     # 直近の同じ実装ファイルと比較する.
     daily-coding diff FILE
 
+    # 各作業ディレクトリのコード行数を表示する.
+    daily-coding stats
+    daily-coding stats -v
+    daily-coding stats -vv
+
     # 空メッセージで git commit する.
     daily-coding commit
 
