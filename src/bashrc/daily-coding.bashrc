@@ -5,7 +5,7 @@ shopt -s extglob
 function daily-coding
 {
     case "${1:-}" in
-        "" | -+([0-9]))
+        '' | -+([0-9]))
             _daily-coding.cd "$1"
             ;;
         +([0-9]) | ++([0-9]))
