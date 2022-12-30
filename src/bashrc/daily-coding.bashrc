@@ -45,17 +45,25 @@ function daily-coding
 
 function _daily-coding.cd
 {
-    declare -r n_days="${1:-0}"
-    declare -r target_date="$(date --date "${n_days} days" '+%Y-%m-%d')"
+    case "${1}" in
+        '' | +([0-9]) | ++([0-9]) | -+([0-9]))
+            declare -r n_days="${1:-0}"
+            declare -r target_date="$(date --date "${n_days} days" '+%Y-%m-%d')"
 
-    declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE:-0}")"/../.. && pwd)"
-    declare -r workspace_dir="${root_dir}/workspace"
-    declare -r target_dir="${workspace_dir}/${target_date}"
+            declare -r root_dir="$(cd "$(dirname "${BASH_SOURCE:-0}")"/../.. && pwd)"
+            declare -r workspace_dir="${root_dir}/workspace"
+            declare -r target_dir="${workspace_dir}/${target_date}"
 
-    if [[ ${n_days} -eq 0 ]]; then
-        mkdir -p "${target_dir}"
-    fi
-    cd "${target_dir}" && pwd
+            if [[ ${n_days} -eq 0 ]]; then
+                mkdir -p "${target_dir}"
+            fi
+            cd "${target_dir}" && pwd
+            ;;
+        *)
+            echo "Invalid option: [$1]" >&2
+            return 1
+            ;;
+    esac
 }
 
 function _daily-coding.commit
