@@ -6,7 +6,7 @@ function daily-coding
 {
     case "${1:-}" in
         '' | -+([0-9]))
-            _daily-coding.cd "$1"
+            _daily-coding.cd "${1:-0}"
             ;;
         +([0-9]) | ++([0-9]))
             # 正の数を指定してこの分岐に入ると, 後続処理で必ず失敗する.
@@ -14,7 +14,7 @@ function daily-coding
             # 未来の作業ディレクトリに移動しようと cd するところで失敗する.
             # 無効なオプションとして "Invalid option" を出力されるより,
             # 後続処理の cd で失敗した方が状況を理解しやすいという理由で分岐している.
-            _daily-coding.cd "$1"
+            _daily-coding.cd "${1:-0}"
             ;;
         cd | --cd)
             _daily-coding.cd "${2:-0}"
@@ -23,7 +23,7 @@ function daily-coding
             _daily-coding.commit "${2:-}"
             ;;
         diff | --diff)
-            if [[ "$2" = '' ]]; then
+            if [[ "${2:-}" = '' ]]; then
                 echo 'Invalid option: FILE is required.' >&2
                 _daily-coding.help
                 return 1
@@ -45,7 +45,7 @@ function daily-coding
 
 function _daily-coding.cd
 {
-    case "${1}" in
+    case "${1:-0}" in
         '' | +([0-9]) | ++([0-9]) | -+([0-9]))
             declare -r n_days="${1:-0}"
             declare -r target_date="$(date --date "${n_days} days" '+%Y-%m-%d')"
@@ -68,7 +68,7 @@ function _daily-coding.cd
 
 function _daily-coding.commit
 {
-    case "$1" in
+    case "${1:-}" in
         '')
             git commit --allow-empty-message --m ''
             ;;
