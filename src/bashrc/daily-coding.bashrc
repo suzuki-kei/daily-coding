@@ -6,16 +6,16 @@ function daily-coding
 {
     case "${1:-}" in
         '' | +([0-9]) | ++([0-9]) | -+([0-9]) | --root)
-            _daily-coding.cd "${1:-0}"
+            _daily-coding.cd "${1:-}"
             ;;
         cd | --cd)
-            _daily-coding.cd "${2:-0}"
+            _daily-coding.cd "${2:-}"
             ;;
         commit)
             _daily-coding.commit "${2:-}"
             ;;
         diff | --diff)
-            _daily-coding.diff "${2:-}" "${3:--1}"
+            _daily-coding.diff "${2:-}" "${3:-}"
             ;;
         help | --help | -h)
             _daily-coding.help
@@ -81,16 +81,19 @@ function _daily-coding.commit
 
 function _daily-coding.diff
 {
-    if [[ "${1:-}" == '' ]]; then
+    declare -r file="${1:-}"
+    declare -r offset="${2:--1}"
+
+    if [[ "${file}" == '' ]]; then
         echo 'Invalid option: FILE is required.' >&2
         return 1
     fi
-    if [[ ! -f "$1" ]]; then
-        echo "Invalid option: file [$1] not found." >&2
+    if [[ ! -f "${file}" ]]; then
+        echo "Invalid option: file [${file}] not found." >&2
         return 1
     fi
 
-    declare -r target_file_path="$(_daily-coding._locate-file "$1" "$2")"
+    declare -r target_file_path="$(_daily-coding._locate-file "${file}" "${offset}")"
     if [[ "${target_file_path}" = '' ]]; then
         echo 'same file is not found in other working directory.' >&2
         return 1
