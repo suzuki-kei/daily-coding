@@ -7,7 +7,7 @@ set -eu
 trap 'echo "Assertion failed at line ${LINENO}: ${BASH_COMMAND}"' ERR
 
 declare -r ROOT_DIR="$(cd "$(dirname "$0")/../" && pwd)"
-declare -r TEST_DATA_DIR="${ROOT_DIR}/target/src"
+declare -r TEST_DATA_DIR="${ROOT_DIR}/target/workspace"
 
 source "${ROOT_DIR}/bashrc/daily-coding.bashrc"
 
