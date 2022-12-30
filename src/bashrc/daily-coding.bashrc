@@ -5,7 +5,7 @@ shopt -s extglob
 function daily-coding
 {
     case "${1:-}" in
-        '' | +([0-9]) | ++([0-9]) | -+([0-9]))
+        '' | +([0-9]) | ++([0-9]) | -+([0-9]) | --root)
             _daily-coding.cd "${1:-0}"
             ;;
         cd | --cd)
@@ -128,6 +128,10 @@ function _daily-coding.help
             ${name}
 
         SYNOPSIS
+            ${name} --root
+            ${name} cd --root
+                リポジトリのルートディレクトリに移動します.
+
             ${name} [N]
             ${name} cd [N]|--cd [N]
                 N 日前後の作業ディレクトリに移動します (デフォルトは N=0).
