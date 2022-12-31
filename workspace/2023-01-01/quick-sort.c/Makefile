@@ -1,6 +1,6 @@
 
 SRC := main.c
-OUT := main.out
+OUT := a.out
 
 .DEFAULT_GOAL := run
 

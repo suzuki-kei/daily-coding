@@ -1,16 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "main.h"
 
 #define SIZE 20
-
-void initialize();
-void set_random_values(int *values, int size);
-int is_sorted(const int *values, int size);
-void print_values(const int *values, int size);
-void quick_sort(int *values, int size);
-void quick_sort_impl(int *values, int lower, int upper);
-void swap(int *values, int index1, int index2);
 
 int main(void)
 {
@@ -63,10 +56,10 @@ void print_values(const int *values, int size)
 
 void quick_sort(int *values, int size)
 {
-    quick_sort_impl(values, 0, size - 1);
+    _quick_sort(values, 0, size - 1);
 }
 
-void quick_sort_impl(int *values, int lower, int upper)
+void _quick_sort(int *values, int lower, int upper)
 {
     int lower_index = lower;
     int upper_index = upper;
@@ -83,9 +76,9 @@ void quick_sort_impl(int *values, int lower, int upper)
     }
 
     if (lower_index < upper)
-        quick_sort_impl(values, lower_index, upper);
+        _quick_sort(values, lower_index, upper);
     if (lower < upper_index)
-        quick_sort_impl(values, lower, upper_index);
+        _quick_sort(values, lower, upper_index);
 }
 
 void swap(int *values, int index1, int index2)
