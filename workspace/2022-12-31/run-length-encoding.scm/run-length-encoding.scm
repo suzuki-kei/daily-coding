@@ -47,9 +47,9 @@
 
 (define decode
     (lambda (encoded-runs)
-        (encoded-runs->runs encoded-runs)))
+        (encoded-runs->xs encoded-runs)))
 
-(define encoded-runs->runs
+(define encoded-runs->xs
     (lambda (encoded-runs)
         (runs->xs
             (map encoded-run->run encoded-runs))))

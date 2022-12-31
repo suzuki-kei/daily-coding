@@ -25,7 +25,7 @@
         (test.runs->encoded-runs)
         (test.run->encoded-run)
         (test.decode)
-        (test.encoded-runs->runs)
+        (test.encoded-runs->xs)
         (test.encoded-run->run)
         (test.runs->xs)))
 
@@ -92,15 +92,15 @@
                     (decode encoded-runs))))
         (test-end)))
 
-(define test.encoded-runs->runs
+(define test.encoded-runs->xs
     (lambda ()
-        (test-start "encoded-runs->runs")
+        (test-start "encoded-runs->xs")
         (test.parameterized TEST-DATA-TUPLES
             (lambda (index xs runs encoded-runs)
                 (test*
                     (format "#~d" (+ index 1))
                     xs
-                    (encoded-runs->runs encoded-runs))))
+                    (encoded-runs->xs encoded-runs))))
         (test-end)))
 
 (define test.encoded-run->run
