@@ -278,6 +278,6 @@ function _daily-coding.stats
             declare lines=$(find "${path}" -type f | xargs cat | wc -l)
             echo "${path} ${lines} lines"
         done
-    )
+    ) | column -t -R 2 -o ' '
 }
 
