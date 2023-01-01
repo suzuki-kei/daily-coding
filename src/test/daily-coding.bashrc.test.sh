@@ -11,6 +11,68 @@ declare -r TEST_DATA_DIR="${REPOSITORY_PATH}/target/workspace"
 
 source "${REPOSITORY_PATH}/src/bashrc/daily-coding.bashrc"
 
+function test._daily-coding.locate-date_path
+{
+    rm -rf "${TEST_DATA_DIR}"
+    mkdir -p "${TEST_DATA_DIR}"
+    cd "${TEST_DATA_DIR}"
+
+    declare -ar date_paths=(
+        # 日付が連続する場合.
+        '2023-01-08'
+        '2023-01-09'
+        '2023-01-10'
+        '2023-01-11'
+        '2023-01-12'
+
+        # 日付が連続しない場合.
+        '2023-02-05'
+        '2023-02-08'
+        '2023-02-10'
+        '2023-02-12'
+        '2023-02-15'
+
+        # 当日のディレクトリが存在しない場合.
+        '2023-03-07'
+        '2023-03-09'
+        '2023-03-11'
+        '2023-03-13'
+    )
+
+    for date_path in "${date_paths[@]}"; do
+        mkdir -p "${date_path}"
+    done
+
+    # 日付が連続する場合.
+    test "$(_daily-coding.locate-date_path '2023-01-10' -2)" = '2023-01-08'
+    test "$(_daily-coding.locate-date_path '2023-01-10' -1)" = '2023-01-09'
+    test "$(_daily-coding.locate-date_path '2023-01-10'  0)" = '2023-01-10'
+    test "$(_daily-coding.locate-date_path '2023-01-10'  1)" = '2023-01-11'
+    test "$(_daily-coding.locate-date_path '2023-01-10'  2)" = '2023-01-12'
+
+    # 日付が連続しない場合.
+    test "$(_daily-coding.locate-date_path '2023-02-10' -2)" = '2023-02-05'
+    test "$(_daily-coding.locate-date_path '2023-02-10' -1)" = '2023-02-08'
+    test "$(_daily-coding.locate-date_path '2023-02-10'  0)" = '2023-02-10'
+    test "$(_daily-coding.locate-date_path '2023-02-10'  1)" = '2023-02-12'
+    test "$(_daily-coding.locate-date_path '2023-02-10'  2)" = '2023-02-15'
+
+    # 当日のディレクトリが存在しない場合.
+    test "$(_daily-coding.locate-date_path '2023-03-10' -2)" = '2023-03-07'
+    test "$(_daily-coding.locate-date_path '2023-03-10' -1)" = '2023-03-09'
+    test "$(_daily-coding.locate-date_path '2023-03-10'  0)" = '2023-03-10'
+    test "$(_daily-coding.locate-date_path '2023-03-10'  1)" = '2023-03-11'
+    test "$(_daily-coding.locate-date_path '2023-03-10'  2)" = '2023-03-13'
+
+    # n 番目のディレクトリが存在しない場合.
+    test ! "$(_daily-coding.locate-date_path '2023-01-01' -2)"
+    test ! "$(_daily-coding.locate-date_path '2023-01-01' -1)"
+    test   "$(_daily-coding.locate-date_path '2023-01-01'  0)" = '2023-01-01'
+    test   "$(_daily-coding.locate-date_path '2023-12-31'  0)" = '2023-12-31'
+    test ! "$(_daily-coding.locate-date_path '2023-12-31'  1)"
+    test ! "$(_daily-coding.locate-date_path '2023-12-31'  2)"
+}
+
 function test._daily-coding.locate-file
 {
     rm -rf "${TEST_DATA_DIR}"
@@ -90,4 +152,5 @@ function test._daily-coding.locate-file
 }
 
 test._daily-coding.locate-file
+test._daily-coding.locate-date_path
 

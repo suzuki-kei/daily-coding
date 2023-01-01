@@ -40,11 +40,18 @@ function _daily-coding.cd
         # 無効なオプションとして "Invalid option" と表示されるよりも,
         # cd に失敗した時のエラーメッセージの方が状況を理解しやすいため.
         declare -r n="${BASH_REMATCH[1]:-0}"
-        declare -r date_name="$(date --date "${n} days" '+%Y-%m-%d')"
+        declare -r date_name="$(date '+%Y-%m-%d')"
 
         declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
         declare -r workspace_path="${repository_path}/workspace"
-        declare -r date_path="${workspace_path}/${date_name}"
+
+        declare -r date_path="$(
+            _daily-coding.locate-date_path "${workspace_path}/${date_name}" ${n}
+        )"
+        if [[ "${date_path}" = '' ]]; then
+            echo 'Not found' >&2
+            return 1
+        fi
 
         if [[ ${n} -eq 0 ]]; then
             mkdir -p "${date_path}"
@@ -70,6 +77,27 @@ function _daily-coding.cd
 
     echo "Invalid options: [$@]" >&2
     return 1
+}
+
+function _daily-coding.locate-date_path
+{
+    declare -r date_name="$(basename "$1")"
+    declare -r nth=$2
+
+    declare -r workspace_path="$(dirname "$1")"
+    declare -r date_path="$(
+        cat <(ls -1d "${workspace_path}"/*) <(echo "${workspace_path}/${date_name}") |
+            sort -u |
+            ([[ $nth -ge 0 ]] && cat || tac) |
+            sed -n "/${date_name}/,$ p" |
+            sed -n "$((nth < 0 ? -nth+1 : nth+1)) p"
+    )"
+
+    if [[ "${date_path}" = '' ]]; then
+        echo ''
+    else
+        echo "$(realpath "${date_path}" --relative-to "$(pwd)")"
+    fi
 }
 
 function _daily-coding.commit
@@ -181,7 +209,7 @@ function _daily-coding.help
 
             ${name} [N]
             ${name} cd [N]
-                N 日前後の作業ディレクトリに移動します (デフォルトは N=0).
+                今日を基準に N 個前後の作業ディレクトリに移動します (デフォルトは N=0).
                 N=0 の場合に限り, ディレクトリが存在しなければ作成します.
 
             ${name} commit [--amend]
@@ -211,7 +239,7 @@ function _daily-coding.help
             # 今日の作業ディレクトリに移動します.
             ${name} cd
 
-            # 昨日の作業ディレクトリに移動します.
+            # 今日を基準に 1 個前の作業ディレクトリに移動します.
             ${name} cd -1
 
             # 各作業ディレクトリに含まれるコレクションを表示します.
