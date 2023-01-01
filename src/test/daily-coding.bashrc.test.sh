@@ -19,6 +19,8 @@ function test._daily-coding.cd.optparse
     test "$(_daily-coding.cd.optparse -1)" = 'n=-1 collection_name='
     test "$(_daily-coding.cd.optparse 1 aaa)" = 'n=1 collection_name=aaa'
     test "$(_daily-coding.cd.optparse -1 aaa)" = 'n=-1 collection_name=aaa'
+    test "$(_daily-coding.cd.optparse 2022-12-30)" = 'date_name=2022-12-30 collection_name='
+    test "$(_daily-coding.cd.optparse 2022-12-30 aaa)" = 'date_name=2022-12-30 collection_name=aaa'
     test "$(_daily-coding.cd.optparse --root)" = '--root'
     test "$(_daily-coding.cd.optparse --root aaa 2>&1 || true)" = 'Invalid options: [--root aaa]'
 }

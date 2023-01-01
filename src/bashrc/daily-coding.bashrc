@@ -64,6 +64,26 @@ function _daily-coding.cd
         return 0
     fi
 
+    if [[ "${options}" =~ ^date_name=(.*)\ collection_name=(.*)$ ]]; then
+        declare -r date_name="${BASH_REMATCH[1]}"
+        declare -r collection_name="${BASH_REMATCH[2]}"
+
+        declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+        declare -r workspace_path="${repository_path}/workspace"
+
+        if [[ "${collection_name}" = '' ]]; then
+            declare -r target_path="${workspace_path}/${date_name}"
+        else
+            declare -r target_path="${workspace_path}/${date_name}/${collection_name}"
+        fi
+
+        if [[ "${date_name}" = "$(date '+%Y-%m-%d')" ]]; then
+            mkdir -p "${target_path}"
+        fi
+        cd "${target_path}" && pwd
+        return 0
+    fi
+
     return 1
 }
 
@@ -73,6 +93,16 @@ function _daily-coding.cd.optparse
     if [[ "$@" = '--root' ]]
     then
         echo '--root'
+        return 0
+    fi
+
+    # cd DATE [collection_name]
+    if [[ "$@" =~ ^([1-9][0-9]{3}-[1-9][0-9]-[1-9][0-9])\ +([^-][^ ]*)$ ]] ||
+       [[ "$@" =~ ^([1-9][0-9]{3}-[1-9][0-9]-[1-9][0-9])$ ]]
+    then
+        declare -r date_name="${BASH_REMATCH[1]}"
+        declare -r collection_name="${BASH_REMATCH[2]:-}"
+        echo "date_name=${date_name} collection_name=${collection_name}"
         return 0
     fi
 
