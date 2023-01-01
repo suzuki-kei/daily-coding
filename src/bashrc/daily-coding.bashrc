@@ -224,8 +224,10 @@ function _daily-coding.help
             ${name} help|--help|-h
                 このコマンドの使い方を表示します.
 
-            ${name} ls
-                各作業ディレクトリに含まれるコレクションを表示します.
+            ${name} ls [-v|-vv]
+                日別の作業ディレクトリを一覧表示します.
+                -v を指定すると各作業ディレクトリの 1 階層下,
+                -vv を指定すると各作業ディレクトリの 2 階層下を表示します.
 
             ${name} stats [-v|-vv]
                 各作業ディレクトリに含まれるソースコードの行数を表示します.
@@ -242,8 +244,10 @@ function _daily-coding.help
             # 今日を基準に 1 個前の作業ディレクトリに移動します.
             ${name} cd -1
 
-            # 各作業ディレクトリに含まれるコレクションを表示します.
+            # 日別の作業ディレクトリを一覧表示します.
             ${name} ls
+            ${name} ls -v
+            ${name} ls -vv
 
             # 直近の同じ実装ファイルと比較します.
             ${name} diff FILE
@@ -260,7 +264,7 @@ EOS
 
 function _daily-coding.ls
 {
-    if [[ ! $# -le 0 ]]; then
+    if [[ ! $# -le 1 ]]; then
         echo "Invalid options: [$@]" >&2
         return 1
     fi
@@ -268,7 +272,23 @@ function _daily-coding.ls
     declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
     declare -r workspace_path="${repository_path}/workspace"
 
-    find "${workspace_path}" -mindepth 2 -maxdepth 2 -printf '%P\n' | sort
+    case "${1:-}" in
+        '')
+            declare -r depth=1
+            ;;
+        -v)
+            declare -r depth=2
+            ;;
+        -vv)
+            declare -r depth=3
+            ;;
+        *)
+            echo "Invalid option: [$1]" >&2
+            return 1
+            ;;
+    esac
+
+    find "${workspace_path}" -mindepth ${depth} -maxdepth ${depth} -printf '%P\n' | sort
 }
 
 function _daily-coding.stats
