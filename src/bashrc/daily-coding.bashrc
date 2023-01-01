@@ -32,19 +32,24 @@ function daily-coding
 
 function _daily-coding.cd
 {
-    declare -r options="$(_daily-coding.cd.optparse "$@")"
+    if [[ ! $# -le 1 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
 
-    if [[ "${options}" == '--root' ]]; then
+    # cd --root
+    if [[ "$1" = '--root' ]]; then
         declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
         cd "${repository_path}" && pwd
         return 0
     fi
 
-    if [[ "${options}" =~ ^n=(.*)$ ]]; then
+    # cd [N]
+    if [[ "$1" =~ ^$ ]] || [[ "$1" =~ ^([+-]?[0-9]+)$ ]]; then
         # n が正の数である場合は最後の cd で失敗するが意図通り.
         # 無効なオプションとして "Invalid option" と表示されるよりも,
         # cd に失敗した時のエラーメッセージの方が状況を理解しやすいため.
-        declare -r n="${BASH_REMATCH[1]}"
+        declare -r n="${BASH_REMATCH[1]:-0}"
         declare -r date_name="$(date --date "${n} days" '+%Y-%m-%d')"
 
         declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
@@ -58,7 +63,8 @@ function _daily-coding.cd
         return 0
     fi
 
-    if [[ "${options}" =~ ^date_name=(.*)$ ]]; then
+    # cd DATE
+    if [[ "$1" =~ ^([1-9][0-9]{3}-[1-9][0-9]-[1-9][0-9])$ ]]; then
         declare -r date_name="${BASH_REMATCH[1]}"
 
         declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
@@ -69,33 +75,6 @@ function _daily-coding.cd
             mkdir -p "${date_path}"
         fi
         cd "${date_path}" && pwd
-        return 0
-    fi
-
-    return 1
-}
-
-function _daily-coding.cd.optparse
-{
-    # cd --root
-    if [[ "$@" = '--root' ]]
-    then
-        echo '--root'
-        return 0
-    fi
-
-    # cd DATE
-    if [[ "$@" =~ ^([1-9][0-9]{3}-[1-9][0-9]-[1-9][0-9])$ ]]; then
-        declare -r date_name="${BASH_REMATCH[1]}"
-        echo "date_name=${date_name}"
-        return 0
-    fi
-
-    # cd [N]
-    if [[ "$@" =~ ^([+-]?[0-9]+)$ ]] || [[ "$@" =~ ^$ ]]; then
-        declare -r n="${BASH_REMATCH[1]:-0}"
-        declare -r date_name="$(date --date "${n} days" '+%Y-%m-%d')"
-        echo "n=${n}"
         return 0
     fi
 

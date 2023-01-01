@@ -11,16 +11,6 @@ declare -r TEST_DATA_DIR="${REPOSITORY_PATH}/target/workspace"
 
 source "${REPOSITORY_PATH}/src/bashrc/daily-coding.bashrc"
 
-function test._daily-coding.cd.optparse
-{
-    test "$(_daily-coding.cd.optparse)" = 'n=0'
-    test "$(_daily-coding.cd.optparse 1)" = 'n=1'
-    test "$(_daily-coding.cd.optparse -1)" = 'n=-1'
-    test "$(_daily-coding.cd.optparse 2022-12-30)" = 'date_name=2022-12-30'
-    test "$(_daily-coding.cd.optparse --root)" = '--root'
-    test "$(_daily-coding.cd.optparse --root aaa 2>&1 || true)" = 'Invalid options: [--root aaa]'
-}
-
 function test._daily-coding._locate-file
 {
     rm -rf "${TEST_DATA_DIR}"
@@ -99,6 +89,5 @@ function test._daily-coding._locate-file
     test "$(_daily-coding._locate-file "2022-04-10/aaa/file.txt"  2)" = '2022-04-14/aaa/file.txt'
 }
 
-test._daily-coding.cd.optparse
 test._daily-coding._locate-file
 
