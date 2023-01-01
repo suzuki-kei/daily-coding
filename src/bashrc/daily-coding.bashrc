@@ -5,23 +5,23 @@ shopt -s extglob
 function daily-coding
 {
     case "${1:-}" in
-        cd | --cd)
+        cd)
             shift 1
             _daily-coding.cd "$@"
             ;;
         commit)
             _daily-coding.commit "${2:-}"
             ;;
-        diff | --diff)
+        diff)
             _daily-coding.diff "${2:-}" "${3:-}"
             ;;
         help | --help | -h)
             _daily-coding.help
             ;;
-        ls | list | --ls | --list | -l)
+        ls | list)
             _daily-coding.ls
             ;;
-        stats | --stats)
+        stats)
             _daily-coding.stats "${2:-}"
             ;;
         *)
@@ -216,14 +216,14 @@ function _daily-coding.help
                 リポジトリのルートディレクトリに移動します.
 
             ${name} [N]
-            ${name} cd [N]|--cd [N]
+            ${name} cd [N]
                 N 日前後の作業ディレクトリに移動します (デフォルトは N=0).
                 N=0 の場合に限り, ディレクトリが存在しなければ作成します.
 
             ${name} commit [--amend]
                 空メッセージで git commit します.
 
-            ${name} diff FILE [N]|--diff FILE [N]
+            ${name} diff FILE [N]
                 FILE を直近の実装ファイルと比較します.
 
                 別日の作業ディレクトリから FILE と同一のファイルを探し,
@@ -232,10 +232,10 @@ function _daily-coding.help
             ${name} help|--help|-h
                 このコマンドの使い方を表示します.
 
-            ${name} ls|list|--ls|--list|-l
+            ${name} ls|list
                 各作業ディレクトリに含まれるコレクションを表示します.
 
-            ${name} stats|--stats [-v|-vv]
+            ${name} stats [-v|-vv]
                 各作業ディレクトリに含まれるソースコードの行数を表示します.
                 -v を指定すると作業ディレクトリの 1 階層下のディレクトリごと,
                 -vv を指定すると作業ディレクトリの 2 階層下のディレクトリごとに表示します.
