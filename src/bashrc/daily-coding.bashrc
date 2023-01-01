@@ -18,7 +18,7 @@ function daily-coding
         help | --help | -h)
             _daily-coding.help
             ;;
-        ls | list)
+        ls)
             _daily-coding.ls
             ;;
         stats)
@@ -232,7 +232,7 @@ function _daily-coding.help
             ${name} help|--help|-h
                 このコマンドの使い方を表示します.
 
-            ${name} ls|list
+            ${name} ls
                 各作業ディレクトリに含まれるコレクションを表示します.
 
             ${name} stats [-v|-vv]
