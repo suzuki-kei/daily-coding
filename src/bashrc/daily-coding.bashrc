@@ -40,47 +40,35 @@ function _daily-coding.cd
         return 0
     fi
 
-    if [[ "${options}" =~ ^n=(.*)\ collection_name=(.*)$ ]]; then
+    if [[ "${options}" =~ ^n=(.*)$ ]]; then
         # n が正の数である場合は最後の cd で失敗するが意図通り.
         # 無効なオプションとして "Invalid option" と表示されるよりも,
         # cd に失敗した時のエラーメッセージの方が状況を理解しやすいため.
         declare -r n="${BASH_REMATCH[1]}"
         declare -r date_name="$(date --date "${n} days" '+%Y-%m-%d')"
-        declare -r collection_name="${BASH_REMATCH[2]}"
 
         declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
         declare -r workspace_path="${repository_path}/workspace"
-
-        if [[ "${collection_name}" = '' ]]; then
-            declare -r target_path="${workspace_path}/${date_name}"
-        else
-            declare -r target_path="${workspace_path}/${date_name}/${collection_name}"
-        fi
+        declare -r date_path="${workspace_path}/${date_name}"
 
         if [[ ${n} -eq 0 ]]; then
-            mkdir -p "${target_path}"
+            mkdir -p "${date_path}"
         fi
-        cd "${target_path}" && pwd
+        cd "${date_path}" && pwd
         return 0
     fi
 
-    if [[ "${options}" =~ ^date_name=(.*)\ collection_name=(.*)$ ]]; then
+    if [[ "${options}" =~ ^date_name=(.*)$ ]]; then
         declare -r date_name="${BASH_REMATCH[1]}"
-        declare -r collection_name="${BASH_REMATCH[2]}"
 
         declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
         declare -r workspace_path="${repository_path}/workspace"
-
-        if [[ "${collection_name}" = '' ]]; then
-            declare -r target_path="${workspace_path}/${date_name}"
-        else
-            declare -r target_path="${workspace_path}/${date_name}/${collection_name}"
-        fi
+        declare -r date_path="${workspace_path}/${date_name}"
 
         if [[ "${date_name}" = "$(date '+%Y-%m-%d')" ]]; then
-            mkdir -p "${target_path}"
+            mkdir -p "${date_path}"
         fi
-        cd "${target_path}" && pwd
+        cd "${date_path}" && pwd
         return 0
     fi
 
@@ -96,26 +84,18 @@ function _daily-coding.cd.optparse
         return 0
     fi
 
-    # cd DATE [collection_name]
-    if [[ "$@" =~ ^([1-9][0-9]{3}-[1-9][0-9]-[1-9][0-9])\ +([^-][^ ]*)$ ]] ||
-       [[ "$@" =~ ^([1-9][0-9]{3}-[1-9][0-9]-[1-9][0-9])$ ]]
-    then
+    # cd DATE
+    if [[ "$@" =~ ^([1-9][0-9]{3}-[1-9][0-9]-[1-9][0-9])$ ]]; then
         declare -r date_name="${BASH_REMATCH[1]}"
-        declare -r collection_name="${BASH_REMATCH[2]:-}"
-        echo "date_name=${date_name} collection_name=${collection_name}"
+        echo "date_name=${date_name}"
         return 0
     fi
 
-    # cd [N] [collection_name]
-    if [[ "$@" =~ ^([+-]?[0-9]+)\ +([^-][^ ]*)$ ]] ||
-       [[ "$@" =~ ^([+-]?[0-9]+)$ ]] ||
-       [[ "$@" =~ ^()+([^-][^ ]*)$ ]] ||
-       [[ "$@" =~ ^$ ]]
-    then
+    # cd [N]
+    if [[ "$@" =~ ^([+-]?[0-9]+)$ ]] || [[ "$@" =~ ^$ ]]; then
         declare -r n="${BASH_REMATCH[1]:-0}"
         declare -r date_name="$(date --date "${n} days" '+%Y-%m-%d')"
-        declare -r collection_name="${BASH_REMATCH[2]:-}"
-        echo "n=${n} collection_name=${collection_name}"
+        echo "n=${n}"
         return 0
     fi
 
