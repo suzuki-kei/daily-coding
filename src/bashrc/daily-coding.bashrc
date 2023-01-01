@@ -40,38 +40,36 @@ function _daily-coding.cd
         # 無効なオプションとして "Invalid option" と表示されるよりも,
         # cd に失敗した時のエラーメッセージの方が状況を理解しやすいため.
         declare -r n="${BASH_REMATCH[1]:-0}"
-        declare -r date_name="$(date '+%Y-%m-%d')"
 
         declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-        declare -r workspace_path="${repository_path}/workspace"
+        declare -r base_workspace_name="$(date '+%Y-%m-%d')"
+        declare -r base_workspace_path="${repository_path}/workspace/${base_workspace_name}"
 
-        declare -r date_path="$(
-            _daily-coding.locate-date_path "${workspace_path}/${date_name}" ${n}
+        declare -r target_workspace_path="$(
+            _daily-coding.locate_workspace "${base_workspace_path}" ${n}
         )"
-        if [[ "${date_path}" = '' ]]; then
+        if [[ "${target_workspace_path}" = '' ]]; then
             echo 'Not found' >&2
             return 1
         fi
 
         if [[ ${n} -eq 0 ]]; then
-            mkdir -p "${date_path}"
+            mkdir -p "${target_workspace_path}"
         fi
-        cd "${date_path}" && pwd
+        cd "${target_workspace_path}" && pwd
         return 0
     fi
 
     # cd DATE
     if [[ "$1" =~ ^([1-9][0-9]{3}-[1-9][0-9]-[1-9][0-9])$ ]]; then
-        declare -r date_name="${BASH_REMATCH[1]}"
-
         declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-        declare -r workspace_path="${repository_path}/workspace"
-        declare -r date_path="${workspace_path}/${date_name}"
+        declare -r workspace_name="${BASH_REMATCH[1]}"
+        declare -r workspace_path="${repository_path}/workspace/${workspace_name}"
 
-        if [[ "${date_name}" = "$(date '+%Y-%m-%d')" ]]; then
-            mkdir -p "${date_path}"
+        if [[ "${workspace_name}" = "$(date '+%Y-%m-%d')" ]]; then
+            mkdir -p "${workspace_name}"
         fi
-        cd "${date_path}" && pwd
+        cd "${workspace_name}" && pwd
         return 0
     fi
 
@@ -79,24 +77,26 @@ function _daily-coding.cd
     return 1
 }
 
-function _daily-coding.locate-date_path
+function _daily-coding.locate_workspace
 {
-    declare -r date_name="$(basename "$1")"
-    declare -r nth=$2
+    declare -r root_workspace_path="$(dirname "$1")"
+    declare -r base_workspace_path="$1"
+    declare -r base_workspace_name="$(basename "$1")"
+    declare -r n=$2
 
-    declare -r workspace_path="$(dirname "$1")"
-    declare -r date_path="$(
-        cat <(ls -1d "${workspace_path}"/*) <(echo "${workspace_path}/${date_name}") |
+    declare -r target_workspace_path="$(
+        cat <(ls -1d "${root_workspace_path}"/*) \
+            <(echo "${root_workspace_path}/${base_workspace_name}") |
             sort -u |
-            ([[ $nth -ge 0 ]] && cat || tac) |
-            sed -n "/${date_name}/,$ p" |
-            sed -n "$((nth < 0 ? -nth+1 : nth+1)) p"
+            ([[ $n -ge 0 ]] && cat || tac) |
+            sed -n "/${base_workspace_name}/,$ p" |
+            sed -n "$((n < 0 ? -n+1 : n+1)) p"
     )"
 
-    if [[ "${date_path}" = '' ]]; then
+    if [[ "${target_workspace_path}" = '' ]]; then
         echo ''
     else
-        echo "$(realpath "${date_path}" --relative-to "$(pwd)")"
+        echo "$(realpath "${target_workspace_path}" --relative-to "$(pwd)")"
     fi
 }
 
@@ -128,39 +128,39 @@ function _daily-coding.diff
         return 1
     fi
 
-    declare -r file="${1:-}"
-    declare -r offset="${2:--1}"
+    declare -r base_file_path="${1:-}"
+    declare -r n="${2:--1}"
 
-    if [[ "${file}" == '' ]]; then
+    if [[ "${base_file_path}" == '' ]]; then
         echo 'Invalid option: FILE is required.' >&2
         return 1
     fi
-    if [[ ! -f "${file}" ]]; then
-        echo "Invalid option: file [${file}] not found." >&2
+    if [[ ! -f "${base_file_path}" ]]; then
+        echo "Invalid option: file [${base_file_path}] not found." >&2
         return 1
     fi
 
-    declare -r target_file_path="$(_daily-coding.locate-file "${file}" "${offset}")"
+    declare -r target_file_path="$(_daily-coding.locate_file "${base_file_path}" "${n}")"
     if [[ "${target_file_path}" = '' ]]; then
         echo 'same file is not found in other working directory.' >&2
         return 1
     fi
-    vimdiff "${file}" "${target_file_path}"
+    vimdiff "${base_file_path}" "${target_file_path}"
 }
 
-function _daily-coding.locate-file
+function _daily-coding.locate_file
 {
-    declare -r workspace_path="$(cd "$(dirname "$1")"/../.. && pwd)"
-    declare -r date_name="$(cd "$(dirname "$1")"/.. && basename "$(pwd)")"
-    declare -r collection_name="$(cd "$(dirname "$1")" && basename "$(pwd)")"
-    declare -r file_name="$(basename "$1")"
+    declare -r root_workspace_path="$(cd "$(dirname "$1")"/../.. && pwd)"
+    declare -r base_workspace_name="$(cd "$(dirname "$1")"/.. && basename "$(pwd)")"
+    declare -r base_collection_name="$(cd "$(dirname "$1")" && basename "$(pwd)")"
+    declare -r base_file_name="$(basename "$1")"
 
-    declare -r nth=$2
+    declare -r n=$2
     declare -r target_file_path="$(
-        ls -1 "${workspace_path}"/*/"${collection_name}/${file_name}" |
-            ([[ $nth -ge 0 ]] && cat || tac) |
-            sed -n "/${date_name}/,$ p" |
-            sed -n "$((nth < 0 ? -nth+1 : nth+1)) p"
+        ls -1 "${root_workspace_path}"/*/"${base_collection_name}/${base_file_name}" |
+            ([[ $n -ge 0 ]] && cat || tac) |
+            sed -n "/${base_workspace_name}/,$ p" |
+            sed -n "$((n < 0 ? -n+1 : n+1)) p"
     )"
 
     if [[ ! -f "${target_file_path}" ]]; then
@@ -188,19 +188,15 @@ function _daily-coding.help
 
             日々作成するソースコードは以下のディレクトリ構成に従って保存します.
 
-                <repository_path>/workspace/<date_name>/<collection_name>/
+                <repository_path>/workspace/<workspace_name>/<collection_name>/
 
         WORDS
             ワークスペース
-                <repository_path>/workspace/ のことです.
-                日々作成するソースコードを保存する場所のルートディレクトリです.
-
-            作業ディレクトリ
-                <repository_path>/workspace/<date_name>/ のことです.
+                <repository_path>/workspace/<workspace_name> のことです.
 
             コレクション
-                <repository_path>/workspace/<date_name>/<collection_name>/ のことです.
-                コレクションは日別の作業ディレクトリ内をさらに分けるために作成します.
+                <repository_path>/workspace/<workspace_name>/<collection_name>/ のことです.
+                コレクションはワークスペース内をさらに分けるために作成します.
 
         SYNOPSIS
             ${name} --root
@@ -209,50 +205,50 @@ function _daily-coding.help
 
             ${name} [N]
             ${name} cd [N]
-                今日を基準に N 個前後の作業ディレクトリに移動します (デフォルトは N=0).
+                今日を基準に N 個前後のワークスペースに移動します (デフォルトは N=0).
                 N=0 の場合に限り, ディレクトリが存在しなければ作成します.
 
             ${name} commit [--amend]
                 空メッセージで git commit します.
 
             ${name} diff FILE [N]
-                FILE を直近の実装ファイルと比較します.
+                別のワークスペースにあるファイルと比較します.
 
-                別日の作業ディレクトリから FILE と同一のファイルを探し,
+                別日のワークスペースから FILE と同一のファイルを探し,
                 N 個前後のファイルと vimdiff によって比較します (デフォルトは N=-1).
 
             ${name} help|--help|-h
                 このコマンドの使い方を表示します.
 
             ${name} ls [-v|-vv]
-                日別の作業ディレクトリを一覧表示します.
-                -v を指定すると各作業ディレクトリの 1 階層下,
-                -vv を指定すると各作業ディレクトリの 2 階層下を表示します.
+                ワークスペースの一覧を表示します.
+                -v を指定するとワークスペースの 1 階層下,
+                -vv を指定するとワークスペースの 2 階層下を表示します.
 
             ${name} stats [-v|-vv]
-                各作業ディレクトリに含まれるソースコードの行数を表示します.
-                -v を指定すると作業ディレクトリの 1 階層下のディレクトリごと,
-                -vv を指定すると作業ディレクトリの 2 階層下のディレクトリごとに表示します.
+                各ワークスペースに含まれるソースコードの行数を表示します.
+                -v を指定するとワークスペースの 1 階層下,
+                -vv を指定するとワークスペースの 2 階層下の単位で表示します.
 
         EXAMPLES
             # ${name} の使い方を表示します.
             ${name} help
 
-            # 今日の作業ディレクトリに移動します.
+            # 今日のワークスペースに移動します.
             ${name} cd
 
-            # 今日を基準に 1 個前の作業ディレクトリに移動します.
+            # 今日を基準に 1 個前のワークスペースに移動します.
             ${name} cd -1
 
-            # 日別の作業ディレクトリを一覧表示します.
+            # ワークスペースの一覧表示します.
             ${name} ls
             ${name} ls -v
             ${name} ls -vv
 
-            # 直近の同じ実装ファイルと比較します.
+            # 別のワークスペースにあるファイルと比較します.
             ${name} diff FILE
 
-            # 各作業ディレクトリに含まれるソースコードの行数を表示します.
+            # 各ワークスペースに含まれるソースコードの行数を表示します.
             ${name} stats
             ${name} stats -v
             ${name} stats -vv
@@ -270,7 +266,7 @@ function _daily-coding.ls
     fi
 
     declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-    declare -r workspace_path="${repository_path}/workspace"
+    declare -r root_workspace_path="${repository_path}/workspace"
 
     case "${1:-}" in
         '')
@@ -288,7 +284,7 @@ function _daily-coding.ls
             ;;
     esac
 
-    find "${workspace_path}" -mindepth ${depth} -maxdepth ${depth} -printf '%P\n' | sort
+    find "${root_workspace_path}" -mindepth ${depth} -maxdepth ${depth} -printf '%P\n' | sort
 }
 
 function _daily-coding.stats
@@ -297,9 +293,6 @@ function _daily-coding.stats
         echo "Invalid options: [$@]" >&2
         return 1
     fi
-
-    declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-    declare -r workspace_path="${repository_path}/workspace"
 
     case "${1:-}" in
         '')
@@ -319,7 +312,10 @@ function _daily-coding.stats
 
     # カレントシェルの作業ディレクトリを変更したくないのでサブシェルで実行する.
     (
-        cd "${workspace_path}"
+        declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+        declare -r root_workspace_path="${repository_path}/workspace"
+
+        cd "${root_workspace_path}"
 
         for path in ${glob}
         do
