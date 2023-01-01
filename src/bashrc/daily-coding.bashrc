@@ -281,13 +281,13 @@ function _daily-coding.stats
 
     case "${1:-}" in
         '')
-            declare glob='*'
+            declare -r glob='*'
             ;;
         -v)
-            declare glob='*/*'
+            declare -r glob='*/*'
             ;;
         -vv)
-            declare glob='*/*/*'
+            declare -r glob='*/*/*'
             ;;
         *)
             echo "Invalid option: [$1]" >&2
