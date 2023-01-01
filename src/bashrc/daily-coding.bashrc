@@ -112,7 +112,7 @@ function _daily-coding.diff
         return 1
     fi
 
-    declare -r target_file_path="$(_daily-coding._locate-file "${file}" "${offset}")"
+    declare -r target_file_path="$(_daily-coding.locate-file "${file}" "${offset}")"
     if [[ "${target_file_path}" = '' ]]; then
         echo 'same file is not found in other working directory.' >&2
         return 1
@@ -120,7 +120,7 @@ function _daily-coding.diff
     vimdiff "${file}" "${target_file_path}"
 }
 
-function _daily-coding._locate-file
+function _daily-coding.locate-file
 {
     declare -r workspace_path="$(cd "$(dirname "$1")"/../.. && pwd)"
     declare -r date_name="$(cd "$(dirname "$1")"/.. && basename "$(pwd)")"
