@@ -5,11 +5,9 @@ shopt -s extglob
 function daily-coding
 {
     case "${1:-}" in
-        '' | +([0-9]) | ++([0-9]) | -+([0-9]) | --root)
-            _daily-coding.cd "${1:-}"
-            ;;
         cd | --cd)
-            _daily-coding.cd "${2:-}"
+            shift 1
+            _daily-coding.cd "$@"
             ;;
         commit)
             _daily-coding.commit "${2:-}"
@@ -27,40 +25,72 @@ function daily-coding
             _daily-coding.stats "${2:-}"
             ;;
         *)
-            echo "Invalid option: [$1]" >&2
-            return 1
+            _daily-coding.cd "$@"
             ;;
     esac
 }
 
 function _daily-coding.cd
 {
-    case "${1:-0}" in
-        '' | +([0-9]) | ++([0-9]) | -+([0-9]))
-            # n_days に正の数が指定されると最後の cd で失敗するが意図通り.
-            # 無効なオプションとして "Invalid option" と表示されるよりも,
-            # cd に失敗した時のエラーメッセージの方が状況を理解しやすいため.
-            declare -r n_days="${1:-0}"
-            declare -r date_name="$(date --date "${n_days} days" '+%Y-%m-%d')"
+    declare -r options="$(_daily-coding.cd.optparse "$@")"
 
-            declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-            declare -r workspace_path="${repository_path}/workspace"
-            declare -r date_path="${workspace_path}/${date_name}"
+    if [[ "${options}" == '--root' ]]; then
+        declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+        cd "${repository_path}" && pwd
+        return 0
+    fi
 
-            if [[ ${n_days} -eq 0 ]]; then
-                mkdir -p "${date_path}"
-            fi
-            cd "${date_path}" && pwd
-            ;;
-        --root)
-            declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-            cd "${repository_path}" && pwd
-            ;;
-        *)
-            echo "Invalid option: [$1]" >&2
-            return 1
-            ;;
-    esac
+    if [[ "${options}" =~ ^n=(.*)\ collection_name=(.*)$ ]]; then
+        # n が正の数である場合は最後の cd で失敗するが意図通り.
+        # 無効なオプションとして "Invalid option" と表示されるよりも,
+        # cd に失敗した時のエラーメッセージの方が状況を理解しやすいため.
+        declare -r n="${BASH_REMATCH[1]}"
+        declare -r date_name="$(date --date "${n} days" '+%Y-%m-%d')"
+        declare -r collection_name="${BASH_REMATCH[2]}"
+
+        declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+        declare -r workspace_path="${repository_path}/workspace"
+
+        if [[ "${collection_name}" = '' ]]; then
+            declare -r target_path="${workspace_path}/${date_name}"
+        else
+            declare -r target_path="${workspace_path}/${date_name}/${collection_name}"
+        fi
+
+        if [[ ${n} -eq 0 ]]; then
+            mkdir -p "${target_path}"
+        fi
+        cd "${target_path}" && pwd
+        return 0
+    fi
+
+    return 1
+}
+
+function _daily-coding.cd.optparse
+{
+    # cd --root
+    if [[ "$@" = '--root' ]]
+    then
+        echo '--root'
+        return 0
+    fi
+
+    # cd [N] [collection_name]
+    if [[ "$@" =~ ^([+-]?[0-9]+)\ +([^-][^ ]*)$ ]] ||
+       [[ "$@" =~ ^([+-]?[0-9]+)$ ]] ||
+       [[ "$@" =~ ^()+([^-][^ ]*)$ ]] ||
+       [[ "$@" =~ ^$ ]]
+    then
+        declare -r n="${BASH_REMATCH[1]:-0}"
+        declare -r date_name="$(date --date "${n} days" '+%Y-%m-%d')"
+        declare -r collection_name="${BASH_REMATCH[2]:-}"
+        echo "n=${n} collection_name=${collection_name}"
+        return 0
+    fi
+
+    echo "Invalid options: [$@]" >&2
+    return 1
 }
 
 function _daily-coding.commit
