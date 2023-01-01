@@ -123,7 +123,7 @@ function _daily-coding.commit
 
 function _daily-coding.diff
 {
-    if [[ ! $# -le 1 ]]; then
+    if [[ ! $# -le 2 ]]; then
         echo "Invalid options: [$@]" >&2
         return 1
     fi
