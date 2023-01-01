@@ -5,24 +5,14 @@ shopt -s extglob
 function daily-coding
 {
     case "${1:-}" in
-        cd)
+        cd | commit | diff | help | ls | stats)
+            declare -r name="$1"
             shift 1
-            _daily-coding.cd "$@"
+            _daily-coding.$name "$@"
             ;;
-        commit)
-            _daily-coding.commit "${2:-}"
-            ;;
-        diff)
-            _daily-coding.diff "${2:-}" "${3:-}"
-            ;;
-        help | --help | -h)
-            _daily-coding.help
-            ;;
-        ls)
-            _daily-coding.ls
-            ;;
-        stats)
-            _daily-coding.stats "${2:-}"
+        --help | -h)
+            shift 1
+            _daily-coding.help "$@"
             ;;
         *)
             _daily-coding.cd "$@"
