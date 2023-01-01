@@ -220,9 +220,6 @@ function _daily-coding.help
                 N 日前後の作業ディレクトリに移動します (デフォルトは N=0).
                 N=0 の場合に限り, ディレクトリが存在しなければ作成します.
 
-            ${name} cd --root
-                リポジトリのルートディレクトリに移動します.
-
             ${name} commit [--amend]
                 空メッセージで git commit します.
 
