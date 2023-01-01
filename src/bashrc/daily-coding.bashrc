@@ -74,6 +74,11 @@ function _daily-coding.cd
 
 function _daily-coding.commit
 {
+    if [[ ! $# -le 1 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
     case "${1:-}" in
         '')
             git commit --allow-empty-message --m ''
@@ -90,6 +95,11 @@ function _daily-coding.commit
 
 function _daily-coding.diff
 {
+    if [[ ! $# -le 1 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
     declare -r file="${1:-}"
     declare -r offset="${2:--1}"
 
@@ -134,6 +144,11 @@ function _daily-coding.locate-file
 
 function _daily-coding.help
 {
+    if [[ ! $# -le 0 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
     declare -r name="${FUNCNAME[1]}"
 
     cat <<EOS | sed -r 's/^ {8}//'
@@ -217,6 +232,11 @@ EOS
 
 function _daily-coding.ls
 {
+    if [[ ! $# -le 0 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
     declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
     declare -r workspace_path="${repository_path}/workspace"
 
@@ -225,6 +245,11 @@ function _daily-coding.ls
 
 function _daily-coding.stats
 {
+    if [[ ! $# -le 1 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
     declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
     declare -r workspace_path="${repository_path}/workspace"
 
