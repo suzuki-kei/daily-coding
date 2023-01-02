@@ -109,10 +109,10 @@ function _daily-coding.commit
 
     case "${1:-}" in
         '')
-            git commit --allow-empty-message --m ''
+            git commit --allow-empty-message -m ''
             ;;
         --amend)
-            git commit --allow-empty-message --m '' --amend
+            git commit --allow-empty-message -m '' --amend
             ;;
         *)
             echo "Invalid option: [$1]" >&2
