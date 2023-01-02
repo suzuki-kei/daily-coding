@@ -1,6 +1,7 @@
 
 (use gauche.test)
 (load "quick-sort.scm")
+(load "apply-for-each.scm")
 
 (define main
     (lambda (arguments)
@@ -49,7 +50,7 @@
             (5 (1 2 3 4 5 6 7 8 9))))
 
         (test-start "partition")
-        (for-each
+        (apply-for-each
             (lambda (index pivot xs)
                 (receive
                     (less-xs equal-xs greater-xs)
@@ -61,8 +62,9 @@
                             (every (lambda (x) (< x 0)) less-xs)
                             (every (lambda (x) (= x 0)) equal-xs)
                             (every (lambda (x) (> x 0)) greater-xs)))))
-            (iota (length tuples))
-            (map car tuples)
-            (map cadr tuples))
+            (map
+                cons
+                (iota (length tuples))
+                tuples))
         (test-end)))
 
