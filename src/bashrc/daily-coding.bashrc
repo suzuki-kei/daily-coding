@@ -5,7 +5,7 @@ shopt -s extglob
 function daily-coding
 {
     case "${1:-}" in
-        cd | commit | diff | help | ls | stats)
+        cd | commit | diff | help | ls | stats | stats2)
             declare -r name="$1"
             shift 1
             _daily-coding.$name "$@"
@@ -230,6 +230,12 @@ function _daily-coding.help
                 -v を指定するとワークスペースの 1 階層下,
                 -vv を指定するとワークスペースの 2 階層下の単位で表示します.
 
+            ${name} stats2
+                *EXPERIMENTAL*
+                stats の拡張版として試作した機能です.
+                ソースコードの行数やファイル数などの集計値を表示します.
+                ワークスペースやコレクション, 拡張子などいくつかの軸で集計します.
+
         EXAMPLES
             # ${name} の使い方を表示します.
             ${name} help
@@ -323,5 +329,98 @@ function _daily-coding.stats
             echo "${path} ${lines} lines"
         done
     ) | column -t -R 2 -o ' '
+}
+
+function _daily-coding.stats2
+{
+    declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
+
+    _daily-coding.stats.report 'total'                '"total"'
+    _daily-coding.stats.report 'workspace'            '.workspace'
+    _daily-coding.stats.report 'workspace/collection' '.workspace + "/" + .collection'
+    _daily-coding.stats.report 'collection'           '.collection'
+    _daily-coding.stats.report 'language'             '.language'
+    _daily-coding.stats.report 'file'                 '.file'
+    _daily-coding.stats.report 'extension'            '.extension'
+}
+
+function _daily-coding.stats.generate_jsonl
+{
+    declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+    declare -r root_workspace_path="${repository_path}/workspace"
+
+    (
+        cd "${root_workspace_path}"
+
+        while read lines path
+        do
+            path="${path#./}"
+            declare workspace="${path%%/*}"
+            path="${path#*/}"
+            declare collection="${path%%/*}"
+            declare language="${collection##*.}"
+            path="${path#*/}"
+            declare file="${path}"
+            declare extension="$(basename "${file##*.}")"
+
+            cat <<EOS | jq -cM '.'
+                {
+                    "workspace": "$workspace",
+                    "collection": "$collection",
+                    "language": "$language",
+                    "file": "$file",
+                    "extension": "$extension",
+                    "lines": $lines
+                }
+EOS
+        done < <(find . -type f | sort | xargs wc -l | sed -r '/^ *[0-9]+ total$/d')
+    )
+}
+
+function _daily-coding.stats.report
+{
+    declare -r group_key_name="$1"
+    declare -r group_key_value="$2"
+
+    echo "${group_key_name}"
+
+    declare -r jq_query="$(cat <<EOS
+        (
+            [
+                "${group_key_name}",
+                "workspaces",
+                "collections",
+                "languages",
+                "files",
+                "extensions",
+                "lines"
+            ]
+        ),
+        (
+            map({
+                "group_key"            : (${group_key_value}),
+                "workspace_collection" : (.workspace + "/" + .collection)
+                } + .)
+            | group_by(.group_key)
+            | map({
+                "group_key"   : .[0].group_key,
+                "workspaces"  : ([.[].workspace]            | unique | length),
+                "collections" : ([.[].workspace_collection] | unique | length),
+                "languages"   : ([.[].language]             | unique | length),
+                "files"       : ([.[].file]                          | length),
+                "extensions"  : ([.[].extension]            | unique | length),
+                "lines"       : ([.[].lines]                         | add)})
+            | sort_by(.group_key)
+            | map([.[]])
+            | .[]
+        )
+        | @tsv
+EOS)"
+
+    echo "${jsonl}" \
+        | jq -sr "${jq_query}" \
+        | column -t -R 2,3,4,5,6,7 \
+        | sed 's/^/    /'
+    echo
 }
 
