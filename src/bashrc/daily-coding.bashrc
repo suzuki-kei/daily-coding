@@ -363,16 +363,7 @@ function _daily-coding.stats.generate_jsonl
             declare file="${path}"
             declare extension="$(basename "${file##*.}")"
 
-            cat <<EOS | jq -cM '.'
-                {
-                    "workspace": "$workspace",
-                    "collection": "$collection",
-                    "language": "$language",
-                    "file": "$file",
-                    "extension": "$extension",
-                    "lines": $lines
-                }
-EOS
+            echo "{\"workspace\": \"${workspace}\", \"collection\": \"${collection}\", \"language\": \"${language}\", \"file\": \"${file}\", \"extension\": \"${extension}\", \"lines\": ${lines}}"
         done < <(find . -type f | sort | xargs wc -l | sed -r '/^ *[0-9]+ total$/d')
     )
 }
