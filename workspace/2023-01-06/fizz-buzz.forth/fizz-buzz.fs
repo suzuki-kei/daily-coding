@@ -17,7 +17,7 @@
 
 : _fizz-buzz recursive ( i n -- )
     dup 0 = if
-        drop drop   ( i n -- )
+        drop drop       ( i n -- )
     else
         over            ( i n -- i n i )
         fizz-buzz-value ( i n i -- i n )
