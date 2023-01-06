@@ -9,7 +9,7 @@ trap 'echo "Assertion failed at line ${LINENO}: ${BASH_COMMAND}"' ERR
 declare -r REPOSITORY_PATH="$(cd "$(dirname "$0")/../.." && pwd)"
 declare -r TEST_DATA_DIR="${REPOSITORY_PATH}/target/workspace"
 
-source "${REPOSITORY_PATH}/src/bashrc/daily-coding.bashrc"
+source "${REPOSITORY_PATH}/src/main/daily-coding.bashrc"
 
 function test._daily-coding.locate_file
 {
