@@ -335,13 +335,13 @@ function _daily-coding.stats2
 {
     declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
 
-    _daily-coding.stats.report 'total'                '"total"'
-    _daily-coding.stats.report 'workspace'            '.workspace'
-    _daily-coding.stats.report 'workspace/collection' '.workspace + "/" + .collection'
-    _daily-coding.stats.report 'collection'           '.collection'
-    _daily-coding.stats.report 'language'             '.language'
-    _daily-coding.stats.report 'file'                 '.file'
-    _daily-coding.stats.report 'extension'            '.extension'
+    _daily-coding.stats.report "${jsonl}" 'total'                '"total"'
+    _daily-coding.stats.report "${jsonl}" 'workspace'            '.workspace'
+    _daily-coding.stats.report "${jsonl}" 'workspace/collection' '.workspace + "/" + .collection'
+    _daily-coding.stats.report "${jsonl}" 'collection'           '.collection'
+    _daily-coding.stats.report "${jsonl}" 'language'             '.language'
+    _daily-coding.stats.report "${jsonl}" 'file'                 '.file'
+    _daily-coding.stats.report "${jsonl}" 'extension'            '.extension'
 }
 
 function _daily-coding.stats.generate_jsonl
@@ -370,8 +370,9 @@ function _daily-coding.stats.generate_jsonl
 
 function _daily-coding.stats.report
 {
-    declare -r group_key_name="$1"
-    declare -r group_key_value="$2"
+    declare -r jsonl="$1"
+    declare -r group_key_name="$2"
+    declare -r group_key_value="$3"
 
     echo "${group_key_name}"
 
