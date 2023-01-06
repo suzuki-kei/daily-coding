@@ -5,7 +5,7 @@ shopt -s extglob
 function daily-coding
 {
     case "${1:-}" in
-        cd | commit | diff | help | ls | stats | stats2)
+        cd | commit | diff | help | ls | stats)
             declare -r name="$1"
             shift 1
             _daily-coding.$name "$@"
@@ -225,16 +225,16 @@ function _daily-coding.help
                 -v を指定するとワークスペースの 1 階層下,
                 -vv を指定するとワークスペースの 2 階層下を表示します.
 
-            ${name} stats [-v|-vv]
-                各ワークスペースに含まれるソースコードの行数を表示します.
-                -v を指定するとワークスペースの 1 階層下,
-                -vv を指定するとワークスペースの 2 階層下の単位で表示します.
-
-            ${name} stats2
-                *EXPERIMENTAL*
-                stats の拡張版として試作した機能です.
-                ソースコードの行数やファイル数などの集計値を表示します.
-                ワークスペースやコレクション, 拡張子などいくつかの軸で集計します.
+            ${name} stats
+            ${name} stats -v|--workspace
+            ${name} stats -vv|--language
+            ${name} stats -vvv|--extension
+            ${name} stats -vvvv|--collection
+            ${name} stats -vvvvv|--file
+            ${name} stats -vvvvvv|--workspace-collection
+                ソースコードの統計情報を表示します.
+                オプションを指定しない場合, ワークスペースごとのコード行数を高速に表示します.
+                オプションを指定する場合, 異なる軸で集計したソースコードの統計情報を表示します.
 
         EXAMPLES
             # ${name} の使い方を表示します.
@@ -258,6 +258,8 @@ function _daily-coding.help
             ${name} stats
             ${name} stats -v
             ${name} stats -vv
+            ${name} stats -vvv
+            ${name} stats -vvvv
 
             # 空メッセージで git commit します.
             ${name} commit
@@ -302,46 +304,49 @@ function _daily-coding.stats
 
     case "${1:-}" in
         '')
-            declare -r glob='*'
+            # カレントシェルの作業ディレクトリを変更したくないのでサブシェルで実行する.
+            (
+                declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+                declare -r root_workspace_path="${repository_path}/workspace"
+
+                cd "${root_workspace_path}"
+
+                for path in *
+                do
+                    declare lines=$(find "${path}" -type f | xargs cat | wc -l)
+                    echo "${path} ${lines} lines"
+                done
+            ) | column -t -R 2 -o ' '
             ;;
-        -v)
-            declare -r glob='*/*'
+        -v | --workspace)
+            declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'workspace' '.workspace'
             ;;
-        -vv)
-            declare -r glob='*/*/*'
+        -vv | --language)
+            declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'language' '.language'
+            ;;
+        -vvv | --extension)
+            declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'extension' '.extension'
+            ;;
+        -vvvv | --collection)
+            declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'collection' '.collection'
+            ;;
+        -vvvvv | --file)
+            declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'file' '.file'
+            ;;
+        -vvvvvv | --workspace-collection)
+            declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'workspace/collection' '.workspace + "/" + .collection'
             ;;
         *)
             echo "Invalid option: [$1]" >&2
             return 1
             ;;
     esac
-
-    # カレントシェルの作業ディレクトリを変更したくないのでサブシェルで実行する.
-    (
-        declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-        declare -r root_workspace_path="${repository_path}/workspace"
-
-        cd "${root_workspace_path}"
-
-        for path in ${glob}
-        do
-            declare lines=$(find "${path}" -type f | xargs cat | wc -l)
-            echo "${path} ${lines} lines"
-        done
-    ) | column -t -R 2 -o ' '
-}
-
-function _daily-coding.stats2
-{
-    declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
-
-    _daily-coding.stats.report "${jsonl}" 'total'                '"total"'
-    _daily-coding.stats.report "${jsonl}" 'workspace'            '.workspace'
-    _daily-coding.stats.report "${jsonl}" 'workspace/collection' '.workspace + "/" + .collection'
-    _daily-coding.stats.report "${jsonl}" 'collection'           '.collection'
-    _daily-coding.stats.report "${jsonl}" 'language'             '.language'
-    _daily-coding.stats.report "${jsonl}" 'file'                 '.file'
-    _daily-coding.stats.report "${jsonl}" 'extension'            '.extension'
 }
 
 function _daily-coding.stats.generate_jsonl
@@ -374,8 +379,6 @@ function _daily-coding.stats.report
     declare -r group_key_name="$2"
     declare -r group_key_value="$3"
 
-    echo "${group_key_name}"
-
     declare -r jq_query="$(cat <<EOS
         (
             [
@@ -406,13 +409,31 @@ function _daily-coding.stats.report
             | map([.[]])
             | .[]
         )
+        ,
+        (
+            map({
+                "group_key"            : "<entire>",
+                "workspace_collection" : (.workspace + "/" + .collection)
+                } + .)
+            | group_by(.group_key)
+            | map({
+                "group_key"   : .[0].group_key,
+                "workspaces"  : ([.[].workspace]            | unique | length),
+                "collections" : ([.[].workspace_collection] | unique | length),
+                "languages"   : ([.[].language]             | unique | length),
+                "files"       : ([.[].file]                          | length),
+                "extensions"  : ([.[].extension]            | unique | length),
+                "lines"       : ([.[].lines]                         | add)})
+            | sort_by(.group_key)
+            | map([.[]])
+            | .[]
+        )
         | @tsv
 EOS)"
 
     echo "${jsonl}" \
         | jq -sr "${jq_query}" \
-        | column -t -R 2,3,4,5,6,7 \
-        | sed 's/^/    /'
+        | column -t -R 2,3,4,5,6,7
     echo
 }
 
