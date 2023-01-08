@@ -107,12 +107,23 @@ function _daily-coding.commit
         return 1
     fi
 
+    declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
+    declare -r root_workspace_path="${repository_path}/workspace"
+
+    if [[ ! "$(pwd)" = "${root_workspace_path}"/*/* ]]; then
+        echo "Not in collection directory." >&2
+        return 1
+    fi
+
+    declare -r collection_path="$(realpath "$(pwd)" --relative-to "${root_workspace_path}")"
+    declare -r collection_name="$(echo "${collection_path}" | cut -d/ -f2)"
+
     case "${1:-}" in
         '')
-            git commit --allow-empty-message -m ''
+            git commit -m "${collection_name}"
             ;;
         --amend)
-            git commit --allow-empty-message -m '' --amend
+            git commit -m "${collection_name}" --amend
             ;;
         *)
             echo "Invalid option: [$1]" >&2
@@ -209,7 +220,8 @@ function _daily-coding.help
                 N=0 の場合に限り, ディレクトリが存在しなければ作成します.
 
             ${name} commit [--amend]
-                空メッセージで git commit します.
+                コレクションの名前で git commit します.
+                カレントディレクトリがコレクションのディレクトリではない場合はエラーになります.
 
             ${name} diff FILE [N]
                 別のワークスペースにあるファイルと比較します.
