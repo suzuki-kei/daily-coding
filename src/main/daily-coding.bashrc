@@ -270,7 +270,7 @@ function _daily-coding.help
             # 今日を基準に 1 個前のワークスペースに移動します.
             ${name} cd -1
 
-            # ワークスペースの一覧表示します.
+            # ワークスペースの一覧を表示します.
             ${name} ls
             ${name} ls -v
             ${name} ls -vv
