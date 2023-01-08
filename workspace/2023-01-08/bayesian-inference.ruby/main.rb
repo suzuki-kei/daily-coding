@@ -1,3 +1,4 @@
+require 'probabilities'
 require 'person'
 
 def main
@@ -5,6 +6,11 @@ def main
         puts '=' * 80
         send("simulate#{n}")
     end
+end
+
+def new_person(liar_probability)
+    probabilities = Probabilities.new(liar_say_lie: 0.8, honest_say_lie: 0.1)
+    Person.new(liar_probability: liar_probability, probabilities: probabilities)
 end
 
 def simulate1
@@ -24,7 +30,7 @@ def simulate1
     EOS
 
     results = (1..9).map{|x| x / 10.0}.map do |initial_liar_probability|
-        person = Person.new(initial_liar_probability)
+        person = new_person(initial_liar_probability)
 
         say_flags.each do |say_flag|
             person.say(say_flag)
@@ -51,7 +57,7 @@ def simulate2
 
     results = (1..9).map{|x| x / 10.0}.map do |initial_liar_probability|
         n = 0
-        person = Person.new(initial_liar_probability)
+        person = new_person(initial_liar_probability)
 
         while person.liar_probability < 0.95
             n += 1
@@ -89,7 +95,7 @@ def simulate3
 
     results = 10.times.map do
         n = 0
-        person = Person.new(initial_liar_probability)
+        person = new_person(initial_liar_probability)
         shuffled_say_flags = say_flags.shuffle
 
         shuffled_say_flags.each do |say_flag|
