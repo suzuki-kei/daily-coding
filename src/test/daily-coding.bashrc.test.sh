@@ -11,6 +11,18 @@ declare -r TEST_DATA_DIR="${REPOSITORY_PATH}/target/workspace"
 
 source "${REPOSITORY_PATH}/src/main/daily-coding.bashrc"
 
+function test._daily-coding.extname
+{
+    test '.md' = "$(_daily-coding.extname 'README.md')"
+    test '.back' = "$(_daily-coding.extname 'README.md.back')"
+
+    test '.bashrc' = "$(_daily-coding.extname '.bashrc')"
+    test '.back' = "$(_daily-coding.extname '.bashrc.back')"
+
+    test 'Makefile' = "$(_daily-coding.extname 'Makefile')"
+    test '.back' = "$(_daily-coding.extname 'Makefile.back')"
+}
+
 function test._daily-coding.locate_file
 {
     rm -rf "${TEST_DATA_DIR}"
@@ -151,6 +163,7 @@ function test._daily-coding.locate_workspace
     test ! "$(_daily-coding.locate_workspace '2023-12-31'  2)"
 }
 
+test._daily-coding.extname
 test._daily-coding.locate_file
 test._daily-coding.locate_workspace
 

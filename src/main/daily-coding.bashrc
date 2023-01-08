@@ -77,6 +77,15 @@ function _daily-coding.cd
     return 1
 }
 
+function _daily-coding.extname
+{
+    if [[ "$1" =~ \.[^.]*$ ]]; then
+        echo "${BASH_REMATCH[0]}"
+    else
+        echo "$1"
+    fi
+}
+
 function _daily-coding.locate_workspace
 {
     declare -r root_workspace_path="$(dirname "$1")"
@@ -378,7 +387,7 @@ function _daily-coding.stats.generate_jsonl
             declare language="${collection##*.}"
             path="${path#*/}"
             declare file="${path}"
-            declare extension="$(basename "${file##*.}")"
+            declare extension="$(_daily-coding.extname "${path}")"
 
             echo "{\"workspace\": \"${workspace}\", \"collection\": \"${collection}\", \"language\": \"${language}\", \"file\": \"${file}\", \"extension\": \"${extension}\", \"lines\": ${lines}}"
         done < <(find . -type f | sort | xargs wc -l | sed -r '/^ *[0-9]+ total$/d')
