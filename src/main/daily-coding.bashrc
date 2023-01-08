@@ -239,8 +239,8 @@ function _daily-coding.help
 
             ${name} stats
             ${name} stats -v|--workspace
-            ${name} stats -vv|--language
-            ${name} stats -vvv|--extension
+            ${name} stats -vv|--language|--lang
+            ${name} stats -vvv|--extension|--ext
             ${name} stats -vvvv|--collection
             ${name} stats -vvvvv|--file
             ${name} stats -vvvvvv|--workspace-collection
@@ -334,11 +334,11 @@ function _daily-coding.stats
             declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
             _daily-coding.stats.report "${jsonl}" 'workspace' '.workspace'
             ;;
-        -vv | --language)
+        -vv | --language | --lang)
             declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
             _daily-coding.stats.report "${jsonl}" 'language' '.language'
             ;;
-        -vvv | --extension)
+        -vvv | --extension | --ext)
             declare -r jsonl="$(_daily-coding.stats.generate_jsonl)"
             _daily-coding.stats.report "${jsonl}" 'extension' '.extension'
             ;;
