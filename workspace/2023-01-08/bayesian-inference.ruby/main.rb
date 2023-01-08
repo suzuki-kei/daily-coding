@@ -1,4 +1,4 @@
-require './person.rb'
+require 'person'
 
 def main
     (1..3).each do |n|

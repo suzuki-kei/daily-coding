@@ -1,5 +1,5 @@
 
 .PHONY: run
 run:
-	@ruby main.rb
+	@ruby -I. main.rb
 
