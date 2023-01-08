@@ -2,6 +2,8 @@
 # vim
 *.swp
 
-# テストデータなどの作業ファイル.
+# ビルド結果やテストデータなどの中間ファイル.
 /target/
+/workspace/**/*.out
+/workspace/**/*.log
 
