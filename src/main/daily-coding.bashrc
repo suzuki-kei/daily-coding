@@ -246,6 +246,9 @@ function _daily-coding.help
                 -v を指定するとワークスペースの 1 階層下,
                 -vv を指定するとワークスペースの 2 階層下を表示します.
 
+            ${name} ls -vvv|--collection
+                コレクションの一覧を表示します.
+
             ${name} stats
             ${name} stats -v|--workspace
             ${name} stats -vv|--language|--lang
@@ -271,6 +274,9 @@ function _daily-coding.help
             ${name} ls
             ${name} ls -v
             ${name} ls -vv
+
+            # コレクションの一覧を表示します.
+            ${name} ls -vvv
 
             # 別のワークスペースにあるファイルと比較します.
             ${name} diff FILE
@@ -299,21 +305,23 @@ function _daily-coding.ls
 
     case "${1:-}" in
         '')
-            declare -r depth=1
+            find "${root_workspace_path}" -mindepth 1 -maxdepth 1 -printf '%P\n' | sort
             ;;
         -v)
-            declare -r depth=2
+            find "${root_workspace_path}" -mindepth 2 -maxdepth 2 -printf '%P\n' | sort
             ;;
         -vv)
-            declare -r depth=3
+            find "${root_workspace_path}" -mindepth 3 -maxdepth 3 -printf '%P\n' | sort
+            ;;
+        -vvv | --collection)
+            ls -1d "${root_workspace_path}"/*/* | xargs -I{} basename '{}' | sort -u
+            return 0
             ;;
         *)
             echo "Invalid option: [$1]" >&2
             return 1
             ;;
     esac
-
-    find "${root_workspace_path}" -mindepth ${depth} -maxdepth ${depth} -printf '%P\n' | sort
 }
 
 function _daily-coding.stats
