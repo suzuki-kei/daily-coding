@@ -30,9 +30,9 @@
 
 [SRFI-45 Primitives for Expressing Iterative Lazy Algorithms](https://srfi.schemers.org/srfi-45/srfi-45.html) より引用:
 
-> (force (delay expression)) -> expression
-> (force (lazy  expression)) -> (force expression)
-> (force (eager value))      -> value
+    (force (delay expression)) -> expression
+    (force (lazy  expression)) -> (force expression)
+    (force (eager value))      -> value
 
 ## lazy の出現場所
 
