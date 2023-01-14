@@ -246,8 +246,14 @@ function _daily-coding.help
                 -v を指定するとワークスペースの 1 階層下,
                 -vv を指定するとワークスペースの 2 階層下を表示します.
 
-            ${name} ls -vvv|--collection
+            ${name} ls --collection
                 コレクションの一覧を表示します.
+
+            ${name} ls --language|--lang
+                言語の一覧を表示します.
+
+            ${name} ls --extension|--ext
+                拡張子の一覧を表示します.
 
             ${name} stats
             ${name} stats -v|--workspace
@@ -313,8 +319,16 @@ function _daily-coding.ls
         -vv)
             find "${root_workspace_path}" -mindepth 3 -maxdepth 3 -printf '%P\n' | sort
             ;;
-        -vvv | --collection)
-            ls -1d "${root_workspace_path}"/*/* | xargs -I{} basename '{}' | sort -u
+        --collection)
+            _daily-coding.stats.generate_jsonl | jq -sr '.[].collection' | sort -u
+            return 0
+            ;;
+        --language | --lang)
+            _daily-coding.stats.generate_jsonl | jq -sr '.[].language' | sort -u
+            return 0
+            ;;
+        --extension | --ext)
+            _daily-coding.stats.generate_jsonl | jq -sr '.[].extension' | sort -u
             return 0
             ;;
         *)
