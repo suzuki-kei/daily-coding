@@ -20,10 +20,10 @@ decode n = encode (26 - n)
 rotate :: Int -> Char -> Char
 rotate n c | isLower c = rotateLower n c
            | isUpper c = rotateUpper n c
-           | otherwise = c
+           | otherwise = rotateNonAlphabet n c
     where
-        rotateLower = rotateChar 'a'
-        rotateUpper = rotateChar 'A'
-        rotateChar offset n c = chr $ rotateInt 26 (ord offset) n (ord c)
-        rotateInt base offset n x = (x + n - offset) `mod` base + offset
+        rotateLower = rotateChar $ ord 'a'
+        rotateUpper = rotateChar $ ord 'A'
+        rotateNonAlphabet n c = c
+        rotateChar offset n c = chr $ (ord c + n - offset) `mod` 26 + offset
 
