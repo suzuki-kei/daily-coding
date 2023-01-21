@@ -79,10 +79,12 @@ function _daily-coding.cd
 
 function _daily-coding.extname
 {
-    if [[ "$1" =~ \.[^.]*$ ]]; then
+    declare -r name="$(basename "$1")"
+
+    if [[ "$name" =~ \.[^.]*$ ]]; then
         echo "${BASH_REMATCH[0]}"
     else
-        echo "$1"
+        echo "$name"
     fi
 }
 

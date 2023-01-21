@@ -14,13 +14,19 @@ source "${REPOSITORY_PATH}/src/main/daily-coding.bashrc"
 function test._daily-coding.extname
 {
     test '.md' = "$(_daily-coding.extname 'README.md')"
+    test '.md' = "$(_daily-coding.extname '/tmp/files/README.md')"
     test '.back' = "$(_daily-coding.extname 'README.md.back')"
+    test '.back' = "$(_daily-coding.extname '/tmp/files/README.md.back')"
 
     test '.bashrc' = "$(_daily-coding.extname '.bashrc')"
+    test '.bashrc' = "$(_daily-coding.extname '/tmp/files/.bashrc')"
     test '.back' = "$(_daily-coding.extname '.bashrc.back')"
+    test '.back' = "$(_daily-coding.extname '/tmp/files/.bashrc.back')"
 
     test 'Makefile' = "$(_daily-coding.extname 'Makefile')"
+    test 'Makefile' = "$(_daily-coding.extname '/tmp/files/Makefile')"
     test '.back' = "$(_daily-coding.extname 'Makefile.back')"
+    test '.back' = "$(_daily-coding.extname '/tmp/files/Makefile.back')"
 }
 
 function test._daily-coding.locate_file
