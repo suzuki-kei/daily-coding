@@ -472,7 +472,8 @@ function _daily-coding.stats.report
             | .[]
         )
         | @tsv
-EOS)"
+EOS
+)"
 
     echo "${jsonl}" \
         | jq -sr "${jq_query}" \
