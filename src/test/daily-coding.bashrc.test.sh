@@ -32,6 +32,62 @@ function test._daily-coding.cd
          "${REPOSITORY_PATH}/workspace/2023-01-01"
 }
 
+function test._daily-coding.commit
+{
+    # TODO
+    :
+}
+
+function test._daily-coding.diff
+{
+    # TODO
+    :
+}
+
+function test._daily-coding.help
+{
+    test "$(_daily-coding.help)" != ''
+}
+
+function test._daily-coding.ls
+{
+    test "$(_daily-coding.ls)" != ''
+    test "$(_daily-coding.ls -v)" != ''
+    test "$(_daily-coding.ls -vv)" != ''
+    test "$(_daily-coding.ls -vvv 2>&1 || true)" = 'Invalid option: [-vvv]'
+    test "$(_daily-coding.ls --collection)" != ''
+    test "$(_daily-coding.ls --language)" != ''
+    test "$(_daily-coding.ls --lang)" != ''
+    test "$(_daily-coding.ls --extension)" != ''
+    test "$(_daily-coding.ls --ext)" != ''
+    test "$(_daily-coding.ls --no-such-option 2>&1 || true)" = 'Invalid option: [--no-such-option]'
+}
+
+function test._daily-coding.stats
+{
+    test "$(_daily-coding.stats)" != ''
+
+    test "$(_daily-coding.stats -v)" != ''
+    test "$(_daily-coding.stats --workspace)" != ''
+
+    test "$(_daily-coding.stats -vv)" != ''
+    test "$(_daily-coding.stats --language)" != ''
+    test "$(_daily-coding.stats --lang)" != ''
+
+    test "$(_daily-coding.stats -vvv)" != ''
+    test "$(_daily-coding.stats --extension)" != ''
+    test "$(_daily-coding.stats --ext)" != ''
+
+    test "$(_daily-coding.stats -vvvv)" != ''
+    test "$(_daily-coding.stats --collection)" != ''
+
+    test "$(_daily-coding.stats -vvvvv)" != ''
+    test "$(_daily-coding.stats --file)" != ''
+
+    test "$(_daily-coding.stats -vvvvvv)" != ''
+    test "$(_daily-coding.stats --workspace-collection)" != ''
+}
+
 function test._daily-coding.extname
 {
     test '.md' = "$(_daily-coding.extname 'README.md')"
@@ -191,6 +247,11 @@ function test._daily-coding.locate_workspace
 }
 
 test._daily-coding.cd
+test._daily-coding.commit
+test._daily-coding.diff
+test._daily-coding.help
+test._daily-coding.ls
+test._daily-coding.stats
 test._daily-coding.extname
 test._daily-coding.locate_file
 test._daily-coding.locate_workspace
