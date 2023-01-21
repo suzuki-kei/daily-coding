@@ -28,14 +28,14 @@ function _daily-coding.cd
     fi
 
     # cd --root
-    if [[ "$1" = '--root' ]]; then
+    if [[ "${1:-}" = '--root' ]]; then
         declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
         cd "${repository_path}" && pwd
         return 0
     fi
 
     # cd [N]
-    if [[ "$1" =~ ^$ ]] || [[ "$1" =~ ^([+-]?[0-9]+)$ ]]; then
+    if [[ "${1:-}" =~ ^$ ]] || [[ "${1:-}" =~ ^([+-]?[0-9]+)$ ]]; then
         # n が正の数である場合は最後の cd で失敗するが意図通り.
         # 無効なオプションとして "Invalid option" と表示されるよりも,
         # cd に失敗した時のエラーメッセージの方が状況を理解しやすいため.
@@ -61,15 +61,15 @@ function _daily-coding.cd
     fi
 
     # cd DATE
-    if [[ "$1" =~ ^([1-9][0-9]{3}-[1-9][0-9]-[1-9][0-9])$ ]]; then
+    if [[ "${1:-}" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})$ ]]; then
         declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
         declare -r workspace_name="${BASH_REMATCH[1]}"
         declare -r workspace_path="${repository_path}/workspace/${workspace_name}"
 
         if [[ "${workspace_name}" = "$(date '+%Y-%m-%d')" ]]; then
-            mkdir -p "${workspace_name}"
+            mkdir -p "${workspace_path}"
         fi
-        cd "${workspace_name}" && pwd
+        cd "${workspace_path}" && pwd
         return 0
     fi
 

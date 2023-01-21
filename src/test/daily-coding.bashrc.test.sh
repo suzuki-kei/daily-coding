@@ -11,6 +11,27 @@ declare -r TEST_DATA_DIR="${REPOSITORY_PATH}/target/workspace"
 
 source "${REPOSITORY_PATH}/src/main/daily-coding.bashrc"
 
+function test._daily-coding.cd
+{
+    test "$(_daily-coding.cd --root > /dev/null && pwd)" = \
+         "${REPOSITORY_PATH}"
+
+    test "$(_daily-coding.cd > /dev/null && pwd)" = \
+         "${REPOSITORY_PATH}/workspace/$(date '+%Y-%m-%d')"
+
+    test "$(_daily-coding.cd -1 > /dev/null && pwd)" = \
+         "${REPOSITORY_PATH}/workspace/$(date '+%Y-%m-%d' --date '1 days ago')"
+
+    test "$(_daily-coding.cd -2 > /dev/null && pwd)" = \
+         "${REPOSITORY_PATH}/workspace/$(date '+%Y-%m-%d' --date '2 days ago')"
+
+    test "$(_daily-coding.cd 2022-12-31 > /dev/null && pwd)" = \
+         "${REPOSITORY_PATH}/workspace/2022-12-31"
+
+    test "$(_daily-coding.cd 2023-01-01 > /dev/null && pwd)" = \
+         "${REPOSITORY_PATH}/workspace/2023-01-01"
+}
+
 function test._daily-coding.extname
 {
     test '.md' = "$(_daily-coding.extname 'README.md')"
@@ -169,6 +190,7 @@ function test._daily-coding.locate_workspace
     test ! "$(_daily-coding.locate_workspace '2023-12-31'  2)"
 }
 
+test._daily-coding.cd
 test._daily-coding.extname
 test._daily-coding.locate_file
 test._daily-coding.locate_workspace
