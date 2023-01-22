@@ -5,7 +5,7 @@ shopt -s extglob
 function daily-coding
 {
     case "${1:-}" in
-        cd | commit | diff | help | ls | stats)
+        cd | commit | diff | diff2 | help | ls | stats)
             declare -r name="$1"
             shift 1
             _daily-coding.$name "$@"
@@ -170,6 +170,33 @@ function _daily-coding.diff
     vimdiff "${base_file_path}" "${target_file_path}"
 }
 
+function _daily-coding.diff2
+{
+    if [[ ! $# -le 1 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
+    declare -r n=${1:--1}
+    declare -r base_collection_path="$(_daily-coding.to_collection_path "$(pwd)")"
+
+    if [[ "${base_collection_path}" == '' ]]; then
+        echo 'Not in collection directory.' >&2
+        return 1
+    fi
+
+    declare -r target_collection_path="$(_daily-coding.locate_collection "${base_collection_path}" ${n})"
+
+    if [[ "${target_collection_path}" == '' ]]; then
+        echo 'target collection is not found.' >&2
+        return 1
+    fi
+
+    diff -q \
+        "$(realpath "${base_collection_path}" --relative-to "$(pwd)")" \
+        "$(realpath "${target_collection_path}" --relative-to "$(pwd)")"
+}
+
 function _daily-coding.locate_file
 {
     declare -r root_workspace_path="$(cd "$(dirname "$1")"/../.. && pwd)"
@@ -189,6 +216,28 @@ function _daily-coding.locate_file
         echo ''
     else
         echo "$(realpath "${target_file_path}" --relative-to "$(pwd)")"
+    fi
+}
+
+function _daily-coding.locate_collection
+{
+    declare -r root_workspace_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)/workspace"
+    declare -r base_collection_path="$(_daily-coding.to_collection_path "$1")"
+    declare -r base_collection_name="$(_daily-coding.to_collection_name "$1")"
+    declare -r base_workspace_name="$(_daily-coding.to_workspace_name "$1")"
+
+    declare -r n=$2
+    declare -r target_collection_path="$(
+        ls -1d "${root_workspace_path}"/*/"${base_collection_name}" |
+            ([[ $n -ge 0 ]] && cat || tac) |
+            sed -n "/${base_workspace_name}\/${base_collection_name}/,$ p" |
+            sed -n "$((n < 0 ? -n+1 : n+1)) p"
+    )"
+
+    if [[ ! -d "${target_collection_path}" ]]; then
+        echo ''
+    else
+        echo "$(realpath "${target_collection_path}" --relative-to "$(pwd)")"
     fi
 }
 
@@ -239,6 +288,12 @@ function _daily-coding.help
 
                 別日のワークスペースから FILE と同一のファイルを探し,
                 N 個前後のファイルと vimdiff によって比較します (デフォルトは N=-1).
+
+            ${name} diff2 [N]
+                別のワークスペースにあるコレクションと比較します.
+
+                別日のワークスペースからカレントディレクトリと同一のコレクションを探し,
+                N 個前後のコレクションと diff -q によって比較します (デフォルトは N=-1).
 
             ${name} help|--help|-h
                 このコマンドの使い方を表示します.
@@ -481,5 +536,54 @@ EOS
         | jq -sr "${jq_query}" \
         | column -t -R 2,3,4,5,6,7
     echo
+}
+
+function _daily-coding.root_path
+{
+    (cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)
+}
+
+function _daily-coding.root_workspace_path
+{
+    echo "$(_daily-coding.root_path)/workspace"
+}
+
+function _daily-coding.to_workspace_path
+{
+    declare -r path="${1:-$(pwd)}"
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    if [[ "$(realpath "${path}" --relative-to "${root_workspace_path}")" != ../* ]]; then
+        echo "${root_workspace_path}/$(echo "${path#${root_workspace_path}/}" | cut -d/ -f1)"
+    else
+        echo ''
+    fi
+}
+
+function _daily-coding.to_workspace_name
+{
+    declare -r workspace_path="$(_daily-coding.to_workspace_path "${1:-$(pwd)}")"
+    echo "${workspace_path##*/}"
+}
+
+function _daily-coding.to_collection_path
+{
+    declare -r path="${1:-$(pwd)}"
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+    declare -r relative_path="$(realpath "${root_workspace_path}" --relative-to "${path}")"
+
+    if [[ "${relative_path}" =~ ^..(/..)+$ ]]; then
+        declare -r workspace_collection_name="$(
+            realpath "${path}" --relative-base "${root_workspace_path}" | cut -d/ -f1,2)"
+        echo "${root_workspace_path}/${workspace_collection_name}"
+    else
+        echo ''
+    fi
+}
+
+function _daily-coding.to_collection_name
+{
+    declare -r collection_path="$(_daily-coding.to_collection_path "${1:-$(pwd)}")"
+    echo "${collection_path##*/}"
 }
 
