@@ -21,6 +21,7 @@ function main
         test._daily-coding.to_workspace_path
         test._daily-coding.to_workspace_name
         test._daily-coding.to_collection_path
+        test._daily-coding.to_collection_name
         test._daily-coding.locate_file
         test._daily-coding.locate_workspace
         test._daily-coding.cd
@@ -163,6 +164,19 @@ function test._daily-coding.to_collection_path
         = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-02-02/aaa/bbb")"
     test "${root_workspace_path}/2023-02-02/aaa" \
         = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-02-02/aaa/bbb/ccc")"
+}
+
+function test._daily-coding.to_collection_name
+{
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-01-01/aaa")"
+    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-01-01/aaa/bbb")"
+    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-01-01/aaa/bbb/ccc")"
+
+    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-02-02/aaa")"
+    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-02-02/aaa/bbb")"
+    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-02-02/aaa/bbb/ccc")"
 }
 
 function test._daily-coding.locate_file
