@@ -9,7 +9,143 @@ trap 'echo "Assertion failed at line ${LINENO}: ${BASH_COMMAND}"' ERR
 declare -r REPOSITORY_PATH="$(cd "$(dirname "$0")/../.." && pwd)"
 declare -r TEST_DATA_DIR="${REPOSITORY_PATH}/target/workspace"
 
+declare -r DAILY_CODING_ROOT_WORKSPACE_PATH="${TEST_DATA_DIR}"
 source "${REPOSITORY_PATH}/src/main/daily-coding.bashrc"
+
+function main
+{
+    declare -ar tests=(
+        test._daily-coding.root_path
+        test._daily-coding.root_workspace_path
+        test._daily-coding.to_workspace_path
+        test._daily-coding.to_workspace_name
+        test._daily-coding.to_collection_path
+        test._daily-coding.cd
+        test._daily-coding.commit
+        test._daily-coding.diff
+        test._daily-coding.help
+        test._daily-coding.ls
+        test._daily-coding.stats
+        test._daily-coding.extname
+        test._daily-coding.locate_file
+        test._daily-coding.locate_workspace
+    )
+
+    for name in ${tests[@]}
+    do
+        setup
+        echo $name
+        $name
+    done
+}
+
+function setup
+{
+    cleanup
+
+    declare -ar directories=(
+        2022-12-31
+        2023-01-01
+        2023-01-01/aaa
+        2023-01-01/aaa/bbb
+        2023-02-02
+        2023-02-02/aaa
+        2023-02-02/aaa/bbb
+        $(date '+%Y-%m-%d')
+        $(date '+%Y-%m-%d' --date '1 days ago')
+        $(date '+%Y-%m-%d' --date '2 days ago')
+    )
+
+    (
+        cd "$(_daily-coding.root_workspace_path)"
+        mkdir -p "${directories[@]}"
+    )
+}
+
+function cleanup
+{
+    rm -rf "${TEST_DATA_DIR}"
+    mkdir -p "${TEST_DATA_DIR}"
+}
+
+function test._daily-coding.root_path
+{
+    test "$(_daily-coding.root_path)" == "${REPOSITORY_PATH}"
+}
+
+function test._daily-coding.root_workspace_path
+{
+    test "$(_daily-coding.root_workspace_path)" == "${TEST_DATA_DIR}"
+}
+
+function test._daily-coding.to_workspace_path
+{
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    test "${root_workspace_path}/2023-01-01" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01/aaa")"
+    test "${root_workspace_path}/2023-01-01" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01/aaa/bbb")"
+
+    test "${root_workspace_path}/2023-02-02" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02")"
+    test "${root_workspace_path}/2023-02-02" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02/aaa")"
+    test "${root_workspace_path}/2023-02-02" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02/aaa/bbb")"
+
+    test "${root_workspace_path}/2023-01-01" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01")"
+    test "${root_workspace_path}/2023-01-01" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01/aaa")"
+    test "${root_workspace_path}/2023-01-01" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01/aaa/bbb")"
+
+    test "${root_workspace_path}/2023-02-02" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02")"
+    test "${root_workspace_path}/2023-02-02" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02/aaa")"
+    test "${root_workspace_path}/2023-02-02" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02/aaa/bbb")"
+}
+
+function test._daily-coding.to_workspace_name
+{
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    test "2023-01-01" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-01-01")"
+    test "2023-01-01" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-01-01/aaa")"
+    test "2023-01-01" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-01-01/aaa/bbb")"
+
+    test "2023-02-02" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-02-02")"
+    test "2023-02-02" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-02-02/aaa")"
+    test "2023-02-02" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-02-02/aaa/bbb")"
+}
+
+function test._daily-coding.to_collection_path
+{
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    test "${root_workspace_path}/2023-01-01/aaa" \
+        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-01-01/aaa")"
+    test "${root_workspace_path}/2023-01-01/aaa" \
+        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-01-01/aaa/bbb")"
+    test "${root_workspace_path}/2023-01-01/aaa" \
+        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-01-01/aaa/bbb/ccc")"
+
+    test "${root_workspace_path}/2023-02-02/aaa" \
+        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-02-02/aaa")"
+    test "${root_workspace_path}/2023-02-02/aaa" \
+        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-02-02/aaa/bbb")"
+    test "${root_workspace_path}/2023-02-02/aaa" \
+        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-02-02/aaa/bbb/ccc")"
+}
 
 function test._daily-coding.cd
 {
@@ -17,19 +153,19 @@ function test._daily-coding.cd
          "${REPOSITORY_PATH}"
 
     test "$(_daily-coding.cd > /dev/null && pwd)" = \
-         "${REPOSITORY_PATH}/workspace/$(date '+%Y-%m-%d')"
+         "${TEST_DATA_DIR}/$(date '+%Y-%m-%d')"
 
     test "$(_daily-coding.cd -1 > /dev/null && pwd)" = \
-         "${REPOSITORY_PATH}/workspace/$(date '+%Y-%m-%d' --date '1 days ago')"
+         "${TEST_DATA_DIR}/$(date '+%Y-%m-%d' --date '1 days ago')"
 
     test "$(_daily-coding.cd -2 > /dev/null && pwd)" = \
-         "${REPOSITORY_PATH}/workspace/$(date '+%Y-%m-%d' --date '2 days ago')"
+         "${TEST_DATA_DIR}/$(date '+%Y-%m-%d' --date '2 days ago')"
 
     test "$(_daily-coding.cd 2022-12-31 > /dev/null && pwd)" = \
-         "${REPOSITORY_PATH}/workspace/2022-12-31"
+         "${TEST_DATA_DIR}/2022-12-31"
 
     test "$(_daily-coding.cd 2023-01-01 > /dev/null && pwd)" = \
-         "${REPOSITORY_PATH}/workspace/2023-01-01"
+         "${TEST_DATA_DIR}/2023-01-01"
 }
 
 function test._daily-coding.commit
@@ -51,6 +187,25 @@ function test._daily-coding.help
 
 function test._daily-coding.ls
 {
+    rm -rf "${TEST_DATA_DIR}"
+    mkdir -p "${TEST_DATA_DIR}"
+    cd "${TEST_DATA_DIR}"
+
+    declare -ar files=(
+        2020-01-01/aaa.c/main.c
+        2020-01-01/bbb.scheme/main.scm
+        2020-02-02/ccc.forth/main.fs
+        2020-02-02/ddd.ruby/main.rb
+        2020-02-02/eee.haskell/main.hs
+        2020-03-03/fff.shell/main.sh
+    )
+
+    for file in ${files[@]}
+    do
+        mkdir -p "$(dirname "${file}")"
+        touch "${file}"
+    done
+
     test "$(_daily-coding.ls)" != ''
     test "$(_daily-coding.ls -v)" != ''
     test "$(_daily-coding.ls -vv)" != ''
@@ -246,13 +401,5 @@ function test._daily-coding.locate_workspace
     test ! "$(_daily-coding.locate_workspace '2023-12-31'  2)"
 }
 
-test._daily-coding.cd
-test._daily-coding.commit
-test._daily-coding.diff
-test._daily-coding.help
-test._daily-coding.ls
-test._daily-coding.stats
-test._daily-coding.extname
-test._daily-coding.locate_file
-test._daily-coding.locate_workspace
+main
 

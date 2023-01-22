@@ -29,8 +29,7 @@ function _daily-coding.cd
 
     # cd --root
     if [[ "${1:-}" = '--root' ]]; then
-        declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-        cd "${repository_path}" && pwd
+        cd "$(_daily-coding.root_path)" && pwd
         return 0
     fi
 
@@ -41,9 +40,8 @@ function _daily-coding.cd
         # cd に失敗した時のエラーメッセージの方が状況を理解しやすいため.
         declare -r n="${BASH_REMATCH[1]:-0}"
 
-        declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
         declare -r base_workspace_name="$(date '+%Y-%m-%d')"
-        declare -r base_workspace_path="${repository_path}/workspace/${base_workspace_name}"
+        declare -r base_workspace_path="$(_daily-coding.root_workspace_path)/${base_workspace_name}"
 
         declare -r target_workspace_path="$(
             _daily-coding.locate_workspace "${base_workspace_path}" ${n}
@@ -62,9 +60,8 @@ function _daily-coding.cd
 
     # cd DATE
     if [[ "${1:-}" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})$ ]]; then
-        declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
         declare -r workspace_name="${BASH_REMATCH[1]}"
-        declare -r workspace_path="${repository_path}/workspace/${workspace_name}"
+        declare -r workspace_path="$(_daily-coding.root_workspace_path)/${workspace_name}"
 
         if [[ "${workspace_name}" = "$(date '+%Y-%m-%d')" ]]; then
             mkdir -p "${workspace_path}"
@@ -90,7 +87,7 @@ function _daily-coding.extname
 
 function _daily-coding.locate_workspace
 {
-    declare -r root_workspace_path="$(dirname "$1")"
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
     declare -r base_workspace_path="$1"
     declare -r base_workspace_name="$(basename "$1")"
     declare -r n=$2
@@ -118,8 +115,7 @@ function _daily-coding.commit
         return 1
     fi
 
-    declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-    declare -r root_workspace_path="${repository_path}/workspace"
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
     if [[ ! "$(pwd)" = "${root_workspace_path}"/*/* ]]; then
         echo "Not in collection directory." >&2
@@ -199,9 +195,9 @@ function _daily-coding.diff2
 
 function _daily-coding.locate_file
 {
-    declare -r root_workspace_path="$(cd "$(dirname "$1")"/../.. && pwd)"
-    declare -r base_workspace_name="$(cd "$(dirname "$1")"/.. && basename "$(pwd)")"
-    declare -r base_collection_name="$(cd "$(dirname "$1")" && basename "$(pwd)")"
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+    declare -r base_workspace_name="$(_daily-coding.to_workspace_name "$1")"
+    declare -r base_collection_name="$(_daily-coding.to_collection_name "$1")"
     declare -r base_file_name="$(basename "$1")"
 
     declare -r n=$2
@@ -221,7 +217,7 @@ function _daily-coding.locate_file
 
 function _daily-coding.locate_collection
 {
-    declare -r root_workspace_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)/workspace"
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
     declare -r base_collection_path="$(_daily-coding.to_collection_path "$1")"
     declare -r base_collection_name="$(_daily-coding.to_collection_name "$1")"
     declare -r base_workspace_name="$(_daily-coding.to_workspace_name "$1")"
@@ -328,6 +324,11 @@ function _daily-coding.help
                 オプションを指定しない場合, ワークスペースごとのコード行数を高速に表示します.
                 オプションを指定する場合, 異なる軸で集計したソースコードの統計情報を表示します.
 
+        ENVIRONMENT
+            DAILY_CODING_ROOT_WORKSPACE_PATH
+                ワークスペースを保存するディレクトリのパスです.
+                デフォルトは <repository_path>/workspace です.
+
         EXAMPLES
             # ${name} の使い方を表示します.
             ${name} help
@@ -368,8 +369,7 @@ function _daily-coding.ls
         return 1
     fi
 
-    declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-    declare -r root_workspace_path="${repository_path}/workspace"
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
     case "${1:-}" in
         '')
@@ -414,7 +414,7 @@ function _daily-coding.random
 
     if [[ "${current_workspace_path}" == '' ]]; then
         declare current_workspace_name="$(date '+%Y-%m-%d')"
-        declare current_workspace_path="${repository_path}/workspace/${current_workspace_name}"
+        declare current_workspace_path="$(_daily-coding.root_workspace_path)/${current_workspace_name}"
     fi
 
     sort \
@@ -435,10 +435,7 @@ function _daily-coding.stats
         '')
             # カレントシェルの作業ディレクトリを変更したくないのでサブシェルで実行する.
             (
-                declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-                declare -r root_workspace_path="${repository_path}/workspace"
-
-                cd "${root_workspace_path}"
+                cd "$(_daily-coding.root_workspace_path)"
 
                 for path in *
                 do
@@ -480,11 +477,8 @@ function _daily-coding.stats
 
 function _daily-coding.stats.generate_jsonl
 {
-    declare -r repository_path="$(cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)"
-    declare -r root_workspace_path="${repository_path}/workspace"
-
     (
-        cd "${root_workspace_path}"
+        cd "$(_daily-coding.root_workspace_path)"
 
         while read lines path
         do
@@ -574,7 +568,7 @@ function _daily-coding.root_path
 
 function _daily-coding.root_workspace_path
 {
-    echo "$(_daily-coding.root_path)/workspace"
+    echo "${DAILY_CODING_ROOT_WORKSPACE_PATH:-$(_daily-coding.root_path)/workspace}"
 }
 
 function _daily-coding.to_workspace_path
