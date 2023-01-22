@@ -3,9 +3,9 @@
 
 .PHONY: clean
 clean:
-	rm -rf target
+	@rm -rf target
 
 .PHONY: test
 test:
-	bash src/test/daily-coding.bashrc.test.sh
+	@bash src/test/daily-coding.bashrc.test.sh
 
