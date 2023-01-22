@@ -1,0 +1,127 @@
+#!/bin/bash
+
+function _daily-coding.help
+{
+    if [[ ! $# -le 0 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
+    declare -r name="${FUNCNAME[1]}"
+
+    cat <<EOS | sed -r 's/^ {8}//'
+        NAME
+            ${name}
+
+        DESCRIPTION
+            ${name} は日々のコーディング練習を支援する機能を提供します.
+
+            日々作成するソースコードは以下のディレクトリ構成に従って保存します.
+
+                <repository_path>/workspace/<workspace_name>/<collection_name>/
+
+        WORDS
+            ワークスペース
+                <repository_path>/workspace/<workspace_name> のことです.
+
+            コレクション
+                <repository_path>/workspace/<workspace_name>/<collection_name>/ のことです.
+                コレクションはワークスペース内をさらに分けるために作成します.
+
+        SYNOPSIS
+            ${name} --root
+            ${name} cd --root
+                リポジトリのルートディレクトリに移動します.
+
+            ${name} [N]
+            ${name} cd [N]
+                今日を基準に N 個前後のワークスペースに移動します (デフォルトは N=0).
+                N=0 の場合に限り, ディレクトリが存在しなければ作成します.
+
+            ${name} commit [--amend]
+                コレクションの名前で git commit します.
+                カレントディレクトリがコレクションのディレクトリではない場合はエラーになります.
+
+            ${name} diff FILE [N]
+                別のワークスペースにあるファイルと比較します.
+
+                別日のワークスペースから FILE と同一のファイルを探し,
+                N 個前後のファイルと vimdiff によって比較します (デフォルトは N=-1).
+
+            ${name} diff2 [N]
+                別のワークスペースにあるコレクションと比較します.
+
+                別日のワークスペースからカレントディレクトリと同一のコレクションを探し,
+                N 個前後のコレクションと diff -q によって比較します (デフォルトは N=-1).
+
+            ${name} help|--help|-h
+                このコマンドの使い方を表示します.
+
+            ${name} ls [-v|-vv]
+                ワークスペースの一覧を表示します.
+                -v を指定するとワークスペースの 1 階層下,
+                -vv を指定するとワークスペースの 2 階層下を表示します.
+
+            ${name} ls --collection
+                コレクションの一覧を表示します.
+
+            ${name} ls --language|--lang
+                言語の一覧を表示します.
+
+            ${name} ls --extension|--ext
+                拡張子の一覧を表示します.
+
+            ${name} random [N]
+                過去に作成したコレクションからランダムに N 個表示します (デフォルトは N=1).
+                現在のワークスペースに存在するコレクションは除外されます.
+                カレントディレクトリがワークスペース外の場合は, 今日のワークスペースが基準となります.
+
+            ${name} stats
+            ${name} stats -v|--workspace
+            ${name} stats -vv|--language|--lang
+            ${name} stats -vvv|--extension|--ext
+            ${name} stats -vvvv|--collection
+            ${name} stats -vvvvv|--file
+            ${name} stats -vvvvvv|--workspace-collection
+                ソースコードの統計情報を表示します.
+                オプションを指定しない場合, ワークスペースごとのコード行数を高速に表示します.
+                オプションを指定する場合, 異なる軸で集計したソースコードの統計情報を表示します.
+
+        ENVIRONMENT
+            DAILY_CODING_ROOT_WORKSPACE_PATH
+                ワークスペースを保存するディレクトリのパスです.
+                デフォルトは <repository_path>/workspace です.
+
+        EXAMPLES
+            # ${name} の使い方を表示します.
+            ${name} help
+
+            # 今日のワークスペースに移動します.
+            ${name} cd
+
+            # 今日を基準に 1 個前のワークスペースに移動します.
+            ${name} cd -1
+
+            # ワークスペースの一覧を表示します.
+            ${name} ls
+            ${name} ls -v
+            ${name} ls -vv
+
+            # コレクションの一覧を表示します.
+            ${name} ls -vvv
+
+            # 別のワークスペースにあるファイルと比較します.
+            ${name} diff FILE
+
+            # 各ワークスペースに含まれるソースコードの行数を表示します.
+            ${name} stats
+            ${name} stats -v
+            ${name} stats -vv
+            ${name} stats -vvv
+            ${name} stats -vvvv
+
+            # 空メッセージで git commit します.
+            ${name} commit
+EOS
+}
+

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+function _daily-coding.diff
+{
+    if [[ ! $# -le 2 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
+    declare -r base_file_path="${1:-}"
+    declare -r n="${2:--1}"
+
+    if [[ "${base_file_path}" == '' ]]; then
+        echo 'Invalid option: FILE is required.' >&2
+        return 1
+    fi
+    if [[ ! -f "${base_file_path}" ]]; then
+        echo "Invalid option: file [${base_file_path}] not found." >&2
+        return 1
+    fi
+
+    declare -r target_file_path="$(_daily-coding.locate_file "${base_file_path}" "${n}")"
+    if [[ "${target_file_path}" = '' ]]; then
+        echo 'same file is not found in other working directory.' >&2
+        return 1
+    fi
+    vimdiff "${base_file_path}" "${target_file_path}"
+}
+

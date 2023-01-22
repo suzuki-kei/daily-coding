@@ -1,0 +1,33 @@
+#!/bin/bash
+
+function _daily-coding.commit
+{
+    if [[ ! $# -le 1 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    if [[ ! "$(pwd)" = "${root_workspace_path}"/*/* ]]; then
+        echo "Not in collection directory." >&2
+        return 1
+    fi
+
+    declare -r collection_path="$(realpath "$(pwd)" --relative-to "${root_workspace_path}")"
+    declare -r collection_name="$(echo "${collection_path}" | cut -d/ -f2)"
+
+    case "${1:-}" in
+        '')
+            git commit -m "${collection_name}"
+            ;;
+        --amend)
+            git commit -m "${collection_name}" --amend
+            ;;
+        *)
+            echo "Invalid option: [$1]" >&2
+            return 1
+            ;;
+    esac
+}
+

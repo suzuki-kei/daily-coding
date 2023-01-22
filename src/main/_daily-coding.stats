@@ -1,0 +1,118 @@
+#!/bin/bash
+
+function _daily-coding.stats
+{
+    if [[ ! $# -le 1 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
+    case "${1:-}" in
+        '')
+            # カレントシェルの作業ディレクトリを変更したくないのでサブシェルで実行する.
+            (
+                cd "$(_daily-coding.root_workspace_path)"
+
+                for path in *
+                do
+                    declare lines=$(find "${path}" -type f | xargs cat | wc -l)
+                    echo "${path} ${lines} lines"
+                done
+            ) | column -t -R 2 -o ' '
+            ;;
+        -v | --workspace)
+            declare -r jsonl="$(_daily-coding.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'workspace' '.workspace'
+            ;;
+        -vv | --language | --lang)
+            declare -r jsonl="$(_daily-coding.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'language' '.language'
+            ;;
+        -vvv | --extension | --ext)
+            declare -r jsonl="$(_daily-coding.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'extension' '.extension'
+            ;;
+        -vvvv | --collection)
+            declare -r jsonl="$(_daily-coding.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'collection' '.collection'
+            ;;
+        -vvvvv | --file)
+            declare -r jsonl="$(_daily-coding.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'file' '.file'
+            ;;
+        -vvvvvv | --workspace-collection)
+            declare -r jsonl="$(_daily-coding.generate_jsonl)"
+            _daily-coding.stats.report "${jsonl}" 'workspace/collection' '.workspace + "/" + .collection'
+            ;;
+        *)
+            echo "Invalid option: [$1]" >&2
+            return 1
+            ;;
+    esac
+}
+
+function _daily-coding.stats.report
+{
+    declare -r jsonl="$1"
+    declare -r group_key_name="$2"
+    declare -r group_key_value="$3"
+
+    declare -r jq_query="$(cat <<EOS
+        (
+            [
+                "${group_key_name}",
+                "workspaces",
+                "collections",
+                "languages",
+                "files",
+                "extensions",
+                "lines"
+            ]
+        ),
+        (
+            map({
+                "group_key"            : (${group_key_value}),
+                "workspace_collection" : (.workspace + "/" + .collection)
+                } + .)
+            | group_by(.group_key)
+            | map({
+                "group_key"   : .[0].group_key,
+                "workspaces"  : ([.[].workspace]            | unique | length),
+                "collections" : ([.[].workspace_collection] | unique | length),
+                "languages"   : ([.[].language]             | unique | length),
+                "files"       : ([.[].file]                          | length),
+                "extensions"  : ([.[].extension]            | unique | length),
+                "lines"       : ([.[].lines]                         | add)})
+            | sort_by(.group_key)
+            | map([.[]])
+            | .[]
+        )
+        ,
+        (
+            map({
+                "group_key"            : "<entire>",
+                "workspace_collection" : (.workspace + "/" + .collection)
+                } + .)
+            | group_by(.group_key)
+            | map({
+                "group_key"   : .[0].group_key,
+                "workspaces"  : ([.[].workspace]            | unique | length),
+                "collections" : ([.[].workspace_collection] | unique | length),
+                "languages"   : ([.[].language]             | unique | length),
+                "files"       : ([.[].file]                          | length),
+                "extensions"  : ([.[].extension]            | unique | length),
+                "lines"       : ([.[].lines]                         | add)})
+            | sort_by(.group_key)
+            | map([.[]])
+            | .[]
+        )
+        | @tsv
+EOS
+)"
+
+    echo "${jsonl}" \
+        | jq -sr "${jq_query}" \
+        | column -t -R 2,3,4,5,6,7
+    echo
+}
+
