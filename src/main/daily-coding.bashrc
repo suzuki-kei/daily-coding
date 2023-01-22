@@ -29,3 +29,10 @@ function daily-coding
     esac
 }
 
+function _daily-coding._bash_complete
+{
+    declare -r word="${COMP_WORDS[${COMP_CWORD}]}"
+    COMPREPLY=($(compgen -W "cd commit diff help ls random stats" "${word}"))
+}
+complete -F _daily-coding._bash_complete daily-coding
+
