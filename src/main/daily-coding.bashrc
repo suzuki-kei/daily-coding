@@ -5,7 +5,7 @@ shopt -s extglob
 function daily-coding
 {
     case "${1:-}" in
-        cd | commit | diff | diff2 | help | ls | stats)
+        cd | commit | diff | diff2 | help | ls | random | stats)
             declare -r name="$1"
             shift 1
             _daily-coding.$name "$@"
@@ -312,6 +312,11 @@ function _daily-coding.help
             ${name} ls --extension|--ext
                 拡張子の一覧を表示します.
 
+            ${name} random [N]
+                過去に作成したコレクションからランダムに N 個表示します (デフォルトは N=1).
+                現在のワークスペースに存在するコレクションは除外されます.
+                カレントディレクトリがワークスペース外の場合は, 今日のワークスペースが基準となります.
+
             ${name} stats
             ${name} stats -v|--workspace
             ${name} stats -vv|--language|--lang
@@ -393,6 +398,30 @@ function _daily-coding.ls
             return 1
             ;;
     esac
+}
+
+function _daily-coding.random
+{
+    if [[ ! $# -le 1 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
+    declare -r n=${1:-1}
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+    declare current_workspace_name="$(_daily-coding.to_workspace_name "$(pwd)")"
+    declare current_workspace_path="$(_daily-coding.to_workspace_path "$(pwd)")"
+
+    if [[ "${current_workspace_path}" == '' ]]; then
+        declare current_workspace_name="$(date '+%Y-%m-%d')"
+        declare current_workspace_path="${repository_path}/workspace/${current_workspace_name}"
+    fi
+
+    sort \
+        <(find "${root_workspace_path}" -mindepth 2 -maxdepth 2 -type d -printf '%P\n' | cut -d/ -f2 | sort -u) \
+        <(find "${current_workspace_path}" -mindepth 1 -maxdepth 1 -type d -printf '%P\n') \
+        <(find "${current_workspace_path}" -mindepth 1 -maxdepth 1 -type d -printf '%P\n') \
+        | uniq -u | shuf | head -${n}
 }
 
 function _daily-coding.stats
