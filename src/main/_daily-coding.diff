@@ -2,6 +2,15 @@
 
 function _daily-coding.diff
 {
+    if [[ "${1:-}" =~ ^$ ]] || [[ "${1:-}" =~ ^([+-]?[0-9]+)$ ]]; then
+        _daily-coding.diff_collection "$@"
+    else
+        _daily-coding.diff_file "$@"
+    fi
+}
+
+function _daily-coding.diff_file
+{
     if [[ ! $# -le 2 ]]; then
         echo "Invalid options: [$@]" >&2
         return 1
@@ -25,5 +34,32 @@ function _daily-coding.diff
         return 1
     fi
     vimdiff "${base_file_path}" "${target_file_path}"
+}
+
+function _daily-coding.diff_collection
+{
+    if [[ ! $# -le 1 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
+    declare -r n=${1:--1}
+    declare -r base_collection_path="$(_daily-coding.to_collection_path "$(pwd)")"
+
+    if [[ "${base_collection_path}" == '' ]]; then
+        echo 'Not in collection directory.' >&2
+        return 1
+    fi
+
+    declare -r target_collection_path="$(_daily-coding.locate_collection "${base_collection_path}" ${n})"
+
+    if [[ "${target_collection_path}" == '' ]]; then
+        echo 'target collection is not found.' >&2
+        return 1
+    fi
+
+    diff -q \
+        "$(realpath "${base_collection_path}" --relative-to "$(pwd)")" \
+        "$(realpath "${target_collection_path}" --relative-to "$(pwd)")"
 }
 
