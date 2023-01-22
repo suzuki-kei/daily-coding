@@ -23,6 +23,7 @@ function main
         test._daily-coding.to_collection_path
         test._daily-coding.to_collection_name
         test._daily-coding.locate_file
+        test._daily-coding.locate_collection
         test._daily-coding.locate_workspace
         test._daily-coding.cd
         test._daily-coding.commit
@@ -266,6 +267,71 @@ function test._daily-coding.locate_file
     test "$(_daily-coding.locate_file "2022-04-10/aaa/file.txt"  0)" = '2022-04-10/aaa/file.txt'
     test "$(_daily-coding.locate_file "2022-04-10/aaa/file.txt"  1)" = '2022-04-12/aaa/file.txt'
     test "$(_daily-coding.locate_file "2022-04-10/aaa/file.txt"  2)" = '2022-04-14/aaa/file.txt'
+}
+
+function test._daily-coding.locate_collection
+{
+    rm -rf "${TEST_DATA_DIR}"
+    mkdir -p "${TEST_DATA_DIR}"
+    cd "${TEST_DATA_DIR}"
+
+    declare -ar date_paths=(
+        # 日付が連続する場合.
+        '2023-01-08/aaa.scheme'
+        '2023-01-09/aaa.scheme'
+        '2023-01-10/aaa.scheme'
+        '2023-01-11/aaa.scheme'
+        '2023-01-12/aaa.scheme'
+
+        # 日付が連続しない場合.
+        '2023-02-05/aaa.scheme'
+        '2023-02-08/aaa.scheme'
+        '2023-02-10/aaa.scheme'
+        '2023-02-12/aaa.scheme'
+        '2023-02-15/aaa.scheme'
+
+        # 当日のディレクトリが存在しない場合.
+        '2023-03-07/aaa.scheme'
+        '2023-03-09/aaa.scheme'
+        '2023-03-11/aaa.scheme'
+        '2023-03-13/aaa.scheme'
+    )
+
+    for date_path in "${date_paths[@]}"; do
+        mkdir -p "${date_path}"
+    done
+
+    # 日付が連続する場合.
+    test "$(_daily-coding.locate_collection '2023-01-10/aaa.scheme' -2)" = '2023-01-08/aaa.scheme'
+    test "$(_daily-coding.locate_collection '2023-01-10/aaa.scheme' -1)" = '2023-01-09/aaa.scheme'
+    test "$(_daily-coding.locate_collection '2023-01-10/aaa.scheme'  0)" = '2023-01-10/aaa.scheme'
+    test "$(_daily-coding.locate_collection '2023-01-10/aaa.scheme'  1)" = '2023-01-11/aaa.scheme'
+    test "$(_daily-coding.locate_collection '2023-01-10/aaa.scheme'  2)" = '2023-01-12/aaa.scheme'
+
+    # 日付が連続しない場合.
+    test "$(_daily-coding.locate_collection '2023-02-10/aaa.scheme' -2)" = '2023-02-05/aaa.scheme'
+    test "$(_daily-coding.locate_collection '2023-02-10/aaa.scheme' -1)" = '2023-02-08/aaa.scheme'
+    test "$(_daily-coding.locate_collection '2023-02-10/aaa.scheme'  0)" = '2023-02-10/aaa.scheme'
+    test "$(_daily-coding.locate_collection '2023-02-10/aaa.scheme'  1)" = '2023-02-12/aaa.scheme'
+    test "$(_daily-coding.locate_collection '2023-02-10/aaa.scheme'  2)" = '2023-02-15/aaa.scheme'
+
+# TODO ディレクトリが存在しない場合に対応する.
+#
+#    # 当日のディレクトリが存在しない場合.
+#    _daily-coding.locate_collection '2023-03-10/aaa.scheme' -2
+#    test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme' -2)" = '2023-03-07/aaa.scheme'
+#    test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme' -1)" = '2023-03-09/aaa.scheme'
+#    test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme'  0)" = '2023-03-10/aaa.scheme'
+#    test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme'  1)" = '2023-03-11/aaa.scheme'
+#    test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme'  2)" = '2023-03-13/aaa.scheme'
+#
+#    # n 番目のディレクトリが存在しない場合.
+#    test ! "$(_daily-coding.locate_collection '2023-01-01/aaa.scheme' -2)"
+#    test ! "$(_daily-coding.locate_collection '2023-01-01/aaa.scheme' -1)"
+#    test   "$(_daily-coding.locate_collection '2023-01-01/aaa.scheme'  0)" = '2023-01-01/aaa.scheme'
+#    test   "$(_daily-coding.locate_collection '2023-12-31/aaa.scheme'  0)" = '2023-12-31/aaa.scheme'
+#    test ! "$(_daily-coding.locate_collection '2023-12-31/aaa.scheme'  1)"
+#    test ! "$(_daily-coding.locate_collection '2023-12-31/aaa.scheme'  2)"
 }
 
 function test._daily-coding.locate_workspace
