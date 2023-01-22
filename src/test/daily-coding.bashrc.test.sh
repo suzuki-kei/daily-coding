@@ -15,20 +15,20 @@ source "${REPOSITORY_PATH}/src/main/daily-coding.bashrc"
 function main
 {
     declare -ar tests=(
+        test._daily-coding.extname
         test._daily-coding.root_path
         test._daily-coding.root_workspace_path
         test._daily-coding.to_workspace_path
         test._daily-coding.to_workspace_name
         test._daily-coding.to_collection_path
+        test._daily-coding.locate_file
+        test._daily-coding.locate_workspace
         test._daily-coding.cd
         test._daily-coding.commit
         test._daily-coding.diff
         test._daily-coding.help
         test._daily-coding.ls
         test._daily-coding.stats
-        test._daily-coding.extname
-        test._daily-coding.locate_file
-        test._daily-coding.locate_workspace
     )
 
     for name in ${tests[@]}
@@ -43,6 +43,9 @@ function setup
 {
     cleanup
 
+    # カレントディレクトリを TEST_DATA_DIR として各テストを実行する.
+    cd "${TEST_DATA_DIR}"
+
     declare -ar directories=(
         2022-12-31
         2023-01-01
@@ -56,16 +59,31 @@ function setup
         $(date '+%Y-%m-%d' --date '2 days ago')
     )
 
-    (
-        cd "$(_daily-coding.root_workspace_path)"
-        mkdir -p "${directories[@]}"
-    )
+    mkdir -p "${directories[@]}"
 }
 
 function cleanup
 {
     rm -rf "${TEST_DATA_DIR}"
     mkdir -p "${TEST_DATA_DIR}"
+}
+
+function test._daily-coding.extname
+{
+    test '.md' = "$(_daily-coding.extname 'README.md')"
+    test '.md' = "$(_daily-coding.extname '/tmp/files/README.md')"
+    test '.back' = "$(_daily-coding.extname 'README.md.back')"
+    test '.back' = "$(_daily-coding.extname '/tmp/files/README.md.back')"
+
+    test '.bashrc' = "$(_daily-coding.extname '.bashrc')"
+    test '.bashrc' = "$(_daily-coding.extname '/tmp/files/.bashrc')"
+    test '.back' = "$(_daily-coding.extname '.bashrc.back')"
+    test '.back' = "$(_daily-coding.extname '/tmp/files/.bashrc.back')"
+
+    test 'Makefile' = "$(_daily-coding.extname 'Makefile')"
+    test 'Makefile' = "$(_daily-coding.extname '/tmp/files/Makefile')"
+    test '.back' = "$(_daily-coding.extname 'Makefile.back')"
+    test '.back' = "$(_daily-coding.extname '/tmp/files/Makefile.back')"
 }
 
 function test._daily-coding.root_path
@@ -145,120 +163,6 @@ function test._daily-coding.to_collection_path
         = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-02-02/aaa/bbb")"
     test "${root_workspace_path}/2023-02-02/aaa" \
         = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-02-02/aaa/bbb/ccc")"
-}
-
-function test._daily-coding.cd
-{
-    test "$(_daily-coding.cd --root > /dev/null && pwd)" = \
-         "${REPOSITORY_PATH}"
-
-    test "$(_daily-coding.cd > /dev/null && pwd)" = \
-         "${TEST_DATA_DIR}/$(date '+%Y-%m-%d')"
-
-    test "$(_daily-coding.cd -1 > /dev/null && pwd)" = \
-         "${TEST_DATA_DIR}/$(date '+%Y-%m-%d' --date '1 days ago')"
-
-    test "$(_daily-coding.cd -2 > /dev/null && pwd)" = \
-         "${TEST_DATA_DIR}/$(date '+%Y-%m-%d' --date '2 days ago')"
-
-    test "$(_daily-coding.cd 2022-12-31 > /dev/null && pwd)" = \
-         "${TEST_DATA_DIR}/2022-12-31"
-
-    test "$(_daily-coding.cd 2023-01-01 > /dev/null && pwd)" = \
-         "${TEST_DATA_DIR}/2023-01-01"
-}
-
-function test._daily-coding.commit
-{
-    # TODO
-    :
-}
-
-function test._daily-coding.diff
-{
-    # TODO
-    :
-}
-
-function test._daily-coding.help
-{
-    test "$(_daily-coding.help)" != ''
-}
-
-function test._daily-coding.ls
-{
-    rm -rf "${TEST_DATA_DIR}"
-    mkdir -p "${TEST_DATA_DIR}"
-    cd "${TEST_DATA_DIR}"
-
-    declare -ar files=(
-        2020-01-01/aaa.c/main.c
-        2020-01-01/bbb.scheme/main.scm
-        2020-02-02/ccc.forth/main.fs
-        2020-02-02/ddd.ruby/main.rb
-        2020-02-02/eee.haskell/main.hs
-        2020-03-03/fff.shell/main.sh
-    )
-
-    for file in ${files[@]}
-    do
-        mkdir -p "$(dirname "${file}")"
-        touch "${file}"
-    done
-
-    test "$(_daily-coding.ls)" != ''
-    test "$(_daily-coding.ls -v)" != ''
-    test "$(_daily-coding.ls -vv)" != ''
-    test "$(_daily-coding.ls -vvv 2>&1 || true)" = 'Invalid option: [-vvv]'
-    test "$(_daily-coding.ls --collection)" != ''
-    test "$(_daily-coding.ls --language)" != ''
-    test "$(_daily-coding.ls --lang)" != ''
-    test "$(_daily-coding.ls --extension)" != ''
-    test "$(_daily-coding.ls --ext)" != ''
-    test "$(_daily-coding.ls --no-such-option 2>&1 || true)" = 'Invalid option: [--no-such-option]'
-}
-
-function test._daily-coding.stats
-{
-    test "$(_daily-coding.stats)" != ''
-
-    test "$(_daily-coding.stats -v)" != ''
-    test "$(_daily-coding.stats --workspace)" != ''
-
-    test "$(_daily-coding.stats -vv)" != ''
-    test "$(_daily-coding.stats --language)" != ''
-    test "$(_daily-coding.stats --lang)" != ''
-
-    test "$(_daily-coding.stats -vvv)" != ''
-    test "$(_daily-coding.stats --extension)" != ''
-    test "$(_daily-coding.stats --ext)" != ''
-
-    test "$(_daily-coding.stats -vvvv)" != ''
-    test "$(_daily-coding.stats --collection)" != ''
-
-    test "$(_daily-coding.stats -vvvvv)" != ''
-    test "$(_daily-coding.stats --file)" != ''
-
-    test "$(_daily-coding.stats -vvvvvv)" != ''
-    test "$(_daily-coding.stats --workspace-collection)" != ''
-}
-
-function test._daily-coding.extname
-{
-    test '.md' = "$(_daily-coding.extname 'README.md')"
-    test '.md' = "$(_daily-coding.extname '/tmp/files/README.md')"
-    test '.back' = "$(_daily-coding.extname 'README.md.back')"
-    test '.back' = "$(_daily-coding.extname '/tmp/files/README.md.back')"
-
-    test '.bashrc' = "$(_daily-coding.extname '.bashrc')"
-    test '.bashrc' = "$(_daily-coding.extname '/tmp/files/.bashrc')"
-    test '.back' = "$(_daily-coding.extname '.bashrc.back')"
-    test '.back' = "$(_daily-coding.extname '/tmp/files/.bashrc.back')"
-
-    test 'Makefile' = "$(_daily-coding.extname 'Makefile')"
-    test 'Makefile' = "$(_daily-coding.extname '/tmp/files/Makefile')"
-    test '.back' = "$(_daily-coding.extname 'Makefile.back')"
-    test '.back' = "$(_daily-coding.extname '/tmp/files/Makefile.back')"
 }
 
 function test._daily-coding.locate_file
@@ -399,6 +303,102 @@ function test._daily-coding.locate_workspace
     test   "$(_daily-coding.locate_workspace '2023-12-31'  0)" = '2023-12-31'
     test ! "$(_daily-coding.locate_workspace '2023-12-31'  1)"
     test ! "$(_daily-coding.locate_workspace '2023-12-31'  2)"
+}
+
+function test._daily-coding.cd
+{
+    test "$(_daily-coding.cd --root > /dev/null && pwd)" = \
+         "${REPOSITORY_PATH}"
+
+    test "$(_daily-coding.cd > /dev/null && pwd)" = \
+         "${TEST_DATA_DIR}/$(date '+%Y-%m-%d')"
+
+    test "$(_daily-coding.cd -1 > /dev/null && pwd)" = \
+         "${TEST_DATA_DIR}/$(date '+%Y-%m-%d' --date '1 days ago')"
+
+    test "$(_daily-coding.cd -2 > /dev/null && pwd)" = \
+         "${TEST_DATA_DIR}/$(date '+%Y-%m-%d' --date '2 days ago')"
+
+    test "$(_daily-coding.cd 2022-12-31 > /dev/null && pwd)" = \
+         "${TEST_DATA_DIR}/2022-12-31"
+
+    test "$(_daily-coding.cd 2023-01-01 > /dev/null && pwd)" = \
+         "${TEST_DATA_DIR}/2023-01-01"
+}
+
+function test._daily-coding.commit
+{
+    # TODO
+    :
+}
+
+function test._daily-coding.diff
+{
+    # TODO
+    :
+}
+
+function test._daily-coding.help
+{
+    test "$(_daily-coding.help)" != ''
+}
+
+function test._daily-coding.ls
+{
+    rm -rf "${TEST_DATA_DIR}"
+    mkdir -p "${TEST_DATA_DIR}"
+    cd "${TEST_DATA_DIR}"
+
+    declare -ar files=(
+        2020-01-01/aaa.c/main.c
+        2020-01-01/bbb.scheme/main.scm
+        2020-02-02/ccc.forth/main.fs
+        2020-02-02/ddd.ruby/main.rb
+        2020-02-02/eee.haskell/main.hs
+        2020-03-03/fff.shell/main.sh
+    )
+
+    for file in ${files[@]}
+    do
+        mkdir -p "$(dirname "${file}")"
+        touch "${file}"
+    done
+
+    test "$(_daily-coding.ls)" != ''
+    test "$(_daily-coding.ls -v)" != ''
+    test "$(_daily-coding.ls -vv)" != ''
+    test "$(_daily-coding.ls -vvv 2>&1 || true)" = 'Invalid option: [-vvv]'
+    test "$(_daily-coding.ls --collection)" != ''
+    test "$(_daily-coding.ls --language)" != ''
+    test "$(_daily-coding.ls --lang)" != ''
+    test "$(_daily-coding.ls --extension)" != ''
+    test "$(_daily-coding.ls --ext)" != ''
+    test "$(_daily-coding.ls --no-such-option 2>&1 || true)" = 'Invalid option: [--no-such-option]'
+}
+
+function test._daily-coding.stats
+{
+    test "$(_daily-coding.stats)" != ''
+
+    test "$(_daily-coding.stats -v)" != ''
+    test "$(_daily-coding.stats --workspace)" != ''
+
+    test "$(_daily-coding.stats -vv)" != ''
+    test "$(_daily-coding.stats --language)" != ''
+    test "$(_daily-coding.stats --lang)" != ''
+
+    test "$(_daily-coding.stats -vvv)" != ''
+    test "$(_daily-coding.stats --extension)" != ''
+    test "$(_daily-coding.stats --ext)" != ''
+
+    test "$(_daily-coding.stats -vvvv)" != ''
+    test "$(_daily-coding.stats --collection)" != ''
+
+    test "$(_daily-coding.stats -vvvvv)" != ''
+    test "$(_daily-coding.stats --file)" != ''
+
+    test "$(_daily-coding.stats -vvvvvv)" != ''
+    test "$(_daily-coding.stats --workspace-collection)" != ''
 }
 
 main
