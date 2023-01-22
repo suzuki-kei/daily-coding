@@ -9,3 +9,7 @@ clean:
 test:
 	@bash src/test/daily-coding.bashrc.test.sh
 
+.PHONY: todo
+todo:
+	@grep -F TODO -R src
+
