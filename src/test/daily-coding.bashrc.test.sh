@@ -42,8 +42,7 @@ function main
 
 function setup
 {
-    cleanup
-
+    rm -rf "${TEST_DATA_DIR}"
     mkdir -p "${TEST_DATA_DIR}"
 
     # カレントディレクトリを TEST_DATA_DIR として各テストを実行する.
@@ -63,11 +62,6 @@ function setup
     )
 
     mkdir -p "${directories[@]}"
-}
-
-function cleanup
-{
-    rm -rf "${TEST_DATA_DIR}"
 }
 
 function test._daily-coding.extname
