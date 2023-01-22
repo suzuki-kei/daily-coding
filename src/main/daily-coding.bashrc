@@ -3,6 +3,7 @@
 shopt -s extglob
 
 source "$(dirname "${BASH_SOURCE}")/_daily-coding._common"
+source "$(dirname "${BASH_SOURCE}")/_daily-coding._bash_complete"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.cd"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.commit"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.diff"
@@ -28,47 +29,4 @@ function daily-coding
             ;;
     esac
 }
-
-function _daily-coding._bash_complete
-{
-    declare -r word="${COMP_WORDS[${COMP_CWORD}]}"
-
-    case "${COMP_WORDS[1]}" in
-        cd)
-            if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W '--root' -- "${word}"))
-            fi
-            ;;
-        commit)
-            if [[ ! "${COMP_WORDS[2]}" == '--amend' ]]; then
-                COMPREPLY=($(compgen -W '--amend' -- "${word}"))
-            fi
-            ;;
-        diff)
-            if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W "$(ls)" -- "${word}"))
-            fi
-            ;;
-        help)
-            # no-operation
-            ;;
-        ls)
-            if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W '-v -vv --collection --language --lang --extension --ext' -- "${word}"))
-            fi
-            ;;
-        random)
-            # no-operation
-            ;;
-        stats)
-            if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W '-v --workspace -vv --language --lang -vvv --extension --ext -vvvv --collection -vvvvv --file -vvvvvv --workspace-collection' -- "${word}"))
-            fi
-            ;;
-        *)
-            COMPREPLY=($(compgen -W 'cd commit diff help ls random stats' -- "${word}"))
-            ;;
-    esac
-}
-complete -F _daily-coding._bash_complete daily-coding
 
