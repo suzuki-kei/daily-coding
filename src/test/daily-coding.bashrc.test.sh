@@ -96,6 +96,9 @@ function test._daily-coding.to_workspace_path
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
+    test "${root_workspace_path}/no-such-workspace" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/no-such-workspace")"
+
     test "${root_workspace_path}/2023-01-01" \
         = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01/aaa")"
     test "${root_workspace_path}/2023-01-01" \
@@ -127,6 +130,9 @@ function test._daily-coding.to_workspace_name
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
+    test "no-such-workspace" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/no-such-workspace")"
+
     test "2023-01-01" \
         = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-01-01")"
     test "2023-01-01" \
@@ -146,6 +152,11 @@ function test._daily-coding.to_collection_path
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
+    test "${root_workspace_path}/1999-01-01/no-such-collection" \
+        = "$(_daily-coding.to_collection_path "${root_workspace_path}/1999-01-01/no-such-collection")"
+    test "${root_workspace_path}/2023-01-01/no-such-collection" \
+        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-01-01/no-such-collection")"
+
     test "${root_workspace_path}/2023-01-01/aaa" \
         = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-01-01/aaa")"
     test "${root_workspace_path}/2023-01-01/aaa" \
@@ -164,6 +175,11 @@ function test._daily-coding.to_collection_path
 function test._daily-coding.to_collection_name
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    test 'no-such-collection' \
+        = "$(_daily-coding.to_collection_name "${root_workspace_path}/1999-01-01/no-such-collection")"
+    test 'no-such-collection' \
+        = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-01-01/no-such-collection")"
 
     test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-01-01/aaa")"
     test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-01-01/aaa/bbb")"

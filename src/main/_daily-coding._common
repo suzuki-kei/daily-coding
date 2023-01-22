@@ -43,11 +43,11 @@ function _daily-coding.to_collection_path
 {
     declare -r path="${1:-$(pwd)}"
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
-    declare -r relative_path="$(realpath "${root_workspace_path}" --relative-to "${path}")"
+    declare -r relative_path="$(realpath "${root_workspace_path}" -m --relative-to "${path}")"
 
     if [[ "${relative_path}" =~ ^..(/..)+$ ]]; then
         declare -r workspace_collection_name="$(
-            realpath "${path}" --relative-base "${root_workspace_path}" | cut -d/ -f1,2)"
+            realpath "${path}" -m --relative-base "${root_workspace_path}" | cut -d/ -f1,2)"
         echo "${root_workspace_path}/${workspace_collection_name}"
     else
         echo ''
