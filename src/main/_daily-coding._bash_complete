@@ -37,7 +37,7 @@ function _daily-coding._bash_complete
             fi
             ;;
         *)
-            COMPREPLY=($(compgen -W 'cd commit diff help ls random stats' -- "${word}"))
+            COMPREPLY=($(compgen -W '--root cd commit diff help ls random stats' -- "${word}"))
             ;;
     esac
 }
