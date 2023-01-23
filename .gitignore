@@ -2,6 +2,9 @@
 # vim
 *.swp
 
+# python
+**/__pycache__/
+
 # ビルド結果やテストデータなどの中間ファイル.
 /target/
 /workspace/**/*.out
