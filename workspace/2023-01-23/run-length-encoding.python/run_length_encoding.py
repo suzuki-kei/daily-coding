@@ -1,12 +1,4 @@
 
-def main():
-    xs = "a a b c c c".split()
-    encoded = encode(xs)
-    decoded = decode(encoded)
-    print(xs)
-    print(encoded)
-    print(decoded)
-
 def encode(xs):
     return xs_to_encoded_runs(xs)
 
@@ -59,7 +51,4 @@ def runs_to_xs(runs):
     for run in runs:
         xs += run
     return xs
-
-if __name__ == "__main__":
-    main()
 
