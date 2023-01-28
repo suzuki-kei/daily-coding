@@ -2,7 +2,7 @@
 
 function _daily-coding.cd
 {
-    if [[ ! $# -le 1 ]]; then
+    if [[ ! $# -le 2 ]]; then
         echo "Invalid options: [$@]" >&2
         return 1
     fi
@@ -47,6 +47,22 @@ function _daily-coding.cd
             mkdir -p "${workspace_path}"
         fi
         cd "${workspace_path}" && pwd
+        return 0
+    fi
+
+    # cd COLLECTION [N]
+    if [[ "${1:-}" =~ ^[0-9a-zA-Z._-]+$ ]] && [[ "${2:-0}" =~ ^[-]?[0-9]+$ ]]; then
+        declare -r collection_name="$1"
+        declare -r n="${2:-0}"
+        declare -r target_collection_path="$(
+            _daily-coding.ls -v | grep -E "^[^/]+/${collection_name}$" | tac | sed -n "$((-n+1))p")"
+
+        if [[ "${target_collection_path}" = '' ]]; then
+            echo 'Not found' >&2
+            return 1
+        fi
+
+        cd "$(_daily-coding.root_workspace_path)/${target_collection_path}" && pwd
         return 0
     fi
 

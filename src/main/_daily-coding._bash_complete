@@ -8,7 +8,8 @@ function _daily-coding._bash_complete
         cd)
             if [[ ${COMP_CWORD} -le 2 ]]; then
                 declare -r workspaces="$(_daily-coding.ls)"
-                COMPREPLY=($(compgen -W "--root ${workspaces}" -- "${word}"))
+                declare -r collections="$(daily-coding ls --collection)"
+                COMPREPLY=($(compgen -W "--root ${workspaces} ${collections}" -- "${word}"))
             fi
             ;;
         commit)

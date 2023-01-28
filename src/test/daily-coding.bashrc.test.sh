@@ -396,6 +396,16 @@ function test._daily-coding.cd
 
     test "$(_daily-coding.cd 2023-01-01 > /dev/null && pwd)" = \
          "${TEST_DATA_DIR}/2023-01-01"
+
+    test "$(_daily-coding.cd aaa > /dev/null && pwd)" = \
+         "${TEST_DATA_DIR}/2023-02-02/aaa"
+
+    test "$(_daily-coding.cd aaa -1 > /dev/null && pwd)" = \
+         "${TEST_DATA_DIR}/2023-01-01/aaa"
+
+    # TODO コレクションが見つからない場合のテストを行う.
+    #  * _daily-coding.cd aaa -2
+    #  * _daily-coding.cd no-such-collection
 }
 
 function test._daily-coding.commit

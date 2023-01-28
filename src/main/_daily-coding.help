@@ -41,6 +41,10 @@ function _daily-coding.help
             ${name} cd DATE
                 指定した日のワークスペースに移動します.
 
+            ${name} cd COLLECTION [N]
+                指定した名前の最新のコレクションに移動します.
+                N を指定すると, N 個前のコレクションに移動します.
+
             ${name} commit [--amend]
                 コレクションの名前で git commit します.
                 カレントディレクトリがコレクションのディレクトリではない場合はエラーになります.
