@@ -11,13 +11,13 @@ function _daily-coding.ls
 
     case "${1:-}" in
         '')
-            find "${root_workspace_path}" -mindepth 1 -maxdepth 1 -printf '%P\n' | sort
+            _daily-coding.ls_by_depth 1
             ;;
         -v)
-            find "${root_workspace_path}" -mindepth 2 -maxdepth 2 -printf '%P\n' | sort
+            _daily-coding.ls_by_depth 2
             ;;
         -vv)
-            find "${root_workspace_path}" -mindepth 3 -maxdepth 3 -printf '%P\n' | sort
+            _daily-coding.ls_by_depth 3
             ;;
         --collection)
             _daily-coding.generate_jsonl | jq -sr '.[].collection' | sort -u
@@ -36,5 +36,13 @@ function _daily-coding.ls
             return 1
             ;;
     esac
+}
+
+function _daily-coding.ls_by_depth
+{
+    declare -r depth="$1"
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    find "${root_workspace_path}" -mindepth ${depth} -maxdepth ${depth} -printf '%P\n' | sort
 }
 
