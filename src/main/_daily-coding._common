@@ -1,16 +1,5 @@
 #!/bin/bash
 
-function _daily-coding.extname
-{
-    declare -r name="$(basename "$1")"
-
-    if [[ "$name" =~ \.[^.]*$ ]]; then
-        echo "${BASH_REMATCH[0]}"
-    else
-        echo "$name"
-    fi
-}
-
 function _daily-coding.root_path
 {
     (cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)
@@ -141,7 +130,12 @@ function _daily-coding.generate_jsonl
             declare language="${collection##*.}"
             path="${path#*/}"
             declare file="${path}"
-            declare extension="$(_daily-coding.extname "${path}")"
+
+            if [[ "${path}" =~ \.[^.]*$ ]]; then
+                declare extension="${BASH_REMATCH[0]}"
+            else
+                declare extension="${path}"
+            fi
 
             echo "{\"workspace\": \"${workspace}\", \"collection\": \"${collection}\", \"language\": \"${language}\", \"file\": \"${file}\", \"extension\": \"${extension}\", \"lines\": ${lines}}"
         done < <(find . -type f | sort | xargs wc -l | sed -r '/^ *[0-9]+ total$/d')
