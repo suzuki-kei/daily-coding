@@ -7,7 +7,8 @@ function _daily-coding._bash_complete
     case "${COMP_WORDS[1]}" in
         cd)
             if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W '--root' -- "${word}"))
+                declare -r workspaces="$(_daily-coding.ls)"
+                COMPREPLY=($(compgen -W "--root ${workspaces}" -- "${word}"))
             fi
             ;;
         commit)
