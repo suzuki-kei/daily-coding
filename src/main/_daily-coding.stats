@@ -86,8 +86,18 @@ function _daily-coding.stats.report
             | sort_by(.group_key)
             | map([.[]])
             | .[]
-        )
-        ,
+        ),
+        (
+            [
+                "${group_key_name}",
+                "workspaces",
+                "collections",
+                "languages",
+                "files",
+                "extensions",
+                "lines"
+            ]
+        ),
         (
             map({
                 "group_key"            : "<entire>",
