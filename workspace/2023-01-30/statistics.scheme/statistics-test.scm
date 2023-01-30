@@ -8,6 +8,8 @@
 (define test
     (lambda ()
         (test.count)
+        (test.minimum)
+        (test.maximum)
         (test.sum)
         (test.product)
         (test.average)
@@ -22,6 +24,24 @@
         (test* "#2" 1 (count '(1)))
         (test* "#3" 2 (count '(1 2)))
         (test* "#4" 3 (count '(1 2 3)))
+        (test-end)))
+
+(define test.minimum
+    (lambda ()
+        (test-start "minimum")
+        (test* "#1" (test-error) (minimum '()))
+        (test* "#2" 1 (minimum '(1)))
+        (test* "#3" 1 (minimum '(1 2)))
+        (test* "#4" 1 (minimum '(2 1)))
+        (test-end)))
+
+(define test.maximum
+    (lambda ()
+        (test-start "maximum")
+        (test* "#1" (test-error) (maximum '()))
+        (test* "#2" 1 (maximum '(1)))
+        (test* "#3" 2 (maximum '(1 2)))
+        (test* "#4" 2 (maximum '(2 1)))
         (test-end)))
 
 (define test.sum

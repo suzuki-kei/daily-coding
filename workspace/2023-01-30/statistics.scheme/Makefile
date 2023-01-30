@@ -3,7 +3,7 @@
 
 .PHONY: run
 run:
-	@gosh -I. statistics.scm
+	@gosh -I. main.scm
 
 .PHONY: test
 test:
