@@ -78,6 +78,10 @@ function _daily-coding.help
             ${name} ls --extension|--ext
                 拡張子の一覧を表示します.
 
+            ${name} mkcd COLLECTION
+                今日のワークスペースに COLLECTION で指定したディレクトリが存在しなければ作成します.
+                その後, カレントディレクトリを COLLECTION で指定したディレクトリに変更します.
+
             ${name} random [N]
                 過去に作成したコレクションからランダムに N 個表示します (デフォルトは N=1).
                 現在のワークスペースに存在するコレクションは除外されます.

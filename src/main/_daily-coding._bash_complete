@@ -30,6 +30,12 @@ function _daily-coding._bash_complete
                 COMPREPLY=($(compgen -W '-v -vv --collection --language --lang --extension --ext' -- "${word}"))
             fi
             ;;
+        mkcd)
+            if [[ ${COMP_CWORD} -le 2 ]]; then
+                declare -r collections="$(daily-coding ls --collection | cut -d' ' -f1)"
+                COMPREPLY=($(compgen -W "${collections}" -- "${word}"))
+            fi
+            ;;
         random)
             # no-operation
             ;;
@@ -39,7 +45,7 @@ function _daily-coding._bash_complete
             fi
             ;;
         *)
-            COMPREPLY=($(compgen -W '--root cd commit diff help ls random stats' -- "${word}"))
+            COMPREPLY=($(compgen -W '--root cd commit diff help ls mkcd random stats' -- "${word}"))
             ;;
     esac
 }

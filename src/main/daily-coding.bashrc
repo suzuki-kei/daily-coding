@@ -8,6 +8,7 @@ source "$(dirname "${BASH_SOURCE}")/_daily-coding.cd"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.commit"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.diff"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.help"
+source "$(dirname "${BASH_SOURCE}")/_daily-coding.mkcd"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.ls"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.random"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.stats"
@@ -15,7 +16,7 @@ source "$(dirname "${BASH_SOURCE}")/_daily-coding.stats"
 function daily-coding
 {
     case "${1:-}" in
-        cd | commit | diff | help | ls | random | stats)
+        cd | commit | diff | help | ls | mkcd | random | stats)
             declare -r name="$1"
             shift 1
             _daily-coding.$name "$@"
