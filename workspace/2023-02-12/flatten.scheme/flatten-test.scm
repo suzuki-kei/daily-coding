@@ -9,7 +9,7 @@
     (lambda ()
         (test-flatten)))
 
-(define test-flatten
+(define test.flatten
     (lambda ()
         (test-start "flatten")
         (test* "#1" '() (flatten '()))
