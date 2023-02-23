@@ -5,6 +5,9 @@
 # python
 **/__pycache__/
 
+# haskell (cabal)
+**/dist-newstyle/
+
 # ビルド結果やテストデータなどの中間ファイル.
 /target/
 /workspace/**/*.out
