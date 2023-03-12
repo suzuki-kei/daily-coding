@@ -142,3 +142,13 @@ function _daily-coding.generate_jsonl
     )
 }
 
+function _daily-coding.workspaces
+{
+    find "$(_daily-coding.root_workspace_path)" -mindepth 1 -maxdepth 1 -type d -printf '%P\n' | sort
+}
+
+function _daily-coding.collections
+{
+    find "$(_daily-coding.root_workspace_path)"/* -mindepth 1 -maxdepth 1 -type d -printf '%P\n' | sort -u
+}
+
