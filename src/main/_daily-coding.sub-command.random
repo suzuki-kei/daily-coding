@@ -17,11 +17,8 @@ function _daily-coding.random
         declare current_workspace_path="$(_daily-coding.root_workspace_path)/${current_workspace_name}"
     fi
 
-    sort \
-        <(find "${root_workspace_path}" -mindepth 2 -maxdepth 2 -type d -printf '%P\n' | cut -d/ -f2 | sort -u) \
-        <(find "${current_workspace_path}" -mindepth 1 -maxdepth 1 -type d -printf '%P\n') \
-        <(find "${current_workspace_path}" -mindepth 1 -maxdepth 1 -type d -printf '%P\n') \
+    find "${root_workspace_path}"/* -mindepth 1 -maxdepth 1 -type d -printf '%P\n' \
         | grep -vE '^try-' \
-        | uniq -u | shuf | head -${n}
+        | sort -u | shuf | head -${n}
 }
 
