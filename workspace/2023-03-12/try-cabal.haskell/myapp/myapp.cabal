@@ -1,0 +1,30 @@
+cabal-version:   3.8
+name:            myapp
+version:         0.0.0
+build-type:      Simple
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  NumericalSequence
+    build-depends:    base ^>=4.17.0.0
+    hs-source-dirs:   src/lib
+    default-language: Haskell2010
+
+executable myapp
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    myapp, base ^>=4.17.0.0
+    hs-source-dirs:   src/main
+    default-language: Haskell2010
+
+test-suite myapp-test
+    import:           warnings
+    default-language: Haskell2010
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   src/test
+    main-is:          NumericalSequenceTest.hs
+    build-depends:    myapp, base ^>=4.17.0.0, HUnit
+
