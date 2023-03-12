@@ -2,12 +2,30 @@
 
 function _daily-coding.random
 {
-    if [[ ! $# -le 1 ]]; then
+    if [[ ! $# -le 2 ]]; then
         echo "Invalid options: [$@]" >&2
         return 1
     fi
 
-    declare -r n=${1:-1}
+    for OPT
+    do
+        # random N
+        if [[ "${OPT}" =~ ^([0-9]+$) ]]; then
+            declare -r opt_n="${OPT}"
+            continue
+        fi
+
+        # random glob
+        if [[ "${OPT}" != '' ]]; then
+            declare -r opt_glob="${OPT}"
+            continue
+        fi
+    done
+
+
+    declare -r n=${opt_n:-1}
+    declare -r glob="${opt_glob:-*}"
+
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
     declare current_workspace_name="$(_daily-coding.to_workspace_name "$(pwd)")"
     declare current_workspace_path="$(_daily-coding.to_workspace_path "$(pwd)")"
@@ -17,7 +35,7 @@ function _daily-coding.random
         declare current_workspace_path="$(_daily-coding.root_workspace_path)/${current_workspace_name}"
     fi
 
-    find "${root_workspace_path}"/* -mindepth 1 -maxdepth 1 -type d -printf '%P\n' \
+    find "${root_workspace_path}"/* -mindepth 1 -maxdepth 1 -type d -name "${glob}" -printf '%P\n' \
         | grep -vE '^try-' \
         | sort -u | shuf | head -${n}
 }
