@@ -51,11 +51,12 @@ function _daily-coding.cd
     fi
 
     # cd COLLECTION [N]
-    if [[ "${1:-}" =~ ^[0-9a-zA-Z._-]+$ ]] && [[ "${2:-0}" =~ ^[-]?[0-9]+$ ]]; then
+    if [[ "${1:-}" =~ ^[0-9a-zA-Z._+-]+$ ]] && [[ "${2:-0}" =~ ^[-]?[0-9]+$ ]]; then
         declare -r collection_name="$1"
+        declare -r escaped_collection_name="$(_daily-coding.escape_regexp "${collection_name}")"
         declare -r n="${2:-0}"
         declare -r target_collection_path="$(
-            _daily-coding.ls -v | grep -E "^[^/]+/${collection_name}$" | tac | sed -n "$((-n+1))p")"
+            _daily-coding.ls -v | grep -E "^[^/]+/${escaped_collection_name}$" | tac | sed -n "$((-n+1))p")"
 
         if [[ "${target_collection_path}" = '' ]]; then
             echo 'Not found' >&2

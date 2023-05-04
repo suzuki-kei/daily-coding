@@ -1,5 +1,10 @@
 #!/bin/bash
 
+function _daily-coding.escape_regexp
+{
+    echo "$1" | sed -r 's/([,[\*^$()+?{|])/\\\1/g'
+}
+
 function _daily-coding.root_path
 {
     (cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)
