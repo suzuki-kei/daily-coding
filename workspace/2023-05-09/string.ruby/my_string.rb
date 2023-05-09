@@ -61,6 +61,18 @@ module MyString
         end
     end
 
+    #
+    # LPS (Longest proper Prefix Suffix) 配列を返す.
+    #
+    # lps_array[i] は self の先頭 i 文字からなる部分文字列について,
+    # proper prefix かつ proper suffix である最長の文字列の長さを保持する.
+    #
+    def lps_array
+        prefixes[1..].map do |substring|
+            (substring.proper_prefixes & substring.proper_suffixes).map(&:size).max
+        end
+    end
+
 end
 
 class String

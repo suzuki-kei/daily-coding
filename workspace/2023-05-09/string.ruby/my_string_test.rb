@@ -112,5 +112,14 @@ class MyStringTestCase < Test::Unit::TestCase
         assert_equal false, 'bacon lettuce tomato'.superstring_of?(['bacon', 'lettuce', 'tomato', 'sandwich'])
     end
 
+    def test_lps_array
+        assert_equal [0, 1, 2, 3], 'AAAA'.lps_array
+        assert_equal [0, 0, 1, 2], 'ABAB'.lps_array
+        assert_equal [0, 0, 1, 2, 3, 4], 'ababab'.lps_array
+        assert_equal [0, 0, 0, 0, 1, 2, 0], 'ABCDABD'.lps_array
+        assert_equal [0, 1, 0, 1, 2, 2, 2, 3], 'aacaaaac'.lps_array
+        assert_equal [0, 1, 2, 3, 4, 0, 1, 2, 3, 0, 1], 'AAAAABAAABA'.lps_array
+    end
+
 end
 
