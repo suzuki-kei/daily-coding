@@ -12,7 +12,7 @@ module MyString
     end
 
     def proper_prefixes
-        (1...size).map do |n|
+        (0...size).map do |n|
             self[0...n]
         end
     end
@@ -32,8 +32,8 @@ module MyString
     end
 
     def proper_suffixes
-        (1...size).map do |n|
-            self[n...size]
+        (0...size).map do |n|
+            self[size-n...size]
         end
     end
 

@@ -22,7 +22,7 @@ class MyStringTestCase < Test::Unit::TestCase
     end
 
     def test_proper_prefixes
-        expected = ['h', 'he', 'hel', 'hell']
+        expected = ['', 'h', 'he', 'hel', 'hell']
         actual   = 'hello'.proper_prefixes.sort_by(&:size)
         assert_equal expected, actual
     end
@@ -58,7 +58,7 @@ class MyStringTestCase < Test::Unit::TestCase
     end
 
     def test_proper_suffixes
-        expected = ['o', 'lo', 'llo', 'ello']
+        expected = ['', 'o', 'lo', 'llo', 'ello']
         actual   = 'hello'.proper_suffixes.sort_by(&:size)
         assert_equal expected, actual
     end
