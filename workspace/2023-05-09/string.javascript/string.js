@@ -18,6 +18,7 @@ function proper_prefixes(string) {
         return string.substring(0, i)
     })
 }
+
 function is_proper_prefix(string1, string2) {
     return string1.length != string2.length && string1.startsWith(string2)
 }
