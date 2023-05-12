@@ -1,5 +1,5 @@
 
 .PHONY: test
 test:
-	@ruby -I. test_my_string.rb
+	@ruby -I src/main src/test/unit.rb
 
