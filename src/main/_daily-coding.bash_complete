@@ -19,7 +19,11 @@ function _daily-coding._bash_complete
             ;;
         diff)
             if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W "$(ls)" -- "${word}"))
+                if [[ "$(_daily-coding.to_collection_path "$(pwd)")" == '' ]]; then
+                    COMPREPLY=($(compgen -W "$(ls)" -- "${word}"))
+                else
+                    COMPREPLY=($(compgen -W "$(find * -type f | sed -r 's/^.\///')" -- "${word}"))
+                fi
             fi
             ;;
         help)
