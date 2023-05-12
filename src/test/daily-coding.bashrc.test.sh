@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# daily-coding.bashrc.sh のテスト.
+# daily-coding.bashrc のテスト.
 #
 
 set -eu -o errtrace
