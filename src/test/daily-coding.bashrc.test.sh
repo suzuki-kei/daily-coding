@@ -87,6 +87,8 @@ function test._daily-coding.to_workspace_path
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
+    test '' = "$(_daily-coding.to_workspace_path '/out-of-workspace-root')"
+
     test "${root_workspace_path}/no-such-workspace" \
         = "$(_daily-coding.to_workspace_path "${root_workspace_path}/no-such-workspace")"
 
@@ -121,6 +123,8 @@ function test._daily-coding.to_workspace_name
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
+    test '' = "$(_daily-coding.to_workspace_name '/out-of-workspace-root')"
+
     test "no-such-workspace" \
         = "$(_daily-coding.to_workspace_name "${root_workspace_path}/no-such-workspace")"
 
@@ -142,6 +146,10 @@ function test._daily-coding.to_workspace_name
 function test._daily-coding.to_collection_path
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    test '' = "$(_daily-coding.to_collection_path '/out-of-workspace-root')"
+    test '' = "$(_daily-coding.to_collection_path "${root_workspace_path}")"
+    test '' = "$(_daily-coding.to_collection_path "${root_workspace_path}/1999-01-01")"
 
     test "${root_workspace_path}/1999-01-01/no-such-collection" \
         = "$(_daily-coding.to_collection_path "${root_workspace_path}/1999-01-01/no-such-collection")"
@@ -166,6 +174,10 @@ function test._daily-coding.to_collection_path
 function test._daily-coding.to_collection_name
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    test '' = "$(_daily-coding.to_collection_name '/out-of-workspace-root')"
+    test '' = "$(_daily-coding.to_collection_name "${root_workspace_path}")"
+    test '' = "$(_daily-coding.to_collection_name "${root_workspace_path}/1999-01-01")"
 
     test 'no-such-collection' \
         = "$(_daily-coding.to_collection_name "${root_workspace_path}/1999-01-01/no-such-collection")"
@@ -230,6 +242,14 @@ function test._daily-coding.locate_file
         touch "${file}"
     done
 
+    # 空文字列は無効値.
+    test "$(_daily-coding.locate_file '' 0)" = ''
+
+    # コレクション内のファイル以外のパスは無効値.
+    test "$(_daily-coding.locate_file '2022-01-10' 0)" = ''
+    test "$(_daily-coding.locate_file '2022-01-10/aaa' 0)" = ''
+    test "$(_daily-coding.locate_file '/out-of-workspace' 0)" = ''
+
     # 日付が連続する場合.
     test "$(_daily-coding.locate_file "2022-01-10/aaa/file.txt" -2)" = '2022-01-08/aaa/file.txt'
     test "$(_daily-coding.locate_file "2022-01-10/aaa/file.txt" -1)" = '2022-01-09/aaa/file.txt'
@@ -290,6 +310,13 @@ function test._daily-coding.locate_collection
     for date_path in "${date_paths[@]}"; do
         mkdir -p "${date_path}"
     done
+
+    # 空文字列は無効値.
+    test "$(_daily-coding.locate_collection '' 0)" = ''
+
+    # ワークスペース内のコレクション以外のパスは無効値.
+    test "$(_daily-coding.locate_collection '2022-01-10' 0)" = ''
+    test "$(_daily-coding.locate_collection '/out-of-collection' 0)" = ''
 
     # 日付が連続する場合.
     test "$(_daily-coding.locate_collection '2023-01-10/aaa.scheme' -2)" = '2023-01-08/aaa.scheme'
@@ -355,6 +382,12 @@ function test._daily-coding.locate_workspace
     for date_path in "${date_paths[@]}"; do
         mkdir -p "${date_path}"
     done
+
+    # 空文字列は無効値.
+    test "$(_daily-coding.locate_workspace '' 0)" = ''
+
+    # ワークスペース外のパスは無効値.
+    test "$(_daily-coding.locate_workspace '/out-of-workspace' 0)" = ''
 
     # 日付が連続する場合.
     test "$(_daily-coding.locate_workspace '2023-01-10' -2)" = '2023-01-08'

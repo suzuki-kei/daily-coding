@@ -1,20 +1,33 @@
 #!/bin/bash
 
+#
+# 正規表現の特殊文字をエスケープする.
+#
 function _daily-coding.escape_regexp
 {
     echo "$1" | sed -r 's/([,[\*^$()+?{|])/\\\1/g'
 }
 
+#
+# プロジェクトのルートディレクトリのパス.
+#
 function _daily-coding.root_path
 {
     (cd "$(dirname "${BASH_SOURCE}")"/../.. && pwd)
 }
 
+#
+# ワークスペースのルートディレクトリのパス.
+#
 function _daily-coding.root_workspace_path
 {
     echo "${DAILY_CODING_ROOT_WORKSPACE_PATH:-$(_daily-coding.root_path)/workspace}"
 }
 
+#
+# 任意のパスをワークスペースの最上位ディレクトリのパスに変換する.
+# $1 がワークスペース外のパスである場合は空文字列を出力する.
+#
 function _daily-coding.to_workspace_path
 {
     declare -r path="${1:-$(pwd)}"
@@ -27,12 +40,20 @@ function _daily-coding.to_workspace_path
     fi
 }
 
+#
+# 任意のパスをワークスペース名にパスに変換する.
+# $1 がワークスペース外のパスである場合は空文字列を出力する.
+#
 function _daily-coding.to_workspace_name
 {
     declare -r workspace_path="$(_daily-coding.to_workspace_path "${1:-$(pwd)}")"
     echo "${workspace_path##*/}"
 }
 
+#
+# 任意のパスをコレクションの最上位ディレクトリのパスに変換する.
+# $1 がコレクション外のパスである場合は空文字列を出力する.
+#
 function _daily-coding.to_collection_path
 {
     declare -r path="${1:-$(pwd)}"
@@ -48,22 +69,40 @@ function _daily-coding.to_collection_path
     fi
 }
 
+#
+# 任意のパスをコレクション名に変換する.
+# $1 がコレクション外のパスである場合は空文字列を出力する.
+#
 function _daily-coding.to_collection_name
 {
     declare -r collection_path="$(_daily-coding.to_collection_path "${1:-$(pwd)}")"
     echo "${collection_path##*/}"
 }
 
+#
+# カレントディレクトリを基準としたファイルのパスを特定する.
+#
+# $1 に任意のコレクションに含まれるファイルのパスを指定する.
+# $2 に整数 N を指定すると, N 個前後のワークスペースに含まれるファイルのパスを特定する.
+#
+# パスを特定できた場合はカレントディレクトリを基準とした相対パス,
+# パスを特定できなかった場合は空文字列を標準出力に出力する.
+#
 function _daily-coding.locate_file
 {
+    declare -r base_collection_path="$(_daily-coding.to_collection_path "$1")"
+    if [[ "${base_collection_path}" == '' ]]; then
+        return
+    fi
+
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
     declare -r base_workspace_name="$(_daily-coding.to_workspace_name "$1")"
     declare -r base_collection_name="$(_daily-coding.to_collection_name "$1")"
-    declare -r base_file_name="$(basename "$1")"
+    declare -r relative_file_path="$(realpath "${1}" -m --relative-to "${base_collection_path}")"
 
     declare -r n=$2
     declare -r target_file_path="$(
-        ls -1 "${root_workspace_path}"/*/"${base_collection_name}/${base_file_name}" |
+        ls -1 "${root_workspace_path}"/*/"${base_collection_name}/${relative_file_path}" |
             ([[ $n -ge 0 ]] && cat || tac) |
             sed -n "/${base_workspace_name}/,$ p" |
             sed -n "$((n < 0 ? -n+1 : n+1)) p"
@@ -76,10 +115,23 @@ function _daily-coding.locate_file
     fi
 }
 
+#
+# カレントディレクトリを基準としたコレクションの相対パスを特定する.
+#
+# $1 にコレクション以下のパスを指定する.
+# $2 に整数 N を指定すると, N 個前後のワークスペースに含まれるコレクションのパスを特定する.
+#
+# パスを特定できた場合はカレントディレクトリを基準とした相対パス,
+# パスを特定できなかった場合は空文字列を標準出力に出力する.
+#
 function _daily-coding.locate_collection
 {
-    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
     declare -r base_collection_path="$(_daily-coding.to_collection_path "$1")"
+    if [[ "${base_collection_path}" == '' ]]; then
+        return
+    fi
+
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
     declare -r base_collection_name="$(_daily-coding.to_collection_name "$1")"
     declare -r base_workspace_name="$(_daily-coding.to_workspace_name "$1")"
 
@@ -98,12 +150,26 @@ function _daily-coding.locate_collection
     fi
 }
 
+#
+# カレントディレクトリを基準としたワークスペースの相対パスを特定する.
+#
+# $1 にワークスペース以下のパスを指定する.
+# $2 に整数 N を指定すると, N 個前後のワークスペースのパスを特定する.
+#
+# パスを特定できた場合はカレントディレクトリを基準とした相対パス,
+# パスを特定できなかった場合は空文字列を標準出力に出力する.
+#
 function _daily-coding.locate_workspace
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
-    declare -r base_workspace_path="$1"
-    declare -r base_workspace_name="$(basename "$1")"
+    declare -r base_workspace_path="$(_daily-coding.to_workspace_path "$1")"
+    declare -r base_workspace_name="$(_daily-coding.to_workspace_name "$1")"
     declare -r n=$2
+
+    if [[ "${base_workspace_name}" == '' ]]; then
+        echo ''
+        return
+    fi
 
     declare -r target_workspace_path="$(
         cat <(ls -1d "${root_workspace_path}"/*) \
