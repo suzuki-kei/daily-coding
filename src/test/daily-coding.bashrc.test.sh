@@ -15,6 +15,7 @@ source "${REPOSITORY_PATH}/src/main/daily-coding.bashrc"
 function main
 {
     declare -ar tests=(
+        test._daily-coding.escape_regexp
         test._daily-coding.root_path
         test._daily-coding.root_workspace_path
         test._daily-coding.to_workspace_path
@@ -62,6 +63,14 @@ function setup
     )
 
     mkdir -p "${directories[@]}"
+}
+
+function test._daily-coding.escape_regexp
+{
+    test "$(_daily-coding.escape_regexp '')" == ''
+    test "$(_daily-coding.escape_regexp 'abcde')" == 'abcde'
+    test "$(_daily-coding.escape_regexp 'ab*de')" == 'ab\*de'
+    test "$(_daily-coding.escape_regexp ',[*^$()+?{|')" == '\,\[\*\^\$\(\)\+\?\{\|'
 }
 
 function test._daily-coding.root_path
