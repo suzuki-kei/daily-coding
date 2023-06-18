@@ -1,4 +1,4 @@
-3~3s/.*/Fizz/
-5~5s/.*/Buzz/
-15~15s/.*/FizzBuzz/
+15~15cFizzBuzz
+5~5cBuzz
+3~3cFizz
 
