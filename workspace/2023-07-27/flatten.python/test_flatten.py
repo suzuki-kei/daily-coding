@@ -8,6 +8,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual([], flatten([]))
         self.assertEqual([1], flatten([1]))
         self.assertEqual([], flatten([[]]))
+        self.assertEqual([1, 2, 3, 4, 5], flatten([[1], [2], [3], [4], [5]]))
         self.assertEqual([1, 2, 3, 4, 5], flatten([1, [2], [[3, 4], 5]]))
 
 
