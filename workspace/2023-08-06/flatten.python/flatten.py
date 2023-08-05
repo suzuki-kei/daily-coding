@@ -17,3 +17,14 @@ def flatten(values):
         values[i : i + 1] = flatten(values[i])
     return values
 
+
+def flatten(values):
+    flatten_values = []
+
+    for value in values:
+        if is_iterable(value):
+            flatten_values.extend(flatten(value))
+        else:
+            flatten_values.append(value)
+    return flatten_values
+
