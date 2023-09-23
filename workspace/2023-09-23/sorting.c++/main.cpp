@@ -17,6 +17,7 @@ int main()
     DEMONSTRATION(bubble_sort);
     DEMONSTRATION(selection_sort);
     DEMONSTRATION(insertion_sort);
+    DEMONSTRATION(merge_sort);
     DEMONSTRATION(quick_sort);
 
     return 0;

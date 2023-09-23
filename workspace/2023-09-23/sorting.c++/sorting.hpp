@@ -1,6 +1,7 @@
 #ifndef SORTING_HPP_INCLUDED
 #define SORTING_HPP_INCLUDED
 
+#include <algorithm>
 #include <utility>
 
 void bubble_sort(int *values, int size)
@@ -29,6 +30,44 @@ void insertion_sort(int *values, int size)
     for (int sorted_size = 1; sorted_size < size; sorted_size++)
         for (int i = sorted_size; i > 0 && values[i] < values[i - 1]; i--)
             std::swap(values[i], values[i - 1]);
+}
+
+void merge(int *output, const int *begin1, const int *end1, const int *begin2, const int *end2)
+{
+    while (begin1 != end1 && begin2 != end2)
+        *output++ = *begin1 <= *begin2 ? *begin1++ : *begin2++;
+
+    while (begin1 != end1 && begin2 == end2)
+        *output++ = *begin1++;
+
+    while (begin1 == end1 && begin2 != end2)
+        *output++ = *begin2++;
+}
+
+void merge_sort(int *values, int size)
+{
+    int *buffer = new int[size];
+    int *source = values;
+    int *target = buffer;
+
+    for (int chunk_size = 1; chunk_size < size; chunk_size *= 2)
+    {
+        for (int i = 0; i + chunk_size < size; i += chunk_size * 2)
+        {
+            merge(
+                target + i,
+                source + std::min(i + chunk_size * 0, size),
+                source + std::min(i + chunk_size * 1, size),
+                source + std::min(i + chunk_size * 1, size),
+                source + std::min(i + chunk_size * 2, size));
+        }
+        std::swap(source, target);
+    }
+
+    if (target == values)
+        std::copy(&buffer[0], &buffer[size], values);
+
+    delete[] buffer;
 }
 
 void quick_sort(int *values, int lower, int upper)
