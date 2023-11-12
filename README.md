@@ -6,7 +6,7 @@
 
 .bashrc に以下を追加します.
 
-    source /PATH-TO-REPOSITORY-DIR/src/bashrc/daily-coding.bashrc
+    source /PATH-TO-REPOSITORY-DIR/src/main/daily-coding.bashrc
 
 daily-coding コマンドが使えるようになります.
 
