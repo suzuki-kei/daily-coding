@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 {- cabal:
     build-depends: base
 -}
@@ -11,10 +12,19 @@ main = do
     printSequence "fibonacci numbers" fibonacci [0..20]
     printSequence "fizz buzz values" fizzBuzz [1..100]
 
-printSequence :: (Show a) => String -> (Int -> a) -> [Int] -> IO ()
+class ToString a where
+    toString :: a -> String
+
+instance ToString String where
+    toString s = s
+
+instance ToString Int where
+    toString n = show n
+
+printSequence :: (ToString a) => String -> (Int -> a) -> [Int] -> IO ()
 printSequence description f ns = do
-    let values = map (show . f) ns
-    let string = foldl (++) "" $ intersperse " " values
+    let values = map f ns
+    let string = foldl (++) "" $ intersperse " " $ map toString values
     printf "%s:\n%s\n" description string
 
 factorial :: Int -> Int
