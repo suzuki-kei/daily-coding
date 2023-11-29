@@ -46,7 +46,7 @@ function _daily-coding.help
                 N を指定すると, N 個前のコレクションに移動します.
 
             ${name} commit [--amend]
-                コレクションの名前で git commit します.
+                コレクション名をコミットメッセージとして git commit します.
                 カレントディレクトリがコレクションのディレクトリではない場合はエラーになります.
 
             ${name} diff [N]
@@ -132,7 +132,7 @@ function _daily-coding.help
             ${name} stats -vvv
             ${name} stats -vvvv
 
-            # 空メッセージで git commit します.
+            # コレクション名をコミットメッセージとして git commit します.
             ${name} commit
 EOS
 }
