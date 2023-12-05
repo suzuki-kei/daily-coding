@@ -14,6 +14,6 @@ function _daily-coding.mkcd
     declare -r collection_path="${workspace_path}/${collection_name}"
 
     mkdir -p "${collection_path}"
-    cd "${collection_path}" && pwd
+    cd "${collection_path}"
 }
 
