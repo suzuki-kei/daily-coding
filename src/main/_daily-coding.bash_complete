@@ -55,4 +55,5 @@ function _daily-coding._bash_complete
 }
 
 complete -F _daily-coding._bash_complete daily-coding
+complete -F _daily-coding._bash_complete daily
 

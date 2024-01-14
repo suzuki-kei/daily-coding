@@ -31,3 +31,5 @@ function daily-coding
     esac
 }
 
+alias daily=daily-coding
+
