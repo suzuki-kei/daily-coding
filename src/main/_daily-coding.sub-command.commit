@@ -16,13 +16,17 @@ function _daily-coding.commit
 
     declare -r collection_path="$(realpath "$(pwd)" --relative-to "${root_workspace_path}")"
     declare -r collection_name="$(echo "${collection_path}" | cut -d/ -f2)"
+    declare -r option="${1:-}"
 
-    case "${1:-}" in
-        '')
-            git commit -m "${collection_name}"
-            ;;
-        --amend)
-            git commit -m "${collection_name}" --amend
+    if git status -s | grep -v '^[ ?]' | grep -v "^M  ${collection_path}$" > /dev/null; then
+        echo 'ERROR: files outside the collection are already staged.' >&2
+        return 1
+    fi
+
+    case "${option}" in
+        '' | --amend)
+            git add "${root_workspace_path}/${collection_path}"
+            git commit ${option} -m "${collection_name}" --edit
             ;;
         *)
             echo "Invalid option: [$1]" >&2
