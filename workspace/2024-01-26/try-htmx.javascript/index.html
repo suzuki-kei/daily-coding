@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>Try HTMX</title>
+        <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+        <script src="https://unpkg.com/htmx.org/dist/ext/client-side-templates.js"></script>
+        <script src="https://unpkg.com/mustache@latest"></script>
+    </head>
+    <body>
+        <h1>Try HTMX</h1>
+        <div hx-ext="client-side-templates">
+            <button
+                    hx-get="https://jsonplaceholder.typicode.com/posts/1"
+                    hx-swap="outerHTML"
+                    mustache-template="post-template">
+                Click Me
+            </button>
+            <template id="post-template">
+                <div>
+                    <div>userId: {{userId}}</div>
+                    <div>title: {{title}}</div>
+                    <div>body: {{body}}</div>
+                </div>
+            </template>
+        </div>
+    </body>
+</html>
+
