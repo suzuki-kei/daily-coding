@@ -9,7 +9,7 @@ function _daily-coding.help
 
     declare -r name="${FUNCNAME[1]}"
 
-    cat <<EOS | sed -r 's/^ {8}//'
+    cat <<EOS | sed -r 's/^ {8}//' | less -F
         NAME
             ${name}
 
