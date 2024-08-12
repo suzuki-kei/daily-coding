@@ -26,7 +26,7 @@ function _daily-coding.commit
     case "${option}" in
         '' | --amend)
             git add "${root_workspace_path}/${collection_path}"
-            git commit ${option} -m "${collection_name}" --edit
+            git commit ${option} -m "${collection_name}"
             ;;
         *)
             echo "Invalid option: [$1]" >&2
