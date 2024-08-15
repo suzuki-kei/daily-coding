@@ -40,6 +40,9 @@ function _daily-coding._bash_complete
                 COMPREPLY=($(compgen -W "${collections}" -- "${word}"))
             fi
             ;;
+        push)
+            # no-operation
+            ;;
         random)
             # no-operation
             ;;
@@ -49,7 +52,7 @@ function _daily-coding._bash_complete
             fi
             ;;
         *)
-            COMPREPLY=($(compgen -W '-h --help --root cd commit diff help ls mkcd random stats' -- "${word}"))
+            COMPREPLY=($(compgen -W '-h --help --root cd commit diff help ls mkcd push random stats' -- "${word}"))
             ;;
     esac
 }

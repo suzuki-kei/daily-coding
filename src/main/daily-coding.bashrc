@@ -10,13 +10,14 @@ source "$(dirname "${BASH_SOURCE}")/_daily-coding.sub-command.diff"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.sub-command.help"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.sub-command.ls"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.sub-command.mkcd"
+source "$(dirname "${BASH_SOURCE}")/_daily-coding.sub-command.push"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.sub-command.random"
 source "$(dirname "${BASH_SOURCE}")/_daily-coding.sub-command.stats"
 
 function daily-coding
 {
     case "${1:-}" in
-        cd | commit | diff | help | ls | mkcd | random | stats)
+        cd | commit | diff | help | ls | mkcd | push | random | stats)
             declare -r name="$1"
             shift 1
             _daily-coding.$name "$@"

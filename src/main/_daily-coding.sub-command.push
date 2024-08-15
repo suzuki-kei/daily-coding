@@ -1,0 +1,14 @@
+#!/bin/bash
+
+function _daily-coding.push
+{
+    if [[ ! $# -le 0 ]]; then
+        echo "Invalid options: [$@]" >&2
+        return 1
+    fi
+
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+
+    git -C "${root_workspace_path}" push
+}
+
