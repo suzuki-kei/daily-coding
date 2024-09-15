@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <title>Dialogi Example</title>
+    </head>
+    <body>
+        <h1>Dialog Example</h1>
+        <dialog id="my_dialog">
+            <p>ダイアログです。</p>
+            <form method="dialog">
+                <button>OK</button>
+            </form>
+        </dialog>
+        <form method="dialog">
+            <button id="modal_dialog_button">Show modal dialog</button>
+            <button id="modeless_dialog_button">Show modeless dialog</button>
+        </form>
+        <script language="javascript">
+            const myDialog = document.getElementById("my_dialog")
+            const modalDialogButton = document.getElementById("modal_dialog_button")
+            const modelessDialogButton = document.getElementById("modeless_dialog_button")
+
+            modalDialogButton.addEventListener("click", () => {
+                myDialog.showModal()
+            })
+            modelessDialogButton.addEventListener("click", () => {
+                myDialog.show()
+            })
+        </script>
+    </body>
+</html>
+
