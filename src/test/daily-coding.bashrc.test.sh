@@ -494,9 +494,7 @@ function test._daily-coding.ls
     test "$(_daily-coding.ls -vvv 2>&1 || true)" = 'Invalid option: [-vvv]'
     test "$(_daily-coding.ls --collection)" != ''
     test "$(_daily-coding.ls --language)" != ''
-    test "$(_daily-coding.ls --lang)" != ''
     test "$(_daily-coding.ls --extension)" != ''
-    test "$(_daily-coding.ls --ext)" != ''
     test "$(_daily-coding.ls --no-such-option 2>&1 || true)" = 'Invalid option: [--no-such-option]'
 }
 
@@ -509,11 +507,9 @@ function test._daily-coding.stats
 
     test "$(_daily-coding.stats -vv)" != ''
     test "$(_daily-coding.stats --language)" != ''
-    test "$(_daily-coding.stats --lang)" != ''
 
     test "$(_daily-coding.stats -vvv)" != ''
     test "$(_daily-coding.stats --extension)" != ''
-    test "$(_daily-coding.stats --ext)" != ''
 
     test "$(_daily-coding.stats -vvvv)" != ''
     test "$(_daily-coding.stats --collection)" != ''

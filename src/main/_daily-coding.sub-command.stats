@@ -24,11 +24,11 @@ function _daily-coding.stats
             declare -r jsonl="$(_daily-coding.generate_jsonl)"
             _daily-coding.stats.report "${jsonl}" 'workspace' '.workspace'
             ;;
-        -vv | --language | --lang)
+        -vv | --language)
             declare -r jsonl="$(_daily-coding.generate_jsonl)"
             _daily-coding.stats.report "${jsonl}" 'language' '.language'
             ;;
-        -vvv | --extension | --ext)
+        -vvv | --extension)
             declare -r jsonl="$(_daily-coding.generate_jsonl)"
             _daily-coding.stats.report "${jsonl}" 'extension' '.extension'
             ;;

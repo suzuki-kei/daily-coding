@@ -31,7 +31,7 @@ function _daily-coding._bash_complete
             ;;
         ls)
             if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W '-v -vv --collection --language --lang --extension --ext' -- "${word}"))
+                COMPREPLY=($(compgen -W '-v -vv --collection --language --extension' -- "${word}"))
             fi
             ;;
         mkcd)
@@ -48,7 +48,7 @@ function _daily-coding._bash_complete
             ;;
         stats)
             if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W '-v --workspace -vv --language --lang -vvv --extension --ext -vvvv --collection -vvvvv --file -vvvvvv --workspace-collection' -- "${word}"))
+                COMPREPLY=($(compgen -W '-v --workspace -vv --language -vvv --extension -vvvv --collection -vvvvv --file -vvvvvv --workspace-collection' -- "${word}"))
             fi
             ;;
         *)

@@ -72,10 +72,10 @@ function _daily-coding.help
             ${name} ls --collection
                 コレクションの一覧を表示します.
 
-            ${name} ls --language|--lang
+            ${name} ls --language
                 言語の一覧を表示します.
 
-            ${name} ls --extension|--ext
+            ${name} ls --extension
                 拡張子の一覧を表示します.
 
             ${name} mkcd COLLECTION
@@ -93,8 +93,8 @@ function _daily-coding.help
 
             ${name} stats
             ${name} stats -v|--workspace
-            ${name} stats -vv|--language|--lang
-            ${name} stats -vvv|--extension|--ext
+            ${name} stats -vv|--language
+            ${name} stats -vvv|--extension
             ${name} stats -vvvv|--collection
             ${name} stats -vvvvv|--file
             ${name} stats -vvvvvv|--workspace-collection

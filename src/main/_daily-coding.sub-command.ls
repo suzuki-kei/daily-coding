@@ -23,11 +23,11 @@ function _daily-coding.ls
             _daily-coding.ls_by_column 'collection'
             return 0
             ;;
-        --language | --lang)
+        --language)
             _daily-coding.ls_by_column 'language'
             return 0
             ;;
-        --extension | --ext)
+        --extension)
             _daily-coding.ls_by_column 'extension'
             return 0
             ;;
