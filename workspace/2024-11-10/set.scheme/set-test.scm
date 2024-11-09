@@ -1,0 +1,93 @@
+(use gauche.test)
+(load "set")
+
+(define main
+    (lambda (_)
+        (test-start "set")
+        (test-include?)
+        (test-set?)
+        (test-subset?)
+        (test-list->set)
+        (test-union)
+        (test-difference)
+        (test-intersection)
+        (test-end)))
+
+(define test-include?
+    (lambda ()
+        (test-section "include?")
+        (test* "#1" #f (include? 'a '()))
+        (test* "#2" #t (include? 'a '(a)))
+        (test* "#3" #f (include? 'b '(a)))
+        (test* "#4" #t (include? 'a '(a b)))
+        (test* "#5" #t (include? 'b '(a b)))
+        (test* "#6" #f (include? 'c '(a b)))
+        (test* "#7" #t (include? 'a '(a b c)))
+        (test* "#8" #t (include? 'b '(a b c)))
+        (test* "#9" #t (include? 'c '(a b c)))
+        (test* "#10" #f (include? 'd '(a b c)))))
+
+(define test-set?
+    (lambda ()
+        (test-section "set?")
+        (test* "#1" #t (set? '()))
+        (test* "#2" #t (set? '(a)))
+        (test* "#3" #t (set? '(a b)))
+        (test* "#4" #f (set? '(a a)))
+        (test* "#5" #t (set? '(a b c)))
+        (test* "#6" #f (set? '(a b a)))
+        (test* "#7" #f (set? '(a a c)))
+        (test* "#8" #f (set? '(a b b)))))
+
+(define test-subset?
+    (lambda ()
+        (test-section "subset?")
+        (test* "#1" #t (subset? '() '()))
+        (test* "#2" #t (subset? '() '(a)))
+        (test* "#3" #f (subset? '(a) '()))
+        (test* "#4" #t (subset? '(a) '(a)))
+        (test* "#5" #t (subset? '(a b c) '(a b c)))
+        (test* "#6" #t (subset? '(b c d) '(a b c d e)))
+        (test* "#7" #f (subset? '(a b c) '(b c d)))))
+
+(define test-list->set
+    (lambda ()
+        (test-section "list->set")
+        (test* "#1" '() (list->set '()) set-equal?)
+        (test* "#2" '(a) (list->set '(a)) set-equal?)
+        (test* "#3" '(a) (list->set '(a a)) set-equal?)
+        (test* "#4" '(a b) (list->set '(a b)) set-equal?)
+        (test* "#5" '(a b c) (list->set '(a b c)) set-equal?)
+        (test* "#6" '(a b) (list->set '(a b a)) set-equal?)
+        (test* "#7" '(b c) (list->set '(b b c)) set-equal?)
+        (test* "#8" '(a) (list->set '(a a a)) set-equal?)))
+
+(define test-union
+    (lambda ()
+        (test-section "union")
+        (test* "#1" '() (union '() '()) set-equal?)
+        (test* "#2" '(a) (union '() '(a)) set-equal?)
+        (test* "#3" '(a) (union '(a) '()) set-equal?)
+        (test* "#4" '(a) (union '(a) '(a)) set-equal?)
+        (test* "#5" '(a b) (union '(a) '(b)) set-equal?)
+        (test* "#6" '(a b c d) (union '(a c) '(b d)) set-equal?)
+        (test* "#7" '(a b c d) (union '(a b c) '(b c d)) set-equal?)))
+
+(define test-difference
+    (lambda ()
+        (test-section "difference")
+        (test* "#1" '() (difference '() '()) set-equal?)
+        (test* "#2" '() (difference '() '(a)) set-equal?)
+        (test* "#3" '(a) (difference '(a) '()) set-equal?)
+        (test* "#4" '() (difference '(a) '(a)) set-equal?)
+        (test* "#5" '(a c e) (difference '(a b c d e) '(b d)) set-equal?)))
+
+(define test-intersection
+    (lambda ()
+        (test-section "intersection")
+        (test* "#1" '() (intersection '() '()) set-equal?)
+        (test* "#2" '() (intersection '(a) '()) set-equal?)
+        (test* "#3" '() (intersection '() '(a)) set-equal?)
+        (test* "#4" '(a) (intersection '(a) '(a)) set-equal?)
+        (test* "#5" '(b c) (intersection '(a b c) '(b c d)) set-equal?)))
+
