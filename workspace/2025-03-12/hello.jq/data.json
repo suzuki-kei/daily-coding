@@ -1,0 +1,29 @@
+{
+    "data": [
+        {"hour": 0,  "count": 10},
+        {"hour": 1,  "count": 20},
+        {"hour": 2,  "count": 30},
+        {"hour": 3,  "count": 40},
+        {"hour": 4,  "count": 50},
+        {"hour": 5,  "count": 60},
+        {"hour": 6,  "count": 70},
+        {"hour": 7,  "count": 80},
+        {"hour": 8,  "count": 90},
+        {"hour": 9,  "count": 100},
+        {"hour": 10, "count": 110},
+        {"hour": 11, "count": 120},
+        {"hour": 12, "count": 130},
+        {"hour": 13, "count": 120},
+        {"hour": 14, "count": 110},
+        {"hour": 15, "count": 100},
+        {"hour": 16, "count": 90},
+        {"hour": 17, "count": 80},
+        {"hour": 18, "count": 70},
+        {"hour": 19, "count": 60},
+        {"hour": 20, "count": 50},
+        {"hour": 21, "count": 40},
+        {"hour": 22, "count": 30},
+        {"hour": 23, "count": 20}
+    ]
+}
+
