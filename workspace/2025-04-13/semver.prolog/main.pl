@@ -29,7 +29,7 @@ demonstration3 :-
     format("==== bump version~n"),
     semver(Version, 1, 2, 3),
     findall(commit(Type, Message), commit(Type, Message), Commits),
-    semver_bump_version(Version, Commits, BumpedVersion),
+    semver_bump_versions(Version, Commits, BumpedVersion),
     format("semver_bump_version(~w, ~w, ~w).~n", [Version, Commits, BumpedVersion]).
 
 demonstration4 :-

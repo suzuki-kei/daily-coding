@@ -10,11 +10,11 @@ semver_changes(Version, [Commit|Commits], [Change|Changes]) :-
     change(Change, Commit, BumpedVersion),
     semver_changes(BumpedVersion, Commits, Changes).
 
-semver_bump_version(semver(Major, Minor, Patch), [], semver(Major, Minor, Patch)) :-
+semver_bump_versions(semver(Major, Minor, Patch), [], semver(Major, Minor, Patch)) :-
     true.
-semver_bump_version(Version, [Commit|Commits], BumpedVersion) :-
+semver_bump_versions(Version, [Commit|Commits], BumpedVersion) :-
     semver_bump_version(Version, Commit, NextVersion),
-    semver_bump_version(NextVersion, Commits, BumpedVersion).
+    semver_bump_versions(NextVersion, Commits, BumpedVersion).
 
 semver_bump_version(Version, commit(incompatible_change, _), BumpedVersion) :-
     semver_bump_major(Version, BumpedVersion).
