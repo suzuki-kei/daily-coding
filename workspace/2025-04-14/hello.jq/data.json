@@ -1,0 +1,29 @@
+{
+    "data": [
+        {"hour": 0,  "requests": 10},
+        {"hour": 1,  "requests": 20},
+        {"hour": 2,  "requests": 30},
+        {"hour": 3,  "requests": 40},
+        {"hour": 4,  "requests": 50},
+        {"hour": 5,  "requests": 60},
+        {"hour": 6,  "requests": 70},
+        {"hour": 7,  "requests": 80},
+        {"hour": 8,  "requests": 90},
+        {"hour": 9,  "requests": 100},
+        {"hour": 10, "requests": 110},
+        {"hour": 11, "requests": 120},
+        {"hour": 12, "requests": 130},
+        {"hour": 13, "requests": 120},
+        {"hour": 14, "requests": 110},
+        {"hour": 15, "requests": 100},
+        {"hour": 16, "requests": 90},
+        {"hour": 17, "requests": 80},
+        {"hour": 18, "requests": 70},
+        {"hour": 19, "requests": 60},
+        {"hour": 20, "requests": 50},
+        {"hour": 21, "requests": 40},
+        {"hour": 22, "requests": 30},
+        {"hour": 23, "requests": 20}
+    ]
+}
+
