@@ -5,11 +5,15 @@ OUT := main.js
 .DEFAULT_GOAL := all
 
 .PHONY: all
-all: build run clean
+all: type-check build run clean
+
+.PHONY: type-check
+type-check:
+	@tsc --noEmit
 
 .PHONY: build
 build:
-	@tsc --lib dom,es2015 --target es2015 --outFile $(OUT) $(SRC)
+	@tsc
 
 .PHONY: run
 run:

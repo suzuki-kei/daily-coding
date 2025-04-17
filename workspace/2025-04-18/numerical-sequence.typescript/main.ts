@@ -17,7 +17,7 @@ function print_sequence<T>(description: string, f: (n: number) => T, min: number
 
 function sequence(min: number, max: number): number[]
 {
-    return [...Array(max - min + 1).keys()]
+    return [...Array(max - min + 1).keys()].map(x => x + min)
 }
 
 function factorial(n: number): number
