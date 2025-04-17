@@ -1,5 +1,5 @@
 
-SRC := *.c
+SRC := $(wildcard *.c)
 OUT := a.out
 
 .DEFAULT_GOAL := all
