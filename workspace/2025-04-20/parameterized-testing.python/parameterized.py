@@ -1,7 +1,7 @@
 import inspect
 
 
-def expand(tuples):
+def expand(arguments_tuples):
 
     def define_expanded_methods(parameterized_method):
         f_locals = inspect.currentframe().f_back.f_locals
@@ -15,12 +15,12 @@ def expand(tuples):
 
     def make_expanded_methods(parameterized_method):
         return [
-            make_expanded_method(parameterized_method, tuple, index)
-            for index, tuple in enumerate(tuples)
+            make_expanded_method(parameterized_method, arguments_tuple, index)
+            for index, arguments_tuple in enumerate(arguments_tuples)
         ]
 
-    def make_expanded_method(parameterized_method, tuple, index):
-        expanded_method = lambda self: parameterized_method(self, *tuple)
+    def make_expanded_method(parameterized_method, arguments_tuple, index):
+        expanded_method = lambda self: parameterized_method(self, *arguments_tuple)
         expanded_method.__name__ = f"{parameterized_method.__name__}_{index + 1}"
         return expanded_method
 
