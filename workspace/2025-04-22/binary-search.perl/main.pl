@@ -37,9 +37,9 @@ sub binary_search
     return -1 if $lower > $upper;
 
     my $center = int(($lower + $upper) / 2);
-    return $center if $target == @$values_ref[$center];
+    return $center if $target == $values_ref->[$center];
 
-    if ($target < @$values_ref[$center]) {
+    if ($target < $values_ref->[$center]) {
         return binary_search($values_ref, $target, $lower, $center - 1);
     } else {
         return binary_search($values_ref, $target, $center + 1, $upper);
