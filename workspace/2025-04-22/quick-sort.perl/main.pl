@@ -56,7 +56,7 @@ sub quick_sort
             $decrement_index--;
         }
         if ($increment_index <= $decrement_index) {
-            swap($values_ref->[$increment_index++], $values_ref->[$decrement_index--]);
+            swap($values_ref, $increment_index++, $decrement_index--);
         }
     }
 
@@ -76,7 +76,8 @@ sub random_select_range
 
 sub swap
 {
-    ($_[0], $_[1]) = ($_[1], $_[0]);
+    my ($values_ref, $index1, $index2) = @_;
+    ($values_ref->[$index1], $values_ref->[$index2]) = ($values_ref->[$index2], $values_ref->[$index1]);
 }
 
 main();
