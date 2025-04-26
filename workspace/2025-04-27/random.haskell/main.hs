@@ -1,4 +1,4 @@
-import Data.List (intersperse)
+import Data.List (intercalate)
 import System.Random (StdGen)
 import System.Random (getStdGen)
 import System.Random (randomR)
@@ -14,7 +14,7 @@ toString :: Int -> String
 toString = printf "%d"
 
 listToString :: String -> [Int] -> String
-listToString separator xs = foldl (++) "" $ intersperse separator $ map toString xs
+listToString separator xs = intercalate separator $ map toString xs
 
 generateRandomValues :: Int -> StdGen -> ([Int], StdGen)
 generateRandomValues n gen = accumulate [] n gen
