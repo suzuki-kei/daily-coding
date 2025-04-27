@@ -10,7 +10,7 @@ random_values(Xs, N) :-
 random_values(Xs, Xs, 0) :-
     true.
 random_values(Xs, Accumulated, N) :-
-    is(NextN, N - 1),
+    NextN is N - 1,
     random_between(10, 99, X),
     random_values(Xs, [X|Accumulated], NextN).
 
