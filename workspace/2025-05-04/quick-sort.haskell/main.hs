@@ -56,12 +56,10 @@ randomSelect xs gen = (x, gen')
         x = xs !! n
 
 partition :: (Ord a) => a -> [a] -> ([a], [a], [a])
-partition pivot xs = accumulate pivot xs [] [] []
+partition pivot xs = foldl accumulate ([], [], []) xs
     where
-        accumulate pivot [] lessXs equalXs greaterXs =
-            (lessXs, equalXs, greaterXs)
-        accumulate pivot (x : xs) lessXs equalXs greaterXs
-            | x  < pivot = accumulate pivot xs (x : lessXs) equalXs greaterXs
-            | x == pivot = accumulate pivot xs lessXs (x : equalXs) greaterXs
-            | x  > pivot = accumulate pivot xs lessXs equalXs (x : greaterXs)
+        accumulate (lessXs, equalXs, greaterXs) x
+            | x  < pivot = ((x : lessXs), equalXs, greaterXs)
+            | x == pivot = (lessXs, (x : equalXs), greaterXs)
+            | x  > pivot = (lessXs, equalXs, (x : greaterXs))
 
