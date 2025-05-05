@@ -23,8 +23,8 @@ end
 def visit(dag, key, visited_keys, sorted_nodes)
     unless visited_keys.include?(key)
         visited_keys << key
-        dag[key].each do |key|
-            visit(dag, key, visited_keys, sorted_nodes)
+        dag.fetch(key, []).each do |child_key|
+            visit(dag, child_key, visited_keys, sorted_nodes)
         end
         sorted_nodes << key
     end
