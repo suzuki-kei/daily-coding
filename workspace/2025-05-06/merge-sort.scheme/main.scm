@@ -78,12 +78,19 @@
             ((null? (cdr xs))
                 (list (car xs)))
             (else
-                (merge
+                (receive
+                    (left-xs right-xs)
+                    (split xs)
                     (merge
-                        (list (car xs))
-                        (list (cadr xs)))
-                    (merge-sort
-                        (cddr xs)))))))
+                        (merge-sort left-xs)
+                        (merge-sort right-xs)))))))
+
+(define split
+    (lambda (xs)
+        (let ((n (quotient (length xs) 2)))
+            (values
+                (take xs n)
+                (drop xs n)))))
 
 (define merge
     (lambda (xs ys)
