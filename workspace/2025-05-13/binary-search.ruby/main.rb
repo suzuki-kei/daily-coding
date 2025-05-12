@@ -13,7 +13,7 @@ def main
 end
 
 def generate_random_ascending_values(n)
-    n.times.reduce([]) do |values|
+    n.times.reduce([]) do |values, _|
         offset = values[-1] || 9
         values << rand(1..5) + offset
     end
