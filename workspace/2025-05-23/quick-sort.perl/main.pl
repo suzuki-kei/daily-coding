@@ -76,5 +76,7 @@ sub swap
     ($values_ref->[$index1], $values_ref->[$index2]) = ($values_ref->[$index2], $values_ref->[$index1]);
 }
 
-main();
+if (__FILE__ eq $0) {
+    main();
+}
 
