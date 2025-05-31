@@ -1,0 +1,22 @@
+import Data.Char (isSpace)
+
+main :: IO ()
+main = getContents >>= print . wc
+
+wc :: String -> (Int, Int, Int)
+wc s =
+    let
+        (inWord, nLines, nWords, nChars) = foldl folder (False, 0, 0, 0) s
+    in
+        (nLines, nWords, nChars)
+    where
+        folder (inWord, nLines, nWords, nChars) c
+            | isNewLine c = (False, nLines + 1, nWords, nChars + 1)
+            | isSpace c   = (False, nLines, nWords, nChars + 1)
+            | otherwise   =
+                if inWord then
+                    (True, nLines, nWords, nChars + 1)
+                else
+                    (True, nLines, nWords + 1, nChars + 1)
+        isNewLine c = c == '\n'
+
