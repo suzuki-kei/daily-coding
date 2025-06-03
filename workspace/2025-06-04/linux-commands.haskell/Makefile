@@ -1,17 +1,7 @@
 
-.PHONY: cat
-cat:
-	@runghc cat.hs
+GOALS := cat tac rev wc
 
-.PHONY: tac
-tac:
-	@runghc tac.hs
-
-.PHONY: rev
-rev:
-	@runghc rev.hs
-
-.PHONY: wc
-wc:
-	@runghc wc.hs
+.PHONY: $(GOALS)
+$(GOALS):
+	@runghc $@.hs
 
