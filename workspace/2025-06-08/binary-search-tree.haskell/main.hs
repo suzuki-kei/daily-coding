@@ -17,8 +17,7 @@ allTestList = TestList [
     popTestList,
     popNTestList,
     showTreeTestList,
-    fmapTreeTestList,
-    popTestList]
+    fmapTreeTestList]
 
 data Tree a = EmptyTree | Node {nodeValue :: a,
                                 nodeLeft  :: Tree a,
