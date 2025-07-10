@@ -29,7 +29,7 @@ function generate_random_ascending_values(n: number): number[]
 
 function getFromArray<T>(values: T[], index: number, defaultValue?: T): T
 {
-    const value = values.at(index) || defaultValue
+    const value = values.at(index) ?? defaultValue
 
     if (value === undefined)
         throw new Error(`values.at(${index}) is undefined.`)
