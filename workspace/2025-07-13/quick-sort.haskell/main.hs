@@ -30,7 +30,7 @@ printList xs
 isSorted :: Ord a => [a] -> Bool
 isSorted [] = True
 isSorted (x : []) = True
-isSorted (x1 : x2 : xs) = and [x1 <= x2, isSorted (x2 : xs)]
+isSorted (x1 : x2 : xs) = x1 <= x2 && isSorted (x2 : xs)
 
 listToString :: ToString a => [a] -> String
 listToString xs = intercalate " " $ map toString xs
