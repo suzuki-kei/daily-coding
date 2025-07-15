@@ -21,7 +21,7 @@
     else
         dup fizz_buzz
         3 pick 3 pick > if s"  " s+ endif type
-        1 + print_fizz_buzz_values_range
+        1 + recurse
     endif
 ;
 

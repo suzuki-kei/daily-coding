@@ -4,7 +4,7 @@
         drop drop
     else
         rot rot tuck + rot
-        1 - _fibonacci
+        1 - recurse
     endif
 ;
 
@@ -17,7 +17,7 @@
         drop drop
     else
         dup fibonacci .
-        1 + print_fibonacci_numbers_range
+        1 + recurse
     endif
 ;
 

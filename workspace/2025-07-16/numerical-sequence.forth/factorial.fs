@@ -4,7 +4,7 @@
         drop
     else
         tuck * swap
-        1 - _factorial
+        1 - recurse
     endif
 ;
 
@@ -17,7 +17,7 @@
         drop drop
     else
         dup factorial .
-        1 + print_factorials_range
+        1 + recurse
     endif
 ;
 
