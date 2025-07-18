@@ -13,7 +13,7 @@ def main() -> None:
     print(" ".join(generate_fizz_buzz_values(100)))
 
 
-def generate_fizz_buzz_values(n: Optional[int]) -> Iterator[str]:
+def generate_fizz_buzz_values(n: Optional[int] = None) -> Iterator[str]:
     tuples = zip(cycle([*repeat(None, 14), "FizzBuzz"]),
                  cycle([*repeat(None,  4), "Buzz"]),
                  cycle([*repeat(None,  2), "Fizz"]),
