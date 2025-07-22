@@ -1,4 +1,4 @@
 
 main :: IO ()
-main = getContents >>= putStr
+main = interact id
 
