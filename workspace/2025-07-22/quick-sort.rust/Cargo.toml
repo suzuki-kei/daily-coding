@@ -1,0 +1,12 @@
+[package]
+name = "quick-sort"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+rand = "0.9.2"
+
+[[bin]]
+name = "quick-sort"
+path = "main.rs"
+
