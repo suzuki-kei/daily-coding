@@ -1,0 +1,176 @@
+{- cabal:
+    build-depends: base, HUnit
+-}
+
+import Test.HUnit ((~:))
+import Test.HUnit ((~=?))
+import Test.HUnit (Test (TestList))
+import Test.HUnit (Test)
+import Test.HUnit (runTestTTAndExit)
+import Test.HUnit (test)
+import Text.Printf (printf)
+
+main :: IO ()
+main = runTestTTAndExit allTests
+
+infix 1 ==>
+(==>) :: a -> b -> (a, b)
+(==>) a b = (a, b)
+
+testsFromActualExpectedPairs :: (Eq a, Show a) => String -> [(a, a)] -> Test
+testsFromActualExpectedPairs label pairs =
+    let
+        ns     = [1..] :: [Int]
+        labels = map (\n -> printf "%s #%d" label n) ns
+        zipper = (\label (actual, expected) -> label ~: actual ~=? expected)
+        tests  = zipWith zipper labels pairs
+    in
+        test tests
+
+testsFromArgumentExpectedPairs ::
+    (Eq b, Show b) => String -> (a -> b) -> [(a, b)] -> Test
+testsFromArgumentExpectedPairs label f pairs =
+    let
+        mapper = (\(argument, expected) -> (f argument, expected))
+        pairs' = map mapper pairs
+    in
+        testsFromActualExpectedPairs label pairs'
+
+allTests = TestList [
+    fromValueTests,
+    fromValuesTests,
+    popMinTests]
+
+data Tree a = EmptyTree
+            | Node {nodeValue :: a,
+                    nodeLeft  :: Tree a,
+                    nodeRight :: Tree a}
+    deriving (Eq, Show)
+
+data NonEmptyTree a = NonEmptyTree {nonEmptyTreeValue :: a,
+                                    nonEmptyTreeLeft  :: Tree a,
+                                    nonEmptyTreeRight :: Tree a}
+    deriving (Eq, Show)
+
+parseNonEmptyTree :: Tree a -> Maybe (NonEmptyTree a)
+parseNonEmptyTree EmptyTree =
+    Nothing
+parseNonEmptyTree (Node value left right) =
+    Just (NonEmptyTree value left right)
+
+fromValue :: a -> Tree a
+fromValue x = Node x EmptyTree EmptyTree
+
+fromValueTests :: Test
+fromValueTests = testsFromArgumentExpectedPairs "fromValue" fromValue [
+    1 ==> Node 1 EmptyTree EmptyTree,
+    2 ==> Node 2 EmptyTree EmptyTree,
+    3 ==> Node 3 EmptyTree EmptyTree]
+
+fromValues :: Ord a => [a] -> Tree a
+fromValues xs = appends EmptyTree xs
+
+fromValuesTests :: Test
+fromValuesTests =
+    let
+        depth0Expected = EmptyTree
+        depth1Expected = Node 5 EmptyTree EmptyTree
+        depth2Expected = Node 5 (Node 3 EmptyTree EmptyTree)
+                                (Node 7 EmptyTree EmptyTree)
+        depth3Expected = Node 5 (Node 3 (Node 1 EmptyTree EmptyTree)
+                                        (Node 4 EmptyTree EmptyTree))
+                                (Node 7 (Node 6 EmptyTree EmptyTree)
+                                        (Node 9 EmptyTree EmptyTree))
+    in
+        testsFromArgumentExpectedPairs "fromValues" fromValues [
+            -- depth=0
+            ([] :: [Int]) ==> depth0Expected,
+
+            -- depth=1
+            [5] ==> depth1Expected,
+
+            -- depth=2
+            [5, 3, 7] ==> depth2Expected,
+            [5, 7, 3] ==> depth2Expected,
+
+            -- depth=3
+            [5, 3, 7, 1, 4, 6, 9] ==> depth3Expected,
+            [5, 3, 7, 1, 4, 9, 6] ==> depth3Expected,
+            [5, 3, 7, 1, 6, 4, 9] ==> depth3Expected,
+            [5, 3, 7, 1, 6, 9, 4] ==> depth3Expected,
+            [5, 3, 7, 1, 9, 4, 6] ==> depth3Expected,
+            [5, 3, 7, 1, 9, 6, 4] ==> depth3Expected,
+            [5, 3, 7, 4, 1, 6, 9] ==> depth3Expected,
+            [5, 3, 7, 4, 1, 9, 6] ==> depth3Expected,
+            [5, 3, 7, 4, 6, 1, 9] ==> depth3Expected,
+            [5, 3, 7, 4, 6, 9, 1] ==> depth3Expected,
+            [5, 3, 7, 4, 9, 1, 6] ==> depth3Expected,
+            [5, 3, 7, 4, 9, 6, 1] ==> depth3Expected,
+            [5, 3, 7, 6, 1, 4, 9] ==> depth3Expected,
+            [5, 3, 7, 6, 1, 9, 4] ==> depth3Expected,
+            [5, 3, 7, 6, 4, 1, 9] ==> depth3Expected,
+            [5, 3, 7, 6, 4, 9, 1] ==> depth3Expected,
+            [5, 3, 7, 6, 9, 1, 4] ==> depth3Expected,
+            [5, 3, 7, 6, 9, 4, 1] ==> depth3Expected,
+            [5, 3, 7, 9, 1, 4, 6] ==> depth3Expected,
+            [5, 3, 7, 9, 1, 6, 4] ==> depth3Expected,
+            [5, 3, 7, 9, 4, 1, 6] ==> depth3Expected,
+            [5, 3, 7, 9, 4, 6, 1] ==> depth3Expected,
+            [5, 3, 7, 9, 6, 4, 1] ==> depth3Expected,
+            [5, 3, 7, 9, 6, 1, 4] ==> depth3Expected]
+
+append :: Ord a => Tree a -> a -> Tree a
+append EmptyTree x = fromValue x
+append (Node value left right) x
+    | x < value = Node value (append left x) right
+    | otherwise = Node value left (append right x)
+
+appends :: Ord a => Tree a -> [a] -> Tree a
+appends tree xs = foldl append tree xs
+
+popMin :: NonEmptyTree a -> (a, Tree a)
+popMin (NonEmptyTree value left right) = popMin' (Node value left right)
+    where
+        popMin' (Node value EmptyTree right) =
+            (value, right)
+        popMin' (Node value left right) =
+            let
+                (minValue, newLeft) = popMin' left
+            in
+                (minValue, Node value newLeft right)
+
+popMinTests = testsFromArgumentExpectedPairs "popMin" popMin [
+        NonEmptyTree 5 (Node 3 (Node 1 EmptyTree EmptyTree)
+                               (Node 4 EmptyTree EmptyTree))
+                       (Node 7 (Node 6 EmptyTree EmptyTree)
+                               (Node 9 EmptyTree EmptyTree))
+            ==> (1, Node 5 (Node 3 EmptyTree
+                                   (Node 4 EmptyTree EmptyTree))
+                           (Node 7 (Node 6 EmptyTree EmptyTree)
+                                   (Node 9 EmptyTree EmptyTree))),
+        NonEmptyTree 5 (Node 3 EmptyTree
+                               (Node 4 EmptyTree EmptyTree))
+                       (Node 7 (Node 6 EmptyTree EmptyTree)
+                               (Node 9 EmptyTree EmptyTree))
+            ==> (3, Node 5 (Node 4 EmptyTree EmptyTree)
+                           (Node 7 (Node 6 EmptyTree EmptyTree)
+                                   (Node 9 EmptyTree EmptyTree))),
+        NonEmptyTree 5 (Node 4 EmptyTree EmptyTree)
+                       (Node 7 (Node 6 EmptyTree EmptyTree)
+                               (Node 9 EmptyTree EmptyTree))
+            ==> (4, Node 5 EmptyTree
+                           (Node 7 (Node 6 EmptyTree EmptyTree)
+                                   (Node 9 EmptyTree EmptyTree))),
+        NonEmptyTree 5 EmptyTree
+                       (Node 7 (Node 6 EmptyTree EmptyTree)
+                               (Node 9 EmptyTree EmptyTree))
+            ==> (5, Node 7 (Node 6 EmptyTree EmptyTree)
+                           (Node 9 EmptyTree EmptyTree)),
+        NonEmptyTree 7 (Node 6 EmptyTree EmptyTree)
+                       (Node 9 EmptyTree EmptyTree)
+            ==> (6, Node 7 EmptyTree (Node 9 EmptyTree EmptyTree)),
+        NonEmptyTree 7 EmptyTree (Node 9 EmptyTree EmptyTree)
+            ==> (7, Node 9 EmptyTree EmptyTree),
+        NonEmptyTree 9 EmptyTree EmptyTree
+            ==> (9, EmptyTree)]
+
