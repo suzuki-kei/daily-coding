@@ -174,3 +174,9 @@ popMinTests = testsFromArgumentExpectedPairs "popMin" popMin [
         NonEmptyTree 9 EmptyTree EmptyTree
             ==> (9, EmptyTree)]
 
+instance Functor Tree where
+    fmap f EmptyTree =
+        EmptyTree
+    fmap f (Node value left right) =
+        Node (f value) (fmap f left) (fmap f right)
+
