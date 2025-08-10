@@ -76,6 +76,9 @@ int is_sorted(const int *array, int size)
 
 void quick_sort(int *array, int size)
 {
+    if (size <= 1)
+        return;
+
     quick_sort_range(array, 0, size - 1);
 }
 
