@@ -15,7 +15,7 @@ void free_strings(char ***strings, int n);
 void print_strings(char **strings, int n);
 int is_sorted(char **strings, int n);
 void american_flag_sort(char **strings, int n);
-void american_flag_sort_index(char **strings, int n, int index, int *lengths, char **temporary_strings);
+void american_flag_sort_steps(char **strings, int n, int radix, int *lengths, char **temporary_strings);
 
 int main(void)
 {
@@ -152,7 +152,7 @@ void american_flag_sort(char **strings, int n)
     if ((temporary_strings = malloc(sizeof(char *) * n)) == NULL)
         goto FAILED;
 
-    american_flag_sort_index(strings, n, 0, lengths, temporary_strings);
+    american_flag_sort_steps(strings, n, 0, lengths, temporary_strings);
 
     free(lengths);
     free(temporary_strings);
@@ -165,7 +165,7 @@ FAILED:
     exit(1);
 }
 
-void american_flag_sort_index(char **strings, int n, int radix, int *lengths, char **temporary_strings)
+void american_flag_sort_steps(char **strings, int n, int radix, int *lengths, char **temporary_strings)
 {
     int i = 0;
     int counts[RADIX] = {};
@@ -201,7 +201,7 @@ void american_flag_sort_index(char **strings, int n, int radix, int *lengths, ch
     {
         char **substrings = &strings[offsets[i] - counts[i]];
         int substrings_length = counts[i];
-        american_flag_sort_index(substrings, substrings_length, radix + 1, lengths, temporary_strings);
+        american_flag_sort_steps(substrings, substrings_length, radix + 1, lengths, temporary_strings);
     }
 }
 
