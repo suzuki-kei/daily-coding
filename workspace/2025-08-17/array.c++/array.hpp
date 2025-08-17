@@ -86,6 +86,11 @@ class Array
             allocator_traits::deallocate(m_allocator, m_memory, m_capacity);
         }
 
+        Array &operator=(const Array &array)
+        {
+            Array(&array).swap(*this);
+        }
+
         void swap(Array &array)
         {
             std::swap(m_size, array.m_size);
