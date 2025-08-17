@@ -12,7 +12,7 @@ int main(void)
 
 void demonstration(void)
 {
-    int i;
+    unsigned int i;
 
     for (i = 0; i <= 32; i++)
         printf("bit_count(%2u) = %d\n", i, bit_count(i));
