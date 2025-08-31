@@ -1,5 +1,5 @@
 
-.PHON: run
+.PHONY: run
 run:
 	@./yes.b
 
