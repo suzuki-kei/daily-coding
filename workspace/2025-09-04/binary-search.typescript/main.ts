@@ -14,14 +14,6 @@ function main(): void
     }
 }
 
-function checkedArrayAt<T>(values: T[], index: number): T
-{
-    if (index < 0)
-        index = values.length + index
-
-    return values[index]
-}
-
 function generate_random_ascending_values(n: number): number[]
 {
     let value = 9
@@ -36,12 +28,22 @@ function generate_random_ascending_values(n: number): number[]
     return values
 }
 
-function binary_search<T>(values: T[], target: T): number
+function checkedArrayAt<T>(values: T[], index: number): T
+{
+    const value = values.at(index)
+
+    if (value === undefined)
+        throw new Error(`values.at(${index}) is undefined.`)
+
+    return value
+}
+
+function binary_search(values: number[], target: number): number
 {
     return binary_search_range(values, target, 0, values.length - 1)
 }
 
-function binary_search_range<T>(values: T[], target: T, lower: number, upper: number): number
+function binary_search_range(values: number[], target: number, lower: number, upper: number): number
 {
     if (lower > upper)
         return -1
