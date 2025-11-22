@@ -7,6 +7,9 @@ from typing import Any
 from typing import Iterable
 from typing import Iterator
 from typing import Optional
+from typing import TypeVar
+
+T = TypeVar("T")
 
 
 def main() -> None:
@@ -24,10 +27,10 @@ def generate_fizz_buzz_values(n: Optional[int] = None) -> Iterator[str]:
     yield from sliced
 
 
-def first_not_none(iterable: Iterable[str | None]) -> Optional[str]:
+def first_not_none(iterable: Iterable[Optional[T]]) -> T:
     is_none = lambda x: x is None
     dropped = dropwhile(is_none, iterable)
-    return next(dropped)
+    return next(dropped)  # type: ignore [return-value]
 
 
 if __name__ == "__main__":
