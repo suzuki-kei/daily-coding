@@ -7,9 +7,8 @@ function _daily-coding._bash_complete
     case "${COMP_WORDS[1]}" in
         cd)
             if [[ ${COMP_CWORD} -le 2 ]]; then
-                declare -r workspaces="$(_daily-coding.workspaces)"
                 declare -r collections="$(_daily-coding.collections)"
-                COMPREPLY=($(compgen -W "--root ${workspaces} ${collections}" -- "${word}"))
+                COMPREPLY=($(compgen -W "--root ${collections}" -- "${word}"))
             fi
             ;;
         commit)
