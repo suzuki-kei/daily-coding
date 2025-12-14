@@ -9,7 +9,7 @@ function _daily-coding.cd
 
     # cd --root
     if [[ "${1:-}" = '--root' ]]; then
-        cd "$(_daily-coding.root_path)" && pwd
+        cd -- "$(_daily-coding.root_path)" && pwd
         return 0
     fi
 
@@ -32,9 +32,9 @@ function _daily-coding.cd
         fi
 
         if [[ ${n} -eq 0 ]]; then
-            mkdir -p "${target_workspace_path}"
+            mkdir -p -- "${target_workspace_path}"
         fi
-        cd "${target_workspace_path}" && pwd
+        cd -- "${target_workspace_path}" && pwd
         return 0
     fi
 
@@ -44,9 +44,9 @@ function _daily-coding.cd
         declare -r workspace_path="$(_daily-coding.root_workspace_path)/${workspace_name}"
 
         if [[ "${workspace_name}" = "$(date '+%Y-%m-%d')" ]]; then
-            mkdir -p "${workspace_path}"
+            mkdir -p -- "${workspace_path}"
         fi
-        cd "${workspace_path}" && pwd
+        cd -- "${workspace_path}" && pwd
         return 0
     fi
 
@@ -63,7 +63,7 @@ function _daily-coding.cd
             return 1
         fi
 
-        cd "$(_daily-coding.root_workspace_path)/${target_collection_path}" && pwd
+        cd -- "$(_daily-coding.root_workspace_path)/${target_collection_path}" && pwd
         return 0
     fi
 

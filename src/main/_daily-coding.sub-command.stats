@@ -11,7 +11,7 @@ function _daily-coding.stats
         '')
             # カレントシェルの作業ディレクトリを変更したくないのでサブシェルで実行する.
             (
-                cd "$(_daily-coding.root_workspace_path)"
+                cd -- "$(_daily-coding.root_workspace_path)"
 
                 for path in *
                 do

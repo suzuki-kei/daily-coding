@@ -14,7 +14,7 @@ function _daily-coding.commit
         return 1
     fi
 
-    declare -r collection_path="$(realpath "$(pwd)" --relative-to "${root_workspace_path}")"
+    declare -r collection_path="$(realpath --relative-to="${root_workspace_path}" -- "$(pwd)")"
     declare -r collection_name="$(echo "${collection_path}" | cut -d/ -f2)"
     declare -r option="${1:-}"
 

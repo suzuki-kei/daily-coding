@@ -13,7 +13,7 @@ function _daily-coding.escape_regexp
 #
 function _daily-coding.root_path
 {
-    (cd "$(dirname "${BASH_SOURCE[0]}")"/../.. && pwd)
+    (cd -- "$(dirname -- "${BASH_SOURCE[0]}")"/../.. && pwd)
 }
 
 #
@@ -33,7 +33,7 @@ function _daily-coding.to_workspace_path
     declare -r path="${1:-$(pwd)}"
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
-    if [[ "$(realpath "${path}" --relative-to "${root_workspace_path}")" != ../* ]]; then
+    if [[ "$(realpath --relative-to="${root_workspace_path}" -- "${path}")" != ../* ]]; then
         echo "${root_workspace_path}/$(echo "${path#${root_workspace_path}/}" | cut -d/ -f1)"
     else
         echo ''
@@ -58,11 +58,11 @@ function _daily-coding.to_collection_path
 {
     declare -r path="${1:-$(pwd)}"
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
-    declare -r relative_path="$(realpath "${root_workspace_path}" -m --relative-to "${path}")"
+    declare -r relative_path="$(realpath -m --relative-to="${path}" -- "${root_workspace_path}")"
 
     if [[ "${relative_path}" =~ ^..(/..)+$ ]]; then
         declare -r workspace_collection_name="$(
-            realpath "${path}" -m --relative-base "${root_workspace_path}" | cut -d/ -f1,2)"
+            realpath -m --relative-base="${root_workspace_path}" -- "${path}" | cut -d/ -f1,2)"
         echo "${root_workspace_path}/${workspace_collection_name}"
     else
         echo ''
@@ -98,7 +98,7 @@ function _daily-coding.locate_file
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
     declare -r base_workspace_name="$(_daily-coding.to_workspace_name "$1")"
     declare -r base_collection_name="$(_daily-coding.to_collection_name "$1")"
-    declare -r relative_file_path="$(realpath "${1}" -m --relative-to "${base_collection_path}")"
+    declare -r relative_file_path="$(realpath -m --relative-to="${base_collection_path}" -- "${1}")"
 
     declare -r n=$2
     declare -r target_file_path="$(
@@ -111,7 +111,7 @@ function _daily-coding.locate_file
     if [[ ! -f "${target_file_path}" ]]; then
         echo ''
     else
-        echo "$(realpath "${target_file_path}" --relative-to "$(pwd)")"
+        echo "$(realpath --relative-to="$(pwd)" -- "${target_file_path}")"
     fi
 }
 
@@ -146,7 +146,7 @@ function _daily-coding.locate_collection
     if [[ ! -d "${target_collection_path}" ]]; then
         echo ''
     else
-        echo "$(realpath "${target_collection_path}" --relative-to "$(pwd)")"
+        echo "$(realpath --relative-to="$(pwd)" -- "${target_collection_path}")"
     fi
 }
 
@@ -183,14 +183,14 @@ function _daily-coding.locate_workspace
     if [[ "${target_workspace_path}" = '' ]]; then
         echo ''
     else
-        echo "$(realpath "${target_workspace_path}" --relative-to "$(pwd)")"
+        echo "$(realpath --relative-to="$(pwd)" -- "${target_workspace_path}")"
     fi
 }
 
 function _daily-coding.generate_jsonl
 {
     (
-        cd "$(_daily-coding.root_workspace_path)"
+        cd -- "$(_daily-coding.root_workspace_path)"
 
         while read lines path
         do

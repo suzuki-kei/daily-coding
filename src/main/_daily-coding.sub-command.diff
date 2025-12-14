@@ -59,7 +59,7 @@ function _daily-coding.diff_collection
     fi
 
     diff -qr \
-        "$(realpath "${base_collection_path}" --relative-to "$(pwd)")" \
-        "$(realpath "${target_collection_path}" --relative-to "$(pwd)")"
+        "$(realpath --relative-to="$(pwd)" -- "${base_collection_path}")" \
+        "$(realpath --relative-to="$(pwd)" -- "${target_collection_path}")"
 }
 
