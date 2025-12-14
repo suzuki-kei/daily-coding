@@ -91,16 +91,22 @@ function _daily-coding.help
                 カレントディレクトリがワークスペース外の場合は, 今日のワークスペースが基準となります.
                 GLOB によってコレクション名のパターンを指定できます.
 
-            ${name} stats
-            ${name} stats -v|--workspace
-            ${name} stats -vv|--language
-            ${name} stats -vvv|--extension
-            ${name} stats -vvvv|--collection
-            ${name} stats -vvvvv|--file
-            ${name} stats -vvvvvv|--workspace-collection
-                ソースコードの統計情報を表示します.
-                オプションを指定しない場合, ワークスペースごとのコード行数を高速に表示します.
-                オプションを指定する場合, 異なる軸で集計したソースコードの統計情報を表示します.
+            ${name} stats [OPTION]
+                ソースコードの統計情報 (ファイル数や行数など) を表示します.
+                OPTION で集計するときの軸を指定します.
+                OPTION を省略すると日別の行数を表示します.
+
+            ${name} stats -d|--daily|-w|--workspace
+                日ごとに集計した結果を表示します.
+
+            ${name} stats -m|--monthly
+                月ごとに集計した結果を表示します.
+
+            ${name} stats -y|--yearly
+                年ごとに集計した結果を表示します.
+
+            ${name} stats -l|--language
+                (年 x 言語) ごとに集計した結果を表示します.
 
         ENVIRONMENT
             DAILY_CODING_ROOT_WORKSPACE_PATH

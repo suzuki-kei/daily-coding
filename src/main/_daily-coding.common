@@ -208,8 +208,8 @@ function _daily-coding.generate_jsonl
                 declare extension="${path}"
             fi
 
-            echo "{\"workspace\": \"${workspace}\", \"collection\": \"${collection}\", \"language\": \"${language}\", \"file\": \"${file}\", \"extension\": \"${extension}\", \"lines\": ${lines}}"
-        done < <(find . -type f | sort | xargs wc -l --total=never | sed -r '/^ *[0-9]+ total$/d')
+            echo "{\"year\": \"${workspace:0:4}\", \"year_month\": \"${workspace:0:7}\", \"workspace\": \"${workspace}\", \"collection\": \"${collection}\", \"language\": \"${language}\", \"file\": \"${file}\", \"extension\": \"${extension}\", \"lines\": ${lines}}"
+        done < <(find . -type f | sort | xargs wc -l --total=never)
     )
 }
 

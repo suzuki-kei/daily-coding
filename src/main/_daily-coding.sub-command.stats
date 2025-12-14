@@ -9,40 +9,28 @@ function _daily-coding.stats
 
     case "${1:-}" in
         '')
-            # カレントシェルの作業ディレクトリを変更したくないのでサブシェルで実行する.
-            (
-                cd -- "$(_daily-coding.root_workspace_path)"
-
-                for path in *
-                do
-                    declare lines=$(find "${path}" -type f | xargs cat | wc -l)
-                    echo "${path} ${lines} lines"
-                done
-            ) | column -t -R 2 -o ' '
+            _daily-coding.stats.report 'workspace' '.workspace' \
+                | grep -P '^\d{4}-\d{2}-\d{2} ' \
+                | awk '{print $1 " " $7}' \
+                | column -t -R 2
             ;;
-        -v | --workspace)
-            declare -r jsonl="$(_daily-coding.generate_jsonl)"
-            _daily-coding.stats.report "${jsonl}" 'workspace' '.workspace'
+        -d | --daily | -w | --workspace)
+            _daily-coding.stats.report 'workspace' '.workspace'
             ;;
-        -vv | --language)
-            declare -r jsonl="$(_daily-coding.generate_jsonl)"
-            _daily-coding.stats.report "${jsonl}" 'language' '.language'
+        -m | --monthly)
+            _daily-coding.stats.report 'year-month' '.year_month'
             ;;
-        -vvv | --extension)
-            declare -r jsonl="$(_daily-coding.generate_jsonl)"
-            _daily-coding.stats.report "${jsonl}" 'extension' '.extension'
+        -y | --yearly)
+            _daily-coding.stats.report 'year' '.year' | head -n -1
             ;;
-        -vvvv | --collection)
-            declare -r jsonl="$(_daily-coding.generate_jsonl)"
-            _daily-coding.stats.report "${jsonl}" 'collection' '.collection'
+        -a | --all | -e | --entire)
+            _daily-coding.stats.report '-' '"<entire>"' | head -n -1
             ;;
-        -vvvvv | --file)
-            declare -r jsonl="$(_daily-coding.generate_jsonl)"
-            _daily-coding.stats.report "${jsonl}" 'file' '.file'
-            ;;
-        -vvvvvv | --workspace-collection)
-            declare -r jsonl="$(_daily-coding.generate_jsonl)"
-            _daily-coding.stats.report "${jsonl}" 'workspace/collection' '.workspace + "/" + .collection'
+        -l | --language)
+            # TODO _daily-coding.stats.report の内部実装に依存しない方法に変更する.
+            # 現状は 'year language' のようにスペース区切りの値を渡し,
+            # _daily-coding.stats.report の最後にある column で複数列に分割させている.
+            _daily-coding.stats.report 'year language' '.year + " " + .language'
             ;;
         *)
             echo "Invalid option: [$1]" >&2
@@ -53,22 +41,10 @@ function _daily-coding.stats
 
 function _daily-coding.stats.report
 {
-    declare -r jsonl="$1"
-    declare -r group_key_name="$2"
-    declare -r group_key_value="$3"
+    declare -r group_key_name="$1"
+    declare -r group_key_value="$2"
 
     declare -r jq_query="$(cat <<EOS
-        (
-            [
-                "${group_key_name}",
-                "workspaces",
-                "collections",
-                "languages",
-                "files",
-                "extensions",
-                "lines"
-            ]
-        ),
         (
             map({
                 "group_key"            : (${group_key_value}),
@@ -76,53 +52,24 @@ function _daily-coding.stats.report
                 } + .)
             | group_by(.group_key)
             | map({
-                "group_key"   : .[0].group_key,
-                "workspaces"  : ([.[].workspace]            | unique | length),
-                "collections" : ([.[].workspace_collection] | unique | length),
-                "languages"   : ([.[].language]             | unique | length),
-                "files"       : ([.[].file]                          | length),
-                "extensions"  : ([.[].extension]            | unique | length),
-                "lines"       : ([.[].lines]                         | add)})
-            | sort_by(.group_key)
-            | map([.[]])
-            | .[]
-        ),
-        (
-            [
-                "${group_key_name}",
-                "workspaces",
-                "collections",
-                "languages",
-                "files",
-                "extensions",
-                "lines"
-            ]
-        ),
-        (
-            map({
-                "group_key"            : "<entire>",
-                "workspace_collection" : (.workspace + "/" + .collection)
-                } + .)
-            | group_by(.group_key)
-            | map({
-                "group_key"   : .[0].group_key,
-                "workspaces"  : ([.[].workspace]            | unique | length),
-                "collections" : ([.[].workspace_collection] | unique | length),
-                "languages"   : ([.[].language]             | unique | length),
-                "files"       : ([.[].file]                          | length),
-                "extensions"  : ([.[].extension]            | unique | length),
-                "lines"       : ([.[].lines]                         | add)})
-            | sort_by(.group_key)
-            | map([.[]])
-            | .[]
-        )
-        | @tsv
+                "${group_key_name}" : (. | first | .group_key),
+                "workspaces"        : ([.[].workspace]            | unique | length),
+                "collections"       : ([.[].workspace_collection] | unique | length),
+                "languages"         : ([.[].language]             | unique | length),
+                "files"             : ([.[].file]                          | length),
+                "extensions"        : ([.[].extension]            | unique | length),
+                "lines"             : ([.[].lines]                         | add)
+            })
+        ) as \$objects
+        | \$objects | first | keys_unsorted as \$header
+        | \$header,
+        (\$objects | .[] | [.[]]),
+        \$header | @tsv
 EOS
 )"
 
-    echo "${jsonl}" \
+    _daily-coding.generate_jsonl \
         | jq -sr "${jq_query}" \
         | column -t -R 2,3,4,5,6,7
-    echo
 }
 
