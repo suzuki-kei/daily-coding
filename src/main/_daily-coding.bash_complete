@@ -30,7 +30,7 @@ function _daily-coding._bash_complete
             ;;
         ls)
             if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W '-v -vv --collection --language --extension' -- "${word}"))
+                COMPREPLY=($(compgen -W '-v -vv --collection --language' -- "${word}"))
             fi
             ;;
         mkcd)

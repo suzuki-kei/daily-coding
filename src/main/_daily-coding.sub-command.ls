@@ -27,10 +27,6 @@ function _daily-coding.ls
             _daily-coding.ls_by_column 'language'
             return 0
             ;;
-        --extension)
-            _daily-coding.ls_by_column 'extension'
-            return 0
-            ;;
         *)
             echo "Invalid option: [$1]" >&2
             return 1
