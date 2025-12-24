@@ -137,16 +137,18 @@ function _daily-coding.locate_collection
 
     declare -r n=$2
     declare -r target_collection_path="$(
-        ls -1d "${root_workspace_path}"/*/"${base_collection_name}" |
+        cat <(ls -1d "${root_workspace_path}"/*/"${base_collection_name}") \
+            <(echo "${root_workspace_path}/${base_workspace_name}/${base_collection_name}") |
+            sort -u |
             ([[ $n -ge 0 ]] && cat || tac) |
             sed -n "/${base_workspace_name}\/${base_collection_name}/,$ p" |
             sed -n "$((n < 0 ? -n+1 : n+1)) p"
     )"
 
-    if [[ ! -d "${target_collection_path}" ]]; then
+    if [[ "${target_collection_path}" = '' ]]; then
         echo ''
     else
-        echo "$(realpath --relative-to="$(pwd)" -- "${target_collection_path}")"
+        realpath -m --relative-to="$(pwd)" -- "${target_collection_path}"
     fi
 }
 
@@ -183,7 +185,7 @@ function _daily-coding.locate_workspace
     if [[ "${target_workspace_path}" = '' ]]; then
         echo ''
     else
-        echo "$(realpath --relative-to="$(pwd)" -- "${target_workspace_path}")"
+        realpath --relative-to="$(pwd)" -- "${target_workspace_path}"
     fi
 }
 

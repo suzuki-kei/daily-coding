@@ -417,23 +417,20 @@ function test._daily-coding.locate_collection
     test "$(_daily-coding.locate_collection '2023-02-10/aaa.scheme'  1)" = '2023-02-12/aaa.scheme'
     test "$(_daily-coding.locate_collection '2023-02-10/aaa.scheme'  2)" = '2023-02-15/aaa.scheme'
 
-# TODO ディレクトリが存在しない場合に対応する.
-#
-#    # 当日のディレクトリが存在しない場合.
-#    _daily-coding.locate_collection '2023-03-10/aaa.scheme' -2
-#    test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme' -2)" = '2023-03-07/aaa.scheme'
-#    test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme' -1)" = '2023-03-09/aaa.scheme'
-#    test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme'  0)" = '2023-03-10/aaa.scheme'
-#    test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme'  1)" = '2023-03-11/aaa.scheme'
-#    test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme'  2)" = '2023-03-13/aaa.scheme'
-#
-#    # n 番目のディレクトリが存在しない場合.
-#    test ! "$(_daily-coding.locate_collection '2023-01-01/aaa.scheme' -2)"
-#    test ! "$(_daily-coding.locate_collection '2023-01-01/aaa.scheme' -1)"
-#    test   "$(_daily-coding.locate_collection '2023-01-01/aaa.scheme'  0)" = '2023-01-01/aaa.scheme'
-#    test   "$(_daily-coding.locate_collection '2023-12-31/aaa.scheme'  0)" = '2023-12-31/aaa.scheme'
-#    test ! "$(_daily-coding.locate_collection '2023-12-31/aaa.scheme'  1)"
-#    test ! "$(_daily-coding.locate_collection '2023-12-31/aaa.scheme'  2)"
+   # 当日のディレクトリが存在しない場合.
+   test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme' -2)" = '2023-03-07/aaa.scheme'
+   test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme' -1)" = '2023-03-09/aaa.scheme'
+   test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme'  0)" = '2023-03-10/aaa.scheme'
+   test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme'  1)" = '2023-03-11/aaa.scheme'
+   test "$(_daily-coding.locate_collection '2023-03-10/aaa.scheme'  2)" = '2023-03-13/aaa.scheme'
+
+   # n 番目のディレクトリが存在しない場合.
+   test ! "$(_daily-coding.locate_collection '2023-01-01/aaa.scheme' -2)"
+   test ! "$(_daily-coding.locate_collection '2023-01-01/aaa.scheme' -1)"
+   test   "$(_daily-coding.locate_collection '2023-01-01/aaa.scheme'  0)" = '2023-01-01/aaa.scheme'
+   test   "$(_daily-coding.locate_collection '2023-12-31/aaa.scheme'  0)" = '2023-12-31/aaa.scheme'
+   test ! "$(_daily-coding.locate_collection '2023-12-31/aaa.scheme'  1)"
+   test ! "$(_daily-coding.locate_collection '2023-12-31/aaa.scheme'  2)"
 }
 
 function test._daily-coding.locate_workspace
