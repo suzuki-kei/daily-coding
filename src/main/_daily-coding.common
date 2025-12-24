@@ -33,7 +33,7 @@ function _daily-coding.to_workspace_path
     declare -r path="${1:-$(pwd)}"
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
-    if [[ "$(realpath --relative-to="${root_workspace_path}" -- "${path}")" != ../* ]]; then
+    if [[ "$(realpath -m --relative-to="${root_workspace_path}" -- "${path}")" != ../* ]]; then
         echo "${root_workspace_path}/$(echo "${path#${root_workspace_path}/}" | cut -d/ -f1)"
     else
         echo ''

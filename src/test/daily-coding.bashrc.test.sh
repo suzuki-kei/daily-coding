@@ -10,7 +10,7 @@ declare -r REPOSITORY_PATH="$(cd "$(dirname "$0")/../.." && pwd)"
 declare -r TEST_DATA_DIR="${REPOSITORY_PATH}/target/workspace"
 
 declare -r DAILY_CODING_ROOT_WORKSPACE_PATH="${TEST_DATA_DIR}"
-source "${REPOSITORY_PATH}/src/main/daily-coding.bashrc"
+source -- "${REPOSITORY_PATH}/src/main/daily-coding.bashrc"
 
 function main
 {
@@ -36,168 +36,251 @@ function main
     for name in ${tests[@]}
     do
         setup
-        echo $name
+        echo "==== ${name}"
         $name
     done
 }
 
 function setup
 {
-    rm -rf "${TEST_DATA_DIR}"
-    mkdir -p "${TEST_DATA_DIR}"
+    rm -rf -- "${TEST_DATA_DIR}"
+    mkdir -p -- "${TEST_DATA_DIR}"
 
-    # カレントディレクトリを TEST_DATA_DIR として各テストを実行する.
-    cd "${TEST_DATA_DIR}"
+    # TEST_DATA_DIR をカレントディレクトリとして各テストを実行する.
+    cd -- "${TEST_DATA_DIR}"
 
-    declare -ar directories=(
-        2022-12-31
-        2023-01-01
-        2023-01-01/aaa
-        2023-01-01/aaa/bbb
-        2023-02-02
-        2023-02-02/aaa
-        2023-02-02/aaa/bbb
-        $(date '+%Y-%m-%d')
-        $(date '+%Y-%m-%d' --date '1 days ago')
-        $(date '+%Y-%m-%d' --date '2 days ago')
+    declare -ar file_paths=(
+        "2022-12-31/quick-sort.c/README.md"
+        "2022-12-31/quick-sort.c/partition-2way/Makefile"
+        "2022-12-31/quick-sort.c/partition-2way/main.c"
+        "2022-12-31/quick-sort.c/partition-3way/Makefile"
+        "2022-12-31/quick-sort.c/partition-3way/main.c"
+        "2023-01-01/binary-search.cpp/Makefile"
+        "2023-01-01/binary-search.cpp/main.cpp"
+        "2023-02-02/numerical-sequence.force/Makefile"
+        "2023-02-02/numerical-sequence.force/main.fs"
+        "2023-02-02/numerical-sequence.force/factorial.fs"
+        "2023-02-02/numerical-sequence.force/fibonacci.fs"
+        "2023-02-02/numerical-sequence.force/fizz-buzz.fs"
+        "2025-10-10/merge-sort.scm/Makefile"
+        "2025-10-10/merge-sort.scm/main.scm"
+        "2025-10-10/quick-sort.c/Makefile"
+        "2025-10-10/quick-sort.c/main.c"
+        "2025-11-11/bit-count.c/Makefile"
+        "2025-11-11/bit-count.c/main.c"
+        "2025-11-11/binary-search.ruby/Makefile"
+        "2025-11-11/binary-search.ruby/main.rb"
+        "2025-12-12/fizz-buzz.shell/Makefile"
+        "2025-12-12/fizz-buzz.shell/main.sh"
+        "2025-12-12/fizz-buzz.shell/fizz-buzz.sed"
+        "$(date --date '2 days ago' '+%Y-%m-%d')/cat.brainfuck/Makefile"
+        "$(date --date '2 days ago' '+%Y-%m-%d')/cat.brainfuck/cat.b"
+        "$(date --date '1 days ago' '+%Y-%m-%d')/cat.brainfuck/Makefile"
+        "$(date --date '1 days ago' '+%Y-%m-%d')/cat.brainfuck/cat.b"
+        "$(date --date '0 days ago' '+%Y-%m-%d')/cat.brainfuck/Makefile"
+        "$(date --date '0 days ago' '+%Y-%m-%d')/cat.brainfuck/cat.b"
     )
 
-    mkdir -p "${directories[@]}"
+    for file_path in "${file_paths[@]}"
+    do
+        mkdir -p -- "$(dirname -- "${file_path}")"
+        touch -- "${file_path}"
+    done
 }
 
 function test._daily-coding.escape_regexp
 {
-    test "$(_daily-coding.escape_regexp '')" == ''
-    test "$(_daily-coding.escape_regexp 'abcde')" == 'abcde'
-    test "$(_daily-coding.escape_regexp 'ab*de')" == 'ab\*de'
-    test "$(_daily-coding.escape_regexp ',[*^$()+?{|')" == '\,\[\*\^\$\(\)\+\?\{\|'
+    test "$(_daily-coding.escape_regexp '')" = ''
+    test "$(_daily-coding.escape_regexp 'abcde')" = 'abcde'
+    test "$(_daily-coding.escape_regexp 'ab*de')" = 'ab\*de'
+    test "$(_daily-coding.escape_regexp ',[*^$()+?{|')" = '\,\[\*\^\$\(\)\+\?\{\|'
 }
 
 function test._daily-coding.root_path
 {
-    test "$(_daily-coding.root_path)" == "${REPOSITORY_PATH}"
+    test "$(_daily-coding.root_path)" = "${REPOSITORY_PATH}"
 }
 
 function test._daily-coding.root_workspace_path
 {
-    test "$(_daily-coding.root_workspace_path)" == "${TEST_DATA_DIR}"
+    test "$(_daily-coding.root_workspace_path)" = "${TEST_DATA_DIR}"
 }
 
 function test._daily-coding.to_workspace_path
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
+    # root_workspace_path 外のパス
     test '' = "$(_daily-coding.to_workspace_path '/out-of-workspace-root')"
 
+    # root_workspace_path 内の存在しないパス
     test "${root_workspace_path}/no-such-workspace" \
         = "$(_daily-coding.to_workspace_path "${root_workspace_path}/no-such-workspace")"
+    test "${root_workspace_path}/no-such-workspace" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/no-such-workspace/README.md")"
+    test "${root_workspace_path}/no-such-workspace" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/no-such-workspace/partition-2way")"
+    test "${root_workspace_path}/no-such-workspace" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/no-such-workspace/partition-2way/Makefile")"
+    test "${root_workspace_path}/no-such-workspace" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/no-such-workspace/partition-2way/main.c")"
+    test "${root_workspace_path}/no-such-workspace" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/no-such-workspace/partition-3way")"
+    test "${root_workspace_path}/no-such-workspace" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/no-such-workspace/partition-3way/Makefile")"
+    test "${root_workspace_path}/no-such-workspace" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/no-such-workspace/partition-3way/main.c")"
 
-    test "${root_workspace_path}/2023-01-01" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01/aaa")"
-    test "${root_workspace_path}/2023-01-01" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01/aaa/bbb")"
-
-    test "${root_workspace_path}/2023-02-02" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02")"
-    test "${root_workspace_path}/2023-02-02" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02/aaa")"
-    test "${root_workspace_path}/2023-02-02" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02/aaa/bbb")"
-
-    test "${root_workspace_path}/2023-01-01" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01")"
-    test "${root_workspace_path}/2023-01-01" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01/aaa")"
-    test "${root_workspace_path}/2023-01-01" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-01-01/aaa/bbb")"
-
-    test "${root_workspace_path}/2023-02-02" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02")"
-    test "${root_workspace_path}/2023-02-02" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02/aaa")"
-    test "${root_workspace_path}/2023-02-02" \
-        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2023-02-02/aaa/bbb")"
+    # root_workspace_path 内の存在するパス
+    test "${root_workspace_path}/2022-12-31" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2022-12-31")"
+    test "${root_workspace_path}/2022-12-31" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2022-12-31/README.md")"
+    test "${root_workspace_path}/2022-12-31" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2022-12-31/partition-2way")"
+    test "${root_workspace_path}/2022-12-31" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2022-12-31/partition-2way/Makefile")"
+    test "${root_workspace_path}/2022-12-31" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2022-12-31/partition-2way/main.c")"
+    test "${root_workspace_path}/2022-12-31" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2022-12-31/partition-3way")"
+    test "${root_workspace_path}/2022-12-31" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2022-12-31/partition-3way/Makefile")"
+    test "${root_workspace_path}/2022-12-31" \
+        = "$(_daily-coding.to_workspace_path "${root_workspace_path}/2022-12-31/partition-3way/main.c")"
 }
 
 function test._daily-coding.to_workspace_name
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
+    # root_workspace_path 外のパス
     test '' = "$(_daily-coding.to_workspace_name '/out-of-workspace-root')"
 
+    # root_workspace_path 内の存在しないパス
     test "no-such-workspace" \
         = "$(_daily-coding.to_workspace_name "${root_workspace_path}/no-such-workspace")"
 
-    test "2023-01-01" \
-        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-01-01")"
-    test "2023-01-01" \
-        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-01-01/aaa")"
-    test "2023-01-01" \
-        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-01-01/aaa/bbb")"
-
-    test "2023-02-02" \
-        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-02-02")"
-    test "2023-02-02" \
-        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-02-02/aaa")"
-    test "2023-02-02" \
-        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2023-02-02/aaa/bbb")"
+    # root_workspace_path 内の存在するパス
+    test "2022-12-31" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2022-12-31")"
+    test "2022-12-31" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2022-12-31/README.md")"
+    test "2022-12-31" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2022-12-31/partition-2way")"
+    test "2022-12-31" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2022-12-31/partition-2way/Makefile")"
+    test "2022-12-31" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2022-12-31/partition-2way/main.c")"
+    test "2022-12-31" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2022-12-31/partition-3way")"
+    test "2022-12-31" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2022-12-31/partition-3way/Makefile")"
+    test "2022-12-31" \
+        = "$(_daily-coding.to_workspace_name "${root_workspace_path}/2022-12-31/partition-3way/main.c")"
 }
 
 function test._daily-coding.to_collection_path
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
+    # root_workspace_path 外のパス
     test '' = "$(_daily-coding.to_collection_path '/out-of-workspace-root')"
+
+    # root_workspace_path 内の collection ではないパス
     test '' = "$(_daily-coding.to_collection_path "${root_workspace_path}")"
-    test '' = "$(_daily-coding.to_collection_path "${root_workspace_path}/1999-01-01")"
+    test '' = "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31")"
 
-    test "${root_workspace_path}/1999-01-01/no-such-collection" \
-        = "$(_daily-coding.to_collection_path "${root_workspace_path}/1999-01-01/no-such-collection")"
-    test "${root_workspace_path}/2023-01-01/no-such-collection" \
-        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-01-01/no-such-collection")"
+    # 存在する workspace 内の存在しない collection 以下のパス
+    test "${root_workspace_path}/2022-12-31/no-such-collection" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/no-such-collection")"
+    test "${root_workspace_path}/2022-12-31/no-such-collection" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/no-such-collection/README.md")"
+    test "${root_workspace_path}/2022-12-31/no-such-collection" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/no-such-collection/partition-2way")"
+    test "${root_workspace_path}/2022-12-31/no-such-collection" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/no-such-collection/partition-2way/Makefile")"
+    test "${root_workspace_path}/2022-12-31/no-such-collection" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/no-such-collection/partition-2way/main.c")"
+    test "${root_workspace_path}/2022-12-31/no-such-collection" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/no-such-collection/partition-3way")"
+    test "${root_workspace_path}/2022-12-31/no-such-collection" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/no-such-collection/partition-3way/Makefile")"
+    test "${root_workspace_path}/2022-12-31/no-such-collection" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/no-such-collection/partition-3way/main.c")"
 
-    test "${root_workspace_path}/2023-01-01/aaa" \
-        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-01-01/aaa")"
-    test "${root_workspace_path}/2023-01-01/aaa" \
-        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-01-01/aaa/bbb")"
-    test "${root_workspace_path}/2023-01-01/aaa" \
-        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-01-01/aaa/bbb/ccc")"
-
-    test "${root_workspace_path}/2023-02-02/aaa" \
-        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-02-02/aaa")"
-    test "${root_workspace_path}/2023-02-02/aaa" \
-        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-02-02/aaa/bbb")"
-    test "${root_workspace_path}/2023-02-02/aaa" \
-        = "$(_daily-coding.to_collection_path "${root_workspace_path}/2023-02-02/aaa/bbb/ccc")"
+    # 存在する collection 以下のパス
+    test "${root_workspace_path}/2022-12-31/quick-sort.c" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/quick-sort.c")"
+    test "${root_workspace_path}/2022-12-31/quick-sort.c" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/quick-sort.c/README.md")"
+    test "${root_workspace_path}/2022-12-31/quick-sort.c" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/quick-sort.c/partition-2way")"
+    test "${root_workspace_path}/2022-12-31/quick-sort.c" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/quick-sort.c/partition-2way/Makefile")"
+    test "${root_workspace_path}/2022-12-31/quick-sort.c" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/quick-sort.c/partition-2way/main.c")"
+    test "${root_workspace_path}/2022-12-31/quick-sort.c" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/quick-sort.c/partition-3way")"
+    test "${root_workspace_path}/2022-12-31/quick-sort.c" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/quick-sort.c/partition-3way/Makefile")"
+    test "${root_workspace_path}/2022-12-31/quick-sort.c" = \
+        "$(_daily-coding.to_collection_path "${root_workspace_path}/2022-12-31/quick-sort.c/partition-3way/main.c")"
 }
 
 function test._daily-coding.to_collection_name
 {
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
 
+    # root_workspace_path 外のパス
     test '' = "$(_daily-coding.to_collection_name '/out-of-workspace-root')"
+
+    # root_workspace_path 内の collection ではないパス
     test '' = "$(_daily-coding.to_collection_name "${root_workspace_path}")"
-    test '' = "$(_daily-coding.to_collection_name "${root_workspace_path}/1999-01-01")"
+    test '' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31")"
 
-    test 'no-such-collection' \
-        = "$(_daily-coding.to_collection_name "${root_workspace_path}/1999-01-01/no-such-collection")"
-    test 'no-such-collection' \
-        = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-01-01/no-such-collection")"
+    # 存在する workspace 内の存在しない collection 以下のパス
+    test "no-such-collection" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/no-such-collection")"
+    test "no-such-collection" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/no-such-collection/README.md")"
+    test "no-such-collection" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/no-such-collection/partition-2way")"
+    test "no-such-collection" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/no-such-collection/partition-2way/Makefile")"
+    test "no-such-collection" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/no-such-collection/partition-2way/main.c")"
+    test "no-such-collection" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/no-such-collection/partition-3way")"
+    test "no-such-collection" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/no-such-collection/partition-3way/Makefile")"
+    test "no-such-collection" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/no-such-collection/partition-3way/main.c")"
 
-    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-01-01/aaa")"
-    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-01-01/aaa/bbb")"
-    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-01-01/aaa/bbb/ccc")"
-
-    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-02-02/aaa")"
-    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-02-02/aaa/bbb")"
-    test 'aaa' = "$(_daily-coding.to_collection_name "${root_workspace_path}/2023-02-02/aaa/bbb/ccc")"
+    # 存在する collection 以下のパス
+    test "quick-sort.c" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/quick-sort.c")"
+    test "quick-sort.c" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/quick-sort.c/README.md")"
+    test "quick-sort.c" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/quick-sort.c/partition-2way")"
+    test "quick-sort.c" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/quick-sort.c/partition-2way/Makefile")"
+    test "quick-sort.c" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/quick-sort.c/partition-2way/main.c")"
+    test "quick-sort.c" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/quick-sort.c/partition-3way")"
+    test "quick-sort.c" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/quick-sort.c/partition-3way/Makefile")"
+    test "quick-sort.c" = \
+        "$(_daily-coding.to_collection_name "${root_workspace_path}/2022-12-31/quick-sort.c/partition-3way/main.c")"
 }
 
 function test._daily-coding.locate_file
 {
-    rm -rf "${TEST_DATA_DIR}"
-    mkdir -p "${TEST_DATA_DIR}"
-    cd "${TEST_DATA_DIR}"
+    rm -rf -- "${TEST_DATA_DIR}"
+    mkdir -p -- "${TEST_DATA_DIR}"
+    cd -- "${TEST_DATA_DIR}"
 
     declare -ar files=(
         # 日付が連続する場合.
@@ -237,9 +320,10 @@ function test._daily-coding.locate_file
         '2022-04-14/aaa/file.txt'
     )
 
-    for file in "${files[@]}"; do
-        mkdir -p "$(dirname "${file}")"
-        touch "${file}"
+    for file in "${files[@]}"
+    do
+        mkdir -p -- "$(dirname "${file}")"
+        touch -- "${file}"
     done
 
     # 空文字列は無効値.
@@ -281,9 +365,9 @@ function test._daily-coding.locate_file
 
 function test._daily-coding.locate_collection
 {
-    rm -rf "${TEST_DATA_DIR}"
-    mkdir -p "${TEST_DATA_DIR}"
-    cd "${TEST_DATA_DIR}"
+    rm -rf -- "${TEST_DATA_DIR}"
+    mkdir -p -- "${TEST_DATA_DIR}"
+    cd -- "${TEST_DATA_DIR}"
 
     declare -ar date_paths=(
         # 日付が連続する場合.
@@ -307,8 +391,9 @@ function test._daily-coding.locate_collection
         '2023-03-13/aaa.scheme'
     )
 
-    for date_path in "${date_paths[@]}"; do
-        mkdir -p "${date_path}"
+    for date_path in "${date_paths[@]}"
+    do
+        mkdir -p -- "${date_path}"
     done
 
     # 空文字列は無効値.
@@ -353,9 +438,9 @@ function test._daily-coding.locate_collection
 
 function test._daily-coding.locate_workspace
 {
-    rm -rf "${TEST_DATA_DIR}"
-    mkdir -p "${TEST_DATA_DIR}"
-    cd "${TEST_DATA_DIR}"
+    rm -rf -- "${TEST_DATA_DIR}"
+    mkdir -p -- "${TEST_DATA_DIR}"
+    cd -- "${TEST_DATA_DIR}"
 
     declare -ar date_paths=(
         # 日付が連続する場合.
@@ -379,8 +464,9 @@ function test._daily-coding.locate_workspace
         '2023-03-13'
     )
 
-    for date_path in "${date_paths[@]}"; do
-        mkdir -p "${date_path}"
+    for date_path in "${date_paths[@]}"
+    do
+        mkdir -p -- "${date_path}"
     done
 
     # 空文字列は無効値.
@@ -421,33 +507,35 @@ function test._daily-coding.locate_workspace
 
 function test._daily-coding.cd
 {
+    # ルートに移動する
     test "$(_daily-coding.cd --root > /dev/null && pwd)" = \
          "${REPOSITORY_PATH}"
 
+    # ワークスペースを指定しない
     test "$(_daily-coding.cd > /dev/null && pwd)" = \
          "${TEST_DATA_DIR}/$(date '+%Y-%m-%d')"
-
     test "$(_daily-coding.cd -1 > /dev/null && pwd)" = \
          "${TEST_DATA_DIR}/$(date '+%Y-%m-%d' --date '1 days ago')"
-
     test "$(_daily-coding.cd -2 > /dev/null && pwd)" = \
          "${TEST_DATA_DIR}/$(date '+%Y-%m-%d' --date '2 days ago')"
 
+    # ワークスペースを指定する
     test "$(_daily-coding.cd 2022-12-31 > /dev/null && pwd)" = \
          "${TEST_DATA_DIR}/2022-12-31"
-
     test "$(_daily-coding.cd 2023-01-01 > /dev/null && pwd)" = \
          "${TEST_DATA_DIR}/2023-01-01"
+    test "$(_daily-coding.cd 2023-02-02 > /dev/null && pwd)" = \
+         "${TEST_DATA_DIR}/2023-02-02"
 
-    test "$(_daily-coding.cd aaa > /dev/null && pwd)" = \
-         "${TEST_DATA_DIR}/2023-02-02/aaa"
+    # コレクションを指定する
+    test "$(_daily-coding.cd quick-sort.c > /dev/null && pwd)" = \
+         "${TEST_DATA_DIR}/2025-10-10/quick-sort.c"
+    test "$(_daily-coding.cd quick-sort.c -1 > /dev/null && pwd)" = \
+         "${TEST_DATA_DIR}/2022-12-31/quick-sort.c"
 
-    test "$(_daily-coding.cd aaa -1 > /dev/null && pwd)" = \
-         "${TEST_DATA_DIR}/2023-01-01/aaa"
-
-    # TODO コレクションが見つからない場合のテストを行う.
-    #  * _daily-coding.cd aaa -2
-    #  * _daily-coding.cd no-such-collection
+    # 存在しないコレクションを指定する
+    test "$(_daily-coding.cd no-such-collection 2>&1 || true)" = 'Not found'
+    test "$(_daily-coding.cd no-such-collection -1 2>&1 || true)" = 'Not found'
 }
 
 function test._daily-coding.commit
@@ -469,32 +557,11 @@ function test._daily-coding.help
 
 function test._daily-coding.ls
 {
-    rm -rf "${TEST_DATA_DIR}"
-    mkdir -p "${TEST_DATA_DIR}"
-    cd "${TEST_DATA_DIR}"
-
-    declare -ar files=(
-        2020-01-01/aaa.c/main.c
-        2020-01-01/bbb.scheme/main.scm
-        2020-02-02/ccc.forth/main.fs
-        2020-02-02/ddd.ruby/main.rb
-        2020-02-02/eee.haskell/main.hs
-        2020-03-03/fff.shell/main.sh
-    )
-
-    for file in ${files[@]}
-    do
-        mkdir -p "$(dirname "${file}")"
-        touch "${file}"
-    done
-
     test "$(_daily-coding.ls)" != ''
     test "$(_daily-coding.ls -v)" != ''
     test "$(_daily-coding.ls -vv)" != ''
-    test "$(_daily-coding.ls -vvv 2>&1 || true)" = 'Invalid option: [-vvv]'
     test "$(_daily-coding.ls --collection)" != ''
     test "$(_daily-coding.ls --language)" != ''
-    test "$(_daily-coding.ls --extension)" != ''
     test "$(_daily-coding.ls --no-such-option 2>&1 || true)" = 'Invalid option: [--no-such-option]'
 }
 
@@ -502,23 +569,20 @@ function test._daily-coding.stats
 {
     test "$(_daily-coding.stats)" != ''
 
-    test "$(_daily-coding.stats -v)" != ''
+    test "$(_daily-coding.stats -w)" != ''
     test "$(_daily-coding.stats --workspace)" != ''
 
-    test "$(_daily-coding.stats -vv)" != ''
+    test "$(_daily-coding.stats -d)" != ''
+    test "$(_daily-coding.stats --daily)" != ''
+
+    test "$(_daily-coding.stats -m)" != ''
+    test "$(_daily-coding.stats --monthly)" != ''
+
+    test "$(_daily-coding.stats -y)" != ''
+    test "$(_daily-coding.stats --yearly)" != ''
+
+    test "$(_daily-coding.stats -l)" != ''
     test "$(_daily-coding.stats --language)" != ''
-
-    test "$(_daily-coding.stats -vvv)" != ''
-    test "$(_daily-coding.stats --extension)" != ''
-
-    test "$(_daily-coding.stats -vvvv)" != ''
-    test "$(_daily-coding.stats --collection)" != ''
-
-    test "$(_daily-coding.stats -vvvvv)" != ''
-    test "$(_daily-coding.stats --file)" != ''
-
-    test "$(_daily-coding.stats -vvvvvv)" != ''
-    test "$(_daily-coding.stats --workspace-collection)" != ''
 }
 
 main
