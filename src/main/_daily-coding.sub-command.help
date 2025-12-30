@@ -72,6 +72,9 @@ function _daily-coding.help
             ${name} ls --collection
                 コレクションの一覧を表示します.
 
+            ${name} ls --collection-type
+                コレクション種別の一覧を表示します.
+
             ${name} ls --language
                 言語の一覧を表示します.
 

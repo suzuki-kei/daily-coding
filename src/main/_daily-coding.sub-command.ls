@@ -23,6 +23,10 @@ function _daily-coding.ls
             _daily-coding.ls_by_column 'collection'
             return 0
             ;;
+        --collection-type)
+            _daily-coding.ls_by_column 'collection_type'
+            return 0
+            ;;
         --language)
             _daily-coding.ls_by_column 'language'
             return 0
