@@ -93,6 +93,9 @@ function _daily-coding.help
                 OPTION で集計するときの軸を指定します.
                 OPTION を省略すると日別の行数を表示します.
 
+            ${name} stats -a|--all|-e|--entire
+                全体を集計した結果を表示します.
+
             ${name} stats -d|--daily|-w|--workspace
                 日ごとに集計した結果を表示します.
 

@@ -47,7 +47,7 @@ function _daily-coding._bash_complete
             ;;
         stats)
             if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W '-d --daily -w --workspace -m --monthly -y --yearly -l --language -c --collection -t --collection-type' -- "${word}"))
+                COMPREPLY=($(compgen -W '-d --daily -w --workspace -m --monthly -y --yearly -a --all -e --entire -l --language -c --collection -t --collection-type' -- "${word}"))
             fi
             ;;
         *)
