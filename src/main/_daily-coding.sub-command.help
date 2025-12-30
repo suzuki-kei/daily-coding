@@ -105,6 +105,14 @@ function _daily-coding.help
             ${name} stats -l|--language
                 (年 x 言語) ごとに集計した結果を表示します.
 
+            ${name} stats -c|--collection
+                (年 x コレクション) ごとに集計した結果を表示します.
+
+            ${name} stats -t|--collection-type
+                (年 x コレクション種別) ごとに集計した結果を表示します.
+                コレクション種別とはコレクション名の末尾の "." 以降を削除した値です.
+                例: "hello.c" -> "hello"
+
         ENVIRONMENT
             DAILY_CODING_ROOT_WORKSPACE_PATH
                 ワークスペースを保存するディレクトリのパスです.

@@ -32,6 +32,12 @@ function _daily-coding.stats
             # _daily-coding.stats.report の最後にある column で複数列に分割させている.
             _daily-coding.stats.report 'year language' '.year + " " + .language'
             ;;
+        -c | --collection)
+            _daily-coding.stats.report 'year collection' '.year + " " + .collection'
+            ;;
+        -t | --collection-type)
+            _daily-coding.stats.report 'year collection_type' '.year + " " + .collection_type'
+            ;;
         *)
             echo "Invalid option: [$1]" >&2
             return 1
@@ -60,6 +66,7 @@ function _daily-coding.stats.report
                 "extensions"        : ([.[].extension]            | unique | length),
                 "lines"             : ([.[].lines]                         | add)
             })
+            | sort_by((.["${group_key_name}"] | split(" ")[0]), .workspaces, .collections)
         ) as \$objects
         | \$objects | first | keys_unsorted as \$header
         | \$header,
