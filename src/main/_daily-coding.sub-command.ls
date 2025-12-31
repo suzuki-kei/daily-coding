@@ -19,15 +19,15 @@ function _daily-coding.ls
         -vv)
             _daily-coding.ls_by_depth 3
             ;;
-        --collection)
+        -b | --collection-base-name)
+            _daily-coding.ls_by_column 'collection_base_name'
+            return 0
+            ;;
+        -c | --collection)
             _daily-coding.ls_by_column 'collection'
             return 0
             ;;
-        --collection-type)
-            _daily-coding.ls_by_column 'collection_type'
-            return 0
-            ;;
-        --language)
+        -l | --language)
             _daily-coding.ls_by_column 'language'
             return 0
             ;;

@@ -200,7 +200,7 @@ function _daily-coding.generate_jsonl
             declare workspace="${path%%/*}"
             path="${path#*/}"
             declare collection="${path%%/*}"
-            declare collection_type="${collection%%.*}"
+            declare collection_base_name="${collection%%.*}"
             declare language="${collection##*.}"
             path="${path#*/}"
             declare file="${path}"
@@ -211,7 +211,7 @@ function _daily-coding.generate_jsonl
                 declare extension="${path}"
             fi
 
-            echo "{\"year\": \"${workspace:0:4}\", \"year_month\": \"${workspace:0:7}\", \"workspace\": \"${workspace}\", \"collection_type\": \"${collection_type}\", \"collection\": \"${collection}\", \"language\": \"${language}\", \"file\": \"${file}\", \"extension\": \"${extension}\", \"lines\": ${lines}}"
+            echo "{\"year\": \"${workspace:0:4}\", \"year_month\": \"${workspace:0:7}\", \"workspace\": \"${workspace}\", \"collection_base_name\": \"${collection_base_name}\", \"collection\": \"${collection}\", \"language\": \"${language}\", \"file\": \"${file}\", \"extension\": \"${extension}\", \"lines\": ${lines}}"
         done < <(find . -type f | sort | xargs wc -l --total=never)
     )
 }

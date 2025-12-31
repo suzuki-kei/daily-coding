@@ -30,7 +30,17 @@ function _daily-coding._bash_complete
             ;;
         ls)
             if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W '-v -vv --collection --collection-type --language' -- "${word}"))
+                declare -a options=(
+                    '-v'
+                    '-vv'
+                    '-b'
+                    '--collection-base-name'
+                    '-c'
+                    '--collection'
+                    '-l'
+                    '--language'
+                )
+                COMPREPLY=($(compgen -W "${options[*]}" -- "${word}"))
             fi
             ;;
         mkcd)
@@ -47,11 +57,45 @@ function _daily-coding._bash_complete
             ;;
         stats)
             if [[ ${COMP_CWORD} -le 2 ]]; then
-                COMPREPLY=($(compgen -W '-d --daily -w --workspace -m --monthly -y --yearly -a --all -e --entire -l --language -c --collection -t --collection-type' -- "${word}"))
+                declare -a options=(
+                    '-d'
+                    '--daily'
+                    '-w'
+                    '--workspace'
+                    '-m'
+                    '--monthly'
+                    '-y'
+                    '--yearly'
+                    '-a'
+                    '--all'
+                    '-e'
+                    '--entire'
+                    '-l'
+                    '--language'
+                    '-b'
+                    '--collection-base-name'
+                    '-c'
+                    '--collection'
+                )
+                COMPREPLY=($(compgen -W "${options[*]}" -- "${word}"))
             fi
             ;;
         *)
-            COMPREPLY=($(compgen -W '-h --help --root cd commit diff help ls mkcd push random stats' -- "${word}"))
+            declare -a options=(
+                '-h'
+                '--help'
+                '--root'
+                'cd'
+                'commit'
+                'diff'
+                'help'
+                'ls'
+                'mkcd'
+                'push'
+                'random'
+                'stats'
+            )
+            COMPREPLY=($(compgen -W "${options[*]}" -- "${word}"))
             ;;
     esac
 }

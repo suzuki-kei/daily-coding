@@ -32,11 +32,17 @@ function _daily-coding.stats
             # _daily-coding.stats.report の最後にある column で複数列に分割させている.
             _daily-coding.stats.report 'year language' '.year + " " + .language'
             ;;
-        -c | --collection)
-            _daily-coding.stats.report 'year collection' '.year + " " + .collection'
+        -b | --collection-base-name)
+            # TODO _daily-coding.stats.report の内部実装に依存しない方法に変更する.
+            # 現状は 'year language' のようにスペース区切りの値を渡し,
+            # _daily-coding.stats.report の最後にある column で複数列に分割させている.
+            _daily-coding.stats.report 'year collection_base_name' '.year + " " + .collection_base_name'
             ;;
-        -t | --collection-type)
-            _daily-coding.stats.report 'year collection_type' '.year + " " + .collection_type'
+        -c | --collection)
+            # TODO _daily-coding.stats.report の内部実装に依存しない方法に変更する.
+            # 現状は 'year language' のようにスペース区切りの値を渡し,
+            # _daily-coding.stats.report の最後にある column で複数列に分割させている.
+            _daily-coding.stats.report 'year collection' '.year + " " + .collection'
             ;;
         *)
             echo "Invalid option: [$1]" >&2

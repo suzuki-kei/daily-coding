@@ -69,13 +69,13 @@ function _daily-coding.help
                 -v を指定するとワークスペースの 1 階層下,
                 -vv を指定するとワークスペースの 2 階層下を表示します.
 
-            ${name} ls --collection
+            ${name} ls -c | --collection
                 コレクションの一覧を表示します.
 
-            ${name} ls --collection-type
+            ${name} ls -b | --collection-base-name
                 コレクション種別の一覧を表示します.
 
-            ${name} ls --language
+            ${name} ls -l | --language
                 言語の一覧を表示します.
 
             ${name} mkcd COLLECTION
@@ -114,7 +114,7 @@ function _daily-coding.help
             ${name} stats -c|--collection
                 (年 x コレクション) ごとに集計した結果を表示します.
 
-            ${name} stats -t|--collection-type
+            ${name} stats -b|--collection-base-name
                 (年 x コレクション種別) ごとに集計した結果を表示します.
                 コレクション種別とはコレクション名の末尾の "." 以降を削除した値です.
                 例: "hello.c" -> "hello"
