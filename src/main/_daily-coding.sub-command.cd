@@ -20,8 +20,9 @@ function _daily-coding.cd
         # cd に失敗した時のエラーメッセージの方が状況を理解しやすいため.
         declare -r n="${BASH_REMATCH[1]:-0}"
 
+        declare -r year="$(date '+%Y')"
         declare -r base_workspace_name="$(date '+%Y-%m-%d')"
-        declare -r base_workspace_path="$(_daily-coding.root_workspace_path)/${base_workspace_name}"
+        declare -r base_workspace_path="$(_daily-coding.root_workspace_path)/${year}/${base_workspace_name}"
 
         declare -r target_workspace_path="$(
             _daily-coding.locate_workspace "${base_workspace_path}" ${n}
@@ -41,7 +42,8 @@ function _daily-coding.cd
     # cd DATE
     if [[ "${1:-}" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})$ ]]; then
         declare -r workspace_name="${BASH_REMATCH[1]}"
-        declare -r workspace_path="$(_daily-coding.root_workspace_path)/${workspace_name}"
+        declare -r year="${workspace_name%%-*}"
+        declare -r workspace_path="$(_daily-coding.root_workspace_path)/${year}/${workspace_name}"
 
         if [[ "${workspace_name}" = "$(date '+%Y-%m-%d')" ]]; then
             mkdir -p -- "${workspace_path}"
@@ -56,7 +58,7 @@ function _daily-coding.cd
         declare -r escaped_collection_name="$(_daily-coding.escape_regexp "${collection_name}")"
         declare -r n="${2:-0}"
         declare -r target_collection_path="$(
-            _daily-coding.ls -v | grep -E "^[^/]+/${escaped_collection_name}$" | tac | sed -n "$((-n+1))p")"
+            _daily-coding.ls -vv | grep -E "[^/]+/${escaped_collection_name}$" | tac | sed -n "$((-n+1))p")"
 
         if [[ "${target_collection_path}" = '' ]]; then
             echo 'Not found' >&2

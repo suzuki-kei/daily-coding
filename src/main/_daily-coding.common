@@ -32,9 +32,11 @@ function _daily-coding.to_workspace_path
 {
     declare -r path="${1:-$(pwd)}"
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+    declare -r relative_path="$(realpath -m --relative-to="${root_workspace_path}" -- "${path}")"
+    IFS=/ read -ra path_elements <<<"${relative_path}"
 
-    if [[ "$(realpath -m --relative-to="${root_workspace_path}" -- "${path}")" != ../* ]]; then
-        echo "${root_workspace_path}/$(echo "${path#${root_workspace_path}/}" | cut -d/ -f1)"
+    if [[ "${path_elements[0]:-}" =~ ^[1-9][0-9]{3}$ && ${#path_elements[@]} -ge 2 ]]; then
+        echo "${root_workspace_path}/${path_elements[0]}/${path_elements[1]}"
     else
         echo ''
     fi
@@ -47,7 +49,7 @@ function _daily-coding.to_workspace_path
 function _daily-coding.to_workspace_name
 {
     declare -r workspace_path="$(_daily-coding.to_workspace_path "${1:-$(pwd)}")"
-    echo "${workspace_path##*/}"
+    echo "${workspace_path##*/*/}"
 }
 
 #
@@ -58,12 +60,11 @@ function _daily-coding.to_collection_path
 {
     declare -r path="${1:-$(pwd)}"
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
-    declare -r relative_path="$(realpath -m --relative-to="${path}" -- "${root_workspace_path}")"
+    declare -r relative_path="$(realpath -m --relative-to="${root_workspace_path}" -- "${path}")"
+    IFS=/ read -ra path_elements <<<"${relative_path}"
 
-    if [[ "${relative_path}" =~ ^..(/..)+$ ]]; then
-        declare -r workspace_collection_name="$(
-            realpath -m --relative-base="${root_workspace_path}" -- "${path}" | cut -d/ -f1,2)"
-        echo "${root_workspace_path}/${workspace_collection_name}"
+    if [[ "${path_elements[0]:-}" =~ ^[1-9][0-9]{3}$ && ${#path_elements[@]} -ge 3 ]]; then
+        echo "${root_workspace_path}/${path_elements[0]}/${path_elements[1]}/${path_elements[2]}"
     else
         echo ''
     fi
@@ -102,7 +103,7 @@ function _daily-coding.locate_file
 
     declare -r n=$2
     declare -r target_file_path="$(
-        ls -1 "${root_workspace_path}"/*/"${base_collection_name}/${relative_file_path}" |
+        ls -1 "${root_workspace_path}"/*/*/"${base_collection_name}/${relative_file_path}" |
             ([[ $n -ge 0 ]] && cat || tac) |
             sed -n "/${base_workspace_name}/,$ p" |
             sed -n "$((n < 0 ? -n+1 : n+1)) p"
@@ -134,14 +135,15 @@ function _daily-coding.locate_collection
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
     declare -r base_collection_name="$(_daily-coding.to_collection_name "$1")"
     declare -r base_workspace_name="$(_daily-coding.to_workspace_name "$1")"
+    declare -r year="${base_workspace_name%%-*}"
 
     declare -r n=$2
     declare -r target_collection_path="$(
-        cat <(ls -1d "${root_workspace_path}"/*/"${base_collection_name}") \
-            <(echo "${root_workspace_path}/${base_workspace_name}/${base_collection_name}") |
+        cat <(ls -1d "${root_workspace_path}"/*/*/"${base_collection_name}") \
+            <(echo "${root_workspace_path}/${year}/${base_workspace_name}/${base_collection_name}") |
             sort -u |
             ([[ $n -ge 0 ]] && cat || tac) |
-            sed -n "/${base_workspace_name}\/${base_collection_name}/,$ p" |
+            sed -n "/${year}\/${base_workspace_name}\/${base_collection_name}/,$ p" |
             sed -n "$((n < 0 ? -n+1 : n+1)) p"
     )"
 
@@ -166,6 +168,7 @@ function _daily-coding.locate_workspace
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
     declare -r base_workspace_path="$(_daily-coding.to_workspace_path "$1")"
     declare -r base_workspace_name="$(_daily-coding.to_workspace_name "$1")"
+    declare -r year="${base_workspace_name%%-*}"
     declare -r n=$2
 
     if [[ "${base_workspace_name}" == '' ]]; then
@@ -174,8 +177,8 @@ function _daily-coding.locate_workspace
     fi
 
     declare -r target_workspace_path="$(
-        cat <(ls -1d "${root_workspace_path}"/*) \
-            <(echo "${root_workspace_path}/${base_workspace_name}") |
+        cat <(ls -1d "${root_workspace_path}"/*/*) \
+            <(echo "${root_workspace_path}/${year}/${base_workspace_name}") |
             sort -u |
             ([[ $n -ge 0 ]] && cat || tac) |
             sed -n "/${base_workspace_name}/,$ p" |
@@ -197,6 +200,8 @@ function _daily-coding.generate_jsonl
         while read lines path
         do
             path="${path#./}"
+            declare year="${path%%/*}"
+            path="${path#*/}"
             declare workspace="${path%%/*}"
             path="${path#*/}"
             declare collection="${path%%/*}"
@@ -211,7 +216,7 @@ function _daily-coding.generate_jsonl
                 declare extension="${path}"
             fi
 
-            echo "{\"year\": \"${workspace:0:4}\", \"year_month\": \"${workspace:0:7}\", \"workspace\": \"${workspace}\", \"collection_base_name\": \"${collection_base_name}\", \"collection\": \"${collection}\", \"language\": \"${language}\", \"file\": \"${file}\", \"extension\": \"${extension}\", \"lines\": ${lines}}"
+            echo "{\"year\": \"${year}\", \"year_month\": \"${workspace:0:7}\", \"workspace\": \"${workspace}\", \"collection_base_name\": \"${collection_base_name}\", \"collection\": \"${collection}\", \"language\": \"${language}\", \"file\": \"${file}\", \"extension\": \"${extension}\", \"lines\": ${lines}}"
         done < <(find . -type f | sort | xargs wc -l --total=never)
     )
 }

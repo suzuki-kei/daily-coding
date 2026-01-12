@@ -35,7 +35,7 @@ function _daily-coding.random
         declare current_workspace_path="$(_daily-coding.root_workspace_path)/${current_workspace_name}"
     fi
 
-    find "${root_workspace_path}"/* -mindepth 1 -maxdepth 1 -type d -name "${glob}" -printf '%P\n' \
+    find "${root_workspace_path}"/*/* -mindepth 1 -maxdepth 1 -type d -name "${glob}" -printf '%P\n' \
         | grep -vE '^try-' \
         | sort -u | shuf | head -${n}
 }
