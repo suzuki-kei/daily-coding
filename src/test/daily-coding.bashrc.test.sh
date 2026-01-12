@@ -42,6 +42,9 @@ function main
         test._daily-coding.diff
         test._daily-coding.help
         test._daily-coding.ls
+        test._daily-coding.mkcd
+        test._daily-coding.push
+        test._daily-coding.random
         test._daily-coding.stats
     )
 
@@ -676,14 +679,15 @@ function test._daily-coding.cd
 
 function test._daily-coding.commit
 {
-    # TODO
-    :
+    echo 'TODO'
 }
 
 function test._daily-coding.diff
 {
-    # TODO
-    :
+    # 正常系: エラーにならないことだけを確認する.
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+    declare -r collection_path="${root_workspace_path}/2026/2026-01-11/cat.brainfuck"
+    ( cd -- "${collection_path}" && _daily-coding.diff )
 }
 
 function test._daily-coding.help
@@ -704,6 +708,38 @@ function test._daily-coding.ls
     # 異常系
     assert_equal 'Invalid option: [--no-such-option]' \
                  "$(_daily-coding.ls --no-such-option 2>&1 || true)"
+}
+
+function test._daily-coding.mkcd
+{
+    declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
+    declare -r today="$(date '+%Y-%m-%d')"
+    declare -r year="${today%%-*}"
+
+    # 正常系
+    assert_equal "${root_workspace_path}/${year}/${today}/hello.c" \
+                 "$(_daily-coding.mkcd hello.c && pwd)"
+
+    # 正常系: 既にディレクトリが存在する場合でも成功する
+    assert_equal "${root_workspace_path}/${year}/${today}/hello.c" \
+                 "$(_daily-coding.mkcd hello.c && pwd)"
+
+    # 異常系
+    assert_equal 'Invalid option: COLLECTION is required.' \
+                 "$(_daily-coding.mkcd 2>&1 || true)"
+}
+
+function test._daily-coding.push
+{
+    echo 'TODO'
+}
+
+function test._daily-coding.random
+{
+    assert_equal '1' "$(_daily-coding.random | wc -l)"
+    assert_equal '1' "$(_daily-coding.random 1 | wc -l)"
+    assert_equal '2' "$(_daily-coding.random 2 | wc -l)"
+    assert_equal '3' "$(_daily-coding.random 3 | wc -l)"
 }
 
 function test._daily-coding.stats
