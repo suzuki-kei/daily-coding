@@ -37,6 +37,9 @@ function main
         test._daily-coding.locate_file
         test._daily-coding.locate_collection
         test._daily-coding.locate_workspace
+        test._daily-coding.workspaces
+        test._daily-coding.collections
+        test._daily-coding.generate_jsonl
         test._daily-coding.cd
         test._daily-coding.commit
         test._daily-coding.diff
@@ -640,6 +643,81 @@ function test._daily-coding.locate_workspace
                  "$(_daily-coding.locate_workspace '2023/2023-12-31'  1)"
     assert_equal '' \
                  "$(_daily-coding.locate_workspace '2023/2023-12-31'  2)"
+}
+
+function test._daily-coding.generate_jsonl
+{
+    declare -ar expected="$(cat <<EOS | sed -r 's/^ +//'
+        {"year": "2022", "year_month": "2022-12", "workspace": "2022-12-31", "collection_base_name": "quick-sort", "collection": "quick-sort.c", "language": "c", "file": "partition-2way/main.c", "extension": ".c", "lines": 0}
+        {"year": "2022", "year_month": "2022-12", "workspace": "2022-12-31", "collection_base_name": "quick-sort", "collection": "quick-sort.c", "language": "c", "file": "partition-2way/Makefile", "extension": "partition-2way/Makefile", "lines": 0}
+        {"year": "2022", "year_month": "2022-12", "workspace": "2022-12-31", "collection_base_name": "quick-sort", "collection": "quick-sort.c", "language": "c", "file": "partition-3way/main.c", "extension": ".c", "lines": 0}
+        {"year": "2022", "year_month": "2022-12", "workspace": "2022-12-31", "collection_base_name": "quick-sort", "collection": "quick-sort.c", "language": "c", "file": "partition-3way/Makefile", "extension": "partition-3way/Makefile", "lines": 0}
+        {"year": "2022", "year_month": "2022-12", "workspace": "2022-12-31", "collection_base_name": "quick-sort", "collection": "quick-sort.c", "language": "c", "file": "README.md", "extension": ".md", "lines": 0}
+        {"year": "2023", "year_month": "2023-01", "workspace": "2023-01-01", "collection_base_name": "binary-search", "collection": "binary-search.cpp", "language": "cpp", "file": "main.cpp", "extension": ".cpp", "lines": 0}
+        {"year": "2023", "year_month": "2023-01", "workspace": "2023-01-01", "collection_base_name": "binary-search", "collection": "binary-search.cpp", "language": "cpp", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "2023", "year_month": "2023-02", "workspace": "2023-02-02", "collection_base_name": "numerical-sequence", "collection": "numerical-sequence.force", "language": "force", "file": "factorial.fs", "extension": ".fs", "lines": 0}
+        {"year": "2023", "year_month": "2023-02", "workspace": "2023-02-02", "collection_base_name": "numerical-sequence", "collection": "numerical-sequence.force", "language": "force", "file": "fibonacci.fs", "extension": ".fs", "lines": 0}
+        {"year": "2023", "year_month": "2023-02", "workspace": "2023-02-02", "collection_base_name": "numerical-sequence", "collection": "numerical-sequence.force", "language": "force", "file": "fizz-buzz.fs", "extension": ".fs", "lines": 0}
+        {"year": "2023", "year_month": "2023-02", "workspace": "2023-02-02", "collection_base_name": "numerical-sequence", "collection": "numerical-sequence.force", "language": "force", "file": "main.fs", "extension": ".fs", "lines": 0}
+        {"year": "2023", "year_month": "2023-02", "workspace": "2023-02-02", "collection_base_name": "numerical-sequence", "collection": "numerical-sequence.force", "language": "force", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "2025", "year_month": "2025-10", "workspace": "2025-10-10", "collection_base_name": "merge-sort", "collection": "merge-sort.scm", "language": "scm", "file": "main.scm", "extension": ".scm", "lines": 0}
+        {"year": "2025", "year_month": "2025-10", "workspace": "2025-10-10", "collection_base_name": "merge-sort", "collection": "merge-sort.scm", "language": "scm", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "2025", "year_month": "2025-10", "workspace": "2025-10-10", "collection_base_name": "quick-sort", "collection": "quick-sort.c", "language": "c", "file": "main.c", "extension": ".c", "lines": 0}
+        {"year": "2025", "year_month": "2025-10", "workspace": "2025-10-10", "collection_base_name": "quick-sort", "collection": "quick-sort.c", "language": "c", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "2025", "year_month": "2025-11", "workspace": "2025-11-11", "collection_base_name": "binary-search", "collection": "binary-search.ruby", "language": "ruby", "file": "main.rb", "extension": ".rb", "lines": 0}
+        {"year": "2025", "year_month": "2025-11", "workspace": "2025-11-11", "collection_base_name": "binary-search", "collection": "binary-search.ruby", "language": "ruby", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "2025", "year_month": "2025-11", "workspace": "2025-11-11", "collection_base_name": "bit-count", "collection": "bit-count.c", "language": "c", "file": "main.c", "extension": ".c", "lines": 0}
+        {"year": "2025", "year_month": "2025-11", "workspace": "2025-11-11", "collection_base_name": "bit-count", "collection": "bit-count.c", "language": "c", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "2025", "year_month": "2025-12", "workspace": "2025-12-12", "collection_base_name": "fizz-buzz", "collection": "fizz-buzz.shell", "language": "shell", "file": "fizz-buzz.sed", "extension": ".sed", "lines": 0}
+        {"year": "2025", "year_month": "2025-12", "workspace": "2025-12-12", "collection_base_name": "fizz-buzz", "collection": "fizz-buzz.shell", "language": "shell", "file": "main.sh", "extension": ".sh", "lines": 0}
+        {"year": "2025", "year_month": "2025-12", "workspace": "2025-12-12", "collection_base_name": "fizz-buzz", "collection": "fizz-buzz.shell", "language": "shell", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-10", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "cat.b", "extension": ".b", "lines": 0}
+        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-10", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-11", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "cat.b", "extension": ".b", "lines": 0}
+        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-11", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-12", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "cat.b", "extension": ".b", "lines": 0}
+        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-12", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "Makefile", "extension": "Makefile", "lines": 0}
+EOS
+)"
+
+    assert_equal "${expected}" \
+                 "$(_daily-coding.generate_jsonl)"
+}
+
+function test._daily-coding.workspaces
+{
+    declare -ar expected="$(cat <<EOS | tr -d ' '
+        2022-12-31
+        2023-01-01
+        2023-02-02
+        2025-10-10
+        2025-11-11
+        2025-12-12
+        $(date --date '2 days ago' '+%Y-%m-%d')
+        $(date --date '1 days ago' '+%Y-%m-%d')
+        $(date --date '0 days ago' '+%Y-%m-%d')
+EOS
+)"
+
+    assert_equal "${expected}" \
+                 "$(_daily-coding.workspaces)"
+}
+
+function test._daily-coding.collections
+{
+    declare -ar expected="$(cat <<EOS | tr -d ' '
+        binary-search.cpp
+        binary-search.ruby
+        bit-count.c
+        cat.brainfuck
+        fizz-buzz.shell
+        merge-sort.scm
+        numerical-sequence.force
+        quick-sort.c
+EOS
+)"
+    assert_equal "${expected}" \
+                 "$(_daily-coding.collections)"
 }
 
 function test._daily-coding.cd
