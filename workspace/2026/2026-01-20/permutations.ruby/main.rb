@@ -16,12 +16,16 @@ def enumerate_permutations(xs)
     end
 end
 
-def generate_permutations(xs, n = xs.size, &block)
+def generate_permutations(xs, &block)
+    generate_permutations!(xs.clone, xs.size, &block)
+end
+
+def generate_permutations!(xs, n, &block)
     if n == 1
         block.call(xs.clone)
     else
         (0...n).each do |i|
-            generate_permutations(xs, n - 1, &block)
+            generate_permutations!(xs, n - 1, &block)
 
             if n.odd?
                 xs[0], xs[n - 1] = xs[n - 1], xs[0]
