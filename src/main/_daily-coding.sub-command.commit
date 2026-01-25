@@ -15,7 +15,7 @@ function _daily-coding.commit
     fi
 
     declare -r collection_path="$(realpath --relative-to="${root_workspace_path}" -- "$(pwd)")"
-    declare -r collection_name="$(echo "${collection_path}" | cut -d/ -f2)"
+    declare -r collection_name="$(_daily-coding.to_collection_name ${collection_path})"
     declare -r option="${1:-}"
 
     if git status -s | grep -v '^[ ?]' | grep -v "^M  ${collection_path}$" > /dev/null; then
