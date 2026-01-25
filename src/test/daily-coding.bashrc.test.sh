@@ -671,12 +671,12 @@ function test._daily-coding.generate_jsonl
         {"year": "2025", "year_month": "2025-12", "workspace": "2025-12-12", "collection_base_name": "fizz-buzz", "collection": "fizz-buzz.shell", "language": "shell", "file": "fizz-buzz.sed", "extension": ".sed", "lines": 0}
         {"year": "2025", "year_month": "2025-12", "workspace": "2025-12-12", "collection_base_name": "fizz-buzz", "collection": "fizz-buzz.shell", "language": "shell", "file": "main.sh", "extension": ".sh", "lines": 0}
         {"year": "2025", "year_month": "2025-12", "workspace": "2025-12-12", "collection_base_name": "fizz-buzz", "collection": "fizz-buzz.shell", "language": "shell", "file": "Makefile", "extension": "Makefile", "lines": 0}
-        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-10", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "cat.b", "extension": ".b", "lines": 0}
-        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-10", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "Makefile", "extension": "Makefile", "lines": 0}
-        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-11", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "cat.b", "extension": ".b", "lines": 0}
-        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-11", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "Makefile", "extension": "Makefile", "lines": 0}
-        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-12", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "cat.b", "extension": ".b", "lines": 0}
-        {"year": "2026", "year_month": "2026-01", "workspace": "2026-01-12", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "$(date --date '2 days ago' '+%Y')", "year_month": "$(date --date '2 days ago' '+%Y-%m')", "workspace": "$(date --date '2 days ago' '+%Y-%m-%d')", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "cat.b", "extension": ".b", "lines": 0}
+        {"year": "$(date --date '2 days ago' '+%Y')", "year_month": "$(date --date '2 days ago' '+%Y-%m')", "workspace": "$(date --date '2 days ago' '+%Y-%m-%d')", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "$(date --date '1 days ago' '+%Y')", "year_month": "$(date --date '1 days ago' '+%Y-%m')", "workspace": "$(date --date '1 days ago' '+%Y-%m-%d')", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "cat.b", "extension": ".b", "lines": 0}
+        {"year": "$(date --date '1 days ago' '+%Y')", "year_month": "$(date --date '1 days ago' '+%Y-%m')", "workspace": "$(date --date '1 days ago' '+%Y-%m-%d')", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "Makefile", "extension": "Makefile", "lines": 0}
+        {"year": "$(date --date '0 days ago' '+%Y')", "year_month": "$(date --date '0 days ago' '+%Y-%m')", "workspace": "$(date --date '0 days ago' '+%Y-%m-%d')", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "cat.b", "extension": ".b", "lines": 0}
+        {"year": "$(date --date '0 days ago' '+%Y')", "year_month": "$(date --date '0 days ago' '+%Y-%m')", "workspace": "$(date --date '0 days ago' '+%Y-%m-%d')", "collection_base_name": "cat", "collection": "cat.brainfuck", "language": "brainfuck", "file": "Makefile", "extension": "Makefile", "lines": 0}
 EOS
 )"
 
@@ -764,7 +764,7 @@ function test._daily-coding.diff
 {
     # 正常系: エラーにならないことだけを確認する.
     declare -r root_workspace_path="$(_daily-coding.root_workspace_path)"
-    declare -r collection_path="${root_workspace_path}/2026/2026-01-11/cat.brainfuck"
+    declare -r collection_path="${root_workspace_path}/$(date --date '0 days ago' '+%Y/%Y-%m-%d')/cat.brainfuck"
     ( cd -- "${collection_path}" && _daily-coding.diff )
 }
 
