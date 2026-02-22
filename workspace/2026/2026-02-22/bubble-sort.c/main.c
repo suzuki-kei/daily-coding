@@ -69,7 +69,7 @@ int is_sorted(const int *array, int n)
 
 void bubble_sort(int *array, int n)
 {
-    for (int unsorted_size = n; unsorted_size > 0; unsorted_size--)
+    for (int unsorted_size = n; unsorted_size > 1; unsorted_size--)
         for (int i = 0; i < unsorted_size - 1; i++)
             if (array[i] > array[i + 1])
                 swap(&array[i], &array[i + 1]);
