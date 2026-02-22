@@ -71,7 +71,7 @@ int is_sorted(const int *array, int n)
 void shell_sort(int *array, int n)
 {
     for (int hop = compute_initial_hop(n); hop > 0; hop /= 3)
-        for (int i = 1; i < n; i++)
+        for (int i = hop; i < n; i++)
             insert(array, i, hop);
 }
 
