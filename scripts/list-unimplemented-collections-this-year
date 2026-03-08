@@ -1,0 +1,79 @@
+#!/usr/bin/env bash -l
+
+set -eu -o pipefail
+
+declare -ra hidden_collection_names=(
+    #american-flag-sort
+    assign-contents-of-file-to-variable
+    #bayesian-inference
+    #chunked
+    #combination
+    concatenate-string
+    data-type-name
+    dialog
+    #dutch-national-flag-problem
+    extname
+    factorial
+    #fold
+    form
+    #functor
+    high-order-function
+    hypothesis-testing
+    insertion-sort
+    itertools
+    #kmp_search
+    learn-probability
+    markdown-toggle
+    #mathematics
+    maximum
+    optical-illusion
+    pattern-expansion
+    #permutations
+    permutations-combinations
+    quick-sort-benchmark
+    #random
+    recommendation
+    rev
+    sazae-family
+    searching
+    selection-sort
+    sorting
+    sorting-algorithm
+    srfi-1
+    strip-heredoc
+    swap
+    tac
+    timed-cache
+    #topological-sort
+    tree-walk
+    trivial-comment-remover
+    try-alist
+    try-cabal
+    try-erlang
+    try-foreach
+    try-functools
+    try-go
+    try-goroutine
+    try-htmx
+    try-HUnit
+    try-numeric
+    try-php
+    try-prolog
+    try-promise-async-await
+    try-python
+    try-random
+    try-range-based-for
+    try-rust
+    try-srfi-45
+    try-srfi-64
+    try-tagged-template
+    wc
+)
+
+sort \
+    <(daily-coding stats -b | grep -P "^$(date '+%Y')" | awk '{print $2}') \
+    <(daily-coding stats -b | grep -P "^$(date '+%Y')" | awk '{print $2}') \
+    <(daily-coding stats -b | grep -P '^(?!'"$(date '+%Y')"')\d' | awk '{print $2}') \
+    | uniq -u \
+    | grep -vE "^($(IFS='|'; echo "${hidden_collection_names[*]}"))$"
+
