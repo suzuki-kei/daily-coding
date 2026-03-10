@@ -32,7 +32,7 @@ function is_sorted(array)
     )
 }
 
-function bubble_sort(array, partition)
+function bubble_sort(array)
 {
     for (let unsorted_length = array.length; unsorted_length >= 0; unsorted_length--)
         for (let i = 0; i < unsorted_length - 1; i++)
