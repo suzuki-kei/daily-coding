@@ -62,10 +62,5 @@ function compute_initial_hop(n: number): number
     return hop
 }
 
-function swap<T>(array: T[], index1: number, index2: number): void
-{
-    [array[index1], array[index2]] = [array[index2], array[index1]]
-}
-
 main()
 
