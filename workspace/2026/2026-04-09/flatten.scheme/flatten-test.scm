@@ -1,15 +1,23 @@
 (use gauche.test)
 (load "flatten")
 
+(define-syntax labelled-test
+    (syntax-rules ()
+        ((_ test-case target)
+            (test-case
+                (symbol->string 'target)
+                target))))
+
 (define main
     (lambda (_)
         (test-start "flatten")
-        (test-flatten)
+        (labelled-test test-flatten flatten/non-tailrec)
+        (labelled-test test-flatten flatten/tailrec)
         (test-end)))
 
 (define test-flatten
-    (lambda ()
-        (test-section "flatten")
+    (lambda (label flatten)
+        (test-section label)
         (test* "#1" '() (flatten '()))
         (test* "#2" '() (flatten '(())))
         (test* "#3" '() (flatten '((()))))
