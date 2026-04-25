@@ -16,14 +16,14 @@ commit(compatible_fix, "commit 6").
 print_commits :-
     format("==== commits~n"),
     findall(commit(Type, Message), commit(Type, Message), Commits),
-    foreach(member(Commit, Commits), format("~w.~n", [Commit])).
+    forall(member(Commit, Commits), format("~w.~n", [Commit])).
 
 print_changes :-
     format("==== changes~n"),
     semver(Version, 1, 2, 3),
     findall(commit(Type, Message), commit(Type, Message), Commits),
     semver_changes(Version, Commits, Changes),
-    foreach(member(Change, Changes), format("~w.~n", [Change])).
+    forall(member(Change, Changes), format("~w.~n", [Change])).
 
 print_bump_versions :-
     format("==== bump versions~n"),
