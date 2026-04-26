@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <script>
+            const keyEventToString = event => {
+                const keys = [
+                    "altKey",
+                    "code",
+                    "ctrlKey",
+                    "isComposing",
+                    "key",
+                    "location",
+                    "metaKey",
+                    "repeat",
+                    "shiftKey",
+                ]
+                const object = Object.fromEntries(keys.map(key => {
+                    return [key, event[key]]
+                }))
+                return JSON.stringify(object)
+            }
+
+            window.addEventListener("load", event => {
+                const $form = document.getElementById("form")
+                $form.addEventListener("submit", event => {
+                    event.preventDefault()
+                })
+
+                const $input = document.getElementById("input")
+                $input.focus()
+                $input.addEventListener("keydown", event => {
+                    const $log = document.getElementById("log")
+                    const line = `${$log.value === "" ? "" : "\n"}${keyEventToString(event)}`
+                    $log.value += line
+                    $log.scrollTop = $log.scrollHeight
+                })
+            })
+        </script>
+        <style>
+            #input { width: 80% }
+            #log { height: 80% }
+            #log { width: 80% }
+        </style>
+    </head>
+    <body>
+        <form id="form">
+            <div>
+                Input:<br />
+                <input id="input" type="text" />
+            </div>
+            <div>
+                Log:<br />
+                <textarea id="log" readonly="readonly"></textarea>
+            </div>
+        </form>
+    </body>
+</html>
+
