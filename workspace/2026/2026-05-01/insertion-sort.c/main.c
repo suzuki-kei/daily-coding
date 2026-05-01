@@ -87,7 +87,6 @@ void insert(int *array, int i)
         array[i] = array[i - 1];
         i--;
     }
-
     array[i] = insertion_value;
 }
 
