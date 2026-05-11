@@ -4,7 +4,7 @@ import RunLengthEncoding (decode)
 import RunLengthEncoding (encode)
 import RunLengthEncoding (EncodedRun)
 import Test.HUnit ((~:))
-import Test.HUnit ((~=?))
+import Test.HUnit ((~?=))
 import Test.HUnit (runTestTTAndExit)
 import Test.HUnit (Test (TestList))
 import Test.HUnit (test)
@@ -46,10 +46,10 @@ testWithTestDataTuples label assert = test tests
 encodeTests :: Test
 encodeTests = testWithTestDataTuples "encode" assert
     where
-        assert xs encodedRuns = encode xs ~=? encodedRuns
+        assert xs encodedRuns = encode xs ~?= encodedRuns
 
 decodeTests :: Test
 decodeTests = testWithTestDataTuples "decode" assert
     where
-        assert xs encodedRuns = decode encodedRuns ~=? xs
+        assert xs encodedRuns = decode encodedRuns ~?= xs
 
