@@ -45,9 +45,11 @@ function print_array(array: readonly number[]): void
 
 function is_sorted(array: readonly number[]): boolean
 {
-    return Array.from({length: array.length - 1}, (_, i) => i).every(
-        i => array[i] <= array[i + 1]
-    )
+    for (let i = 0; i + 1 < array.length; i++)
+        if (array[i] > array[i + 1])
+            return false
+
+    return true
 }
 
 function quick_sort(array: number[], partition: Partition): void
