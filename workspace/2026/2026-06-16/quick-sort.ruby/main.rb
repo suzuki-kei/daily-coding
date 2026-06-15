@@ -15,22 +15,19 @@ def demonstration(label, partition)
 end
 
 def generate_random_values(n)
-    n.times.map do
+    Array.new(n) do
         rand(10 .. 99)
     end
 end
 
 def print_array(array)
-    if is_sorted(array)
-        puts "#{array.join(' ')} (sorted)"
-    else
-        puts "#{array.join(' ')} (not sorted)"
-    end
+    status = sorted?(array) ? 'sorted' : 'not sorted'
+    puts "#{array.join(' ')} (#{status})"
 end
 
-def is_sorted(array)
-    (0 ... array.size - 1).all? do |i|
-        array[i] <= array[i + 1]
+def sorted?(array)
+    array.each_cons(2).all? do |a, b|
+        a <= b
     end
 end
 
