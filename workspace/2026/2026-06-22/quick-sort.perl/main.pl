@@ -125,5 +125,5 @@ sub swap
     ($aref->[$index1], $aref->[$index2]) = ($aref->[$index2], $aref->[$index1]);
 }
 
-main();
+main() unless caller;
 
