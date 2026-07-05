@@ -1,0 +1,166 @@
+module BinarySearchTreeTest where
+
+import BinarySearchTree (append)
+import BinarySearchTree (appends)
+import BinarySearchTree (fromValue)
+import BinarySearchTree (fromValues)
+import BinarySearchTree (NonEmptyTree (InternalNode))
+import BinarySearchTree (parseNonEmptyTree)
+import BinarySearchTree (popMax)
+import BinarySearchTree (popMin)
+import BinarySearchTree (toList)
+import BinarySearchTree (Tree (EmptyTree))
+import BinarySearchTree (Tree (Node))
+import BinarySearchTree (Tree (nodeLeft))
+import BinarySearchTree (Tree (nodeRight))
+import BinarySearchTree (Tree (nodeValue))
+import BinarySearchTree (Tree)
+import Data.List (permutations)
+import Test.HUnit ((~:))
+import Test.HUnit ((~?=))
+import Test.HUnit (runTestTTAndExit)
+import Test.HUnit (Test (TestList))
+import Test.HUnit (test)
+import Test.HUnit (Test)
+
+main ::
+    IO ()
+main =
+    runTestTTAndExit allTests
+
+allTests ::
+    Test
+allTests =
+    TestList [
+        parseNonEmptyTreeTests,
+        fromValueTests,
+        fromValuesTests,
+        appendTests,
+        appendsTests,
+        toListTests,
+        fmapTests
+    ]
+
+tree0 ::
+    Tree Int
+tree0 =
+    EmptyTree
+
+tree1 ::
+    Tree Int
+tree1 =
+    Node 5 EmptyTree EmptyTree
+
+tree2 ::
+    Tree Int
+tree2 =
+    Node 5 (Node 3 EmptyTree EmptyTree)
+           (Node 7 EmptyTree EmptyTree)
+
+tree3 ::
+    Tree Int
+tree3 =
+    Node 5 (Node 3 (Node 1 EmptyTree EmptyTree)
+                   (Node 4 EmptyTree EmptyTree))
+           (Node 7 (Node 6 EmptyTree EmptyTree)
+                   (Node 9 EmptyTree EmptyTree))
+
+parseNonEmptyTreeTests ::
+    Test
+parseNonEmptyTreeTests =
+    TestList [
+        parseNonEmptyTree tree0 ~?=
+            Nothing,
+        parseNonEmptyTree tree1 ~?=
+            Just (InternalNode (nodeValue tree1) (nodeLeft tree1) (nodeRight tree1)),
+        parseNonEmptyTree tree2 ~?=
+            Just (InternalNode (nodeValue tree2) (nodeLeft tree2) (nodeRight tree2)),
+        parseNonEmptyTree tree3 ~?=
+            Just (InternalNode (nodeValue tree3) (nodeLeft tree3) (nodeRight tree3))
+    ]
+
+fromValueTests ::
+    Test
+fromValueTests =
+    TestList $ map mapper [1..3]
+        where
+            mapper n = fromValue n ~?= (Node n EmptyTree EmptyTree)
+
+fromValuesTests ::
+    Test
+fromValuesTests =
+    TestList [
+        fromValues [] ~?=
+            tree0,
+        fromValues [5] ~?=
+            tree1,
+        fromValues [5, 3, 7] ~?=
+            tree2,
+        fromValues [5, 3, 7, 4, 6, 1, 9] ~?=
+            tree3
+    ]
+
+appendTests ::
+    Test
+appendTests =
+    test [
+        append tree0 1 ~?=
+            Node 1 EmptyTree EmptyTree,
+        append tree0 2 ~?=
+            Node 2 EmptyTree EmptyTree,
+        append tree0 3 ~?=
+            Node 3 EmptyTree EmptyTree,
+        append tree1 3 ~?=
+            Node 5 (Node 3 EmptyTree EmptyTree)
+                   EmptyTree,
+        append tree1 7 ~?=
+            Node 5 EmptyTree
+                   (Node 7 EmptyTree EmptyTree)
+    ]
+
+appendsTests ::
+    Test
+appendsTests =
+    test $ foldl (++) [] [
+        map (\xs -> appends tree0 xs ~?= tree1) (permutations [5]),
+        map (\xs -> appends tree1 xs ~?= tree2) (permutations [3, 7]),
+        map (\xs -> appends tree2 xs ~?= tree3) (permutations [1, 4, 6, 9])
+    ]
+
+toListTests ::
+    Test
+toListTests =
+    test [
+        toList popMin tree0 ~?= [],
+        toList popMin tree1 ~?= [5],
+        toList popMin tree2 ~?= [3, 5, 7],
+        toList popMin tree3 ~?= [1, 3, 4, 5, 6, 7, 9],
+        toList popMax tree0 ~?= [],
+        toList popMax tree1 ~?= [5],
+        toList popMax tree2 ~?= [7, 5, 3],
+        toList popMax tree3 ~?= [9, 7, 6, 5, 4, 3, 1]
+    ]
+
+fmapTests ::
+    Test
+fmapTests =
+    test [
+        fmap (+1) EmptyTree ~?=
+            EmptyTree,
+        fmap (+1) tree1 ~?=
+            Node 6 EmptyTree EmptyTree,
+        fmap (+1) tree2 ~?=
+            Node 6 (Node 4 EmptyTree EmptyTree)
+                   (Node 8 EmptyTree EmptyTree),
+        fmap (+1) tree3 ~?=
+            Node 6 (Node 4 (Node 2 EmptyTree EmptyTree)
+                           (Node 5 EmptyTree EmptyTree))
+                   (Node 8 (Node 7 EmptyTree EmptyTree)
+                           (Node 10 EmptyTree EmptyTree)),
+        fmap (*10) tree3 ~?=
+            Node 50 (Node 30 (Node 10 EmptyTree EmptyTree)
+                             (Node 40 EmptyTree EmptyTree))
+                    (Node 70 (Node 60 EmptyTree EmptyTree)
+                             (Node 90 EmptyTree EmptyTree))
+    ]
+
