@@ -47,7 +47,7 @@ function merge_sort(array: number[]): void
 
     for (let chunk_size = 1; chunk_size < array.length; chunk_size *= 2)
     {
-        for (let i = 0; i + chunk_size < array.length; i += chunk_size * 2)
+        for (let i = 0; i < array.length; i += chunk_size * 2)
         {
             merge(
                 output,
