@@ -47,7 +47,7 @@ function heap_sort(array: number[]): void
 
 function make_heap(array: number[]): void
 {
-    for (let i = array.length / 2 - 1; i >= 0; i--)
+    for (let i = Math.floor(array.length / 2) - 1; i >= 0; i--)
         shift_down(array, array.length, i)
 }
 
