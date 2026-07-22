@@ -8,7 +8,7 @@ void demonstration(Random &random);
 void set_random_values(int *array, int n, Random &random);
 void print_array(const int *array, int n);
 bool is_sorted(const int *array, int n);
-void bubble_sort(int *array, int n, Random &random);
+void bubble_sort(int *array, int n);
 
 template
 <
@@ -32,7 +32,7 @@ void demonstration(Random &random)
     int array[20];
     set_random_values(array, ArrayLength(array), random);
     print_array(array, ArrayLength(array));
-    bubble_sort(array, ArrayLength(array), random);
+    bubble_sort(array, ArrayLength(array));
     print_array(array, ArrayLength(array));
 }
 
@@ -67,7 +67,7 @@ bool is_sorted(const int *array, int n)
     return true;
 }
 
-void bubble_sort(int *array, int n, Random &random)
+void bubble_sort(int *array, int n)
 {
     for (int last = n - 1; last >= 1; last--)
         for (int i = 0; i + 1 <= last; i++)
