@@ -8,7 +8,7 @@ void demonstration(Random &random);
 void set_random_values(int *array, int n, Random &random);
 void print_array(const int *array, int n);
 bool is_sorted(const int *array, int n);
-void selection_sort(int *array, int n, Random &random);
+void selection_sort(int *array, int n);
 
 template
 <
@@ -32,7 +32,7 @@ void demonstration(Random &random)
     int array[20];
     set_random_values(array, ArrayLength(array), random);
     print_array(array, ArrayLength(array));
-    selection_sort(array, ArrayLength(array), random);
+    selection_sort(array, ArrayLength(array));
     print_array(array, ArrayLength(array));
 }
 
@@ -67,7 +67,7 @@ bool is_sorted(const int *array, int n)
     return true;
 }
 
-void selection_sort(int *array, int n, Random &random)
+void selection_sort(int *array, int n)
 {
     for (int begin = 0; begin + 1 < n; begin++)
     {
