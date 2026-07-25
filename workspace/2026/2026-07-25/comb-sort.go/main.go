@@ -72,6 +72,7 @@ func combSort[T cmp.Ordered](xs []T) {
         for i := 0; i + gap < len(xs); i++ {
             if xs[i] > xs[i + gap] {
                 swap(&xs[i], &xs[i + gap])
+                swapped = true
             }
         }
 
