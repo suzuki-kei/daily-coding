@@ -1,7 +1,7 @@
 
 function main()
 {
-    const values = select_without_replacement(10, 99, 20)
+    const values = selection_without_replacement(10, 99, 20)
     console.log(values.join(" "))
 
     const min = values.at(0) - 1
@@ -14,7 +14,7 @@ function main()
     }
 }
 
-function select_without_replacement(min, max, n)
+function selection_without_replacement(min, max, n)
 {
     const values = []
 
