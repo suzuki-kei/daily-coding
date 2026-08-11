@@ -6,18 +6,18 @@
 #define xor(p1, p2) \
     ((Node *) (((uintptr_t) p1) ^ ((uintptr_t) p2)))
 
-XorLinkedList *XorLinkedList_new(void)
+List *XorLinkedList_new(void)
 {
-    XorLinkedList *list = NULL;
+    List *list = NULL;
 
     if ((list = malloc(sizeof(*list))) == NULL)
         return NULL;
 
-    *list = (XorLinkedList) {0};
+    *list = (List) {0};
     return list;
 }
 
-Node *XorLinkedList_current(XorLinkedList *list)
+Node *XorLinkedList_current(List *list)
 {
     if (list == NULL)
         return NULL;
@@ -25,7 +25,7 @@ Node *XorLinkedList_current(XorLinkedList *list)
     return list->current;
 }
 
-Node *XorLinkedList_next(XorLinkedList *list)
+Node *XorLinkedList_next(List *list)
 {
     if (list == NULL || list->current == NULL || list->next == NULL)
         return NULL;
@@ -41,7 +41,7 @@ Node *XorLinkedList_next(XorLinkedList *list)
     return new_current;
 }
 
-Node *XorLinkedList_prev(XorLinkedList *list)
+Node *XorLinkedList_prev(List *list)
 {
     if (list == NULL || list->current == NULL || list->prev == NULL)
         return NULL;
@@ -57,7 +57,7 @@ Node *XorLinkedList_prev(XorLinkedList *list)
     return new_current;
 }
 
-Node *XorLinkedList_insert_before(XorLinkedList *list, int value)
+Node *XorLinkedList_insert_before(List *list, int value)
 {
     if (list == NULL)
         return NULL;
@@ -85,7 +85,7 @@ Node *XorLinkedList_insert_before(XorLinkedList *list, int value)
     return node;
 }
 
-Node *XorLinkedList_insert_after(XorLinkedList *list, int value)
+Node *XorLinkedList_insert_after(List *list, int value)
 {
     if (list == NULL)
         return NULL;
@@ -113,7 +113,7 @@ Node *XorLinkedList_insert_after(XorLinkedList *list, int value)
     return node;
 }
 
-void XorLinkedList_free(XorLinkedList *list)
+void XorLinkedList_free(List *list)
 {
     if (list == NULL)
         return;
@@ -132,7 +132,7 @@ void XorLinkedList_free(XorLinkedList *list)
     free(list);
 }
 
-void XorLinkedList_dump(XorLinkedList *list)
+void XorLinkedList_dump(List *list)
 {
     if (list == NULL)
     {
@@ -143,7 +143,7 @@ void XorLinkedList_dump(XorLinkedList *list)
     const Node *current = list->current;
     while (XorLinkedList_prev(list) != NULL);
 
-    printf("XorLinkedList([");
+    printf("List([");
 
     const char *separator = "";
 

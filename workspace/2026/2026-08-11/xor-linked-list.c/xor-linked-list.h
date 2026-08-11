@@ -14,16 +14,16 @@ typedef struct
     Node *prev;
     Node *next;
 }
-XorLinkedList;
+List;
 
-XorLinkedList *XorLinkedList_new(void);
-Node *XorLinkedList_current(XorLinkedList *list);
-Node *XorLinkedList_next(XorLinkedList *list);
-Node *XorLinkedList_prev(XorLinkedList *list);
-Node *XorLinkedList_insert_before(XorLinkedList *list, int value);
-Node *XorLinkedList_insert_after(XorLinkedList *list, int value);
-void XorLinkedList_free(XorLinkedList *list);
-void XorLinkedList_dump(XorLinkedList *list);
+List *XorLinkedList_new(void);
+Node *XorLinkedList_current(List *list);
+Node *XorLinkedList_next(List *list);
+Node *XorLinkedList_prev(List *list);
+Node *XorLinkedList_insert_before(List *list, int value);
+Node *XorLinkedList_insert_after(List *list, int value);
+void XorLinkedList_free(List *list);
+void XorLinkedList_dump(List *list);
 
 #endif
 

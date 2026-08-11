@@ -4,7 +4,7 @@
 
 int main(void)
 {
-    XorLinkedList *list = NULL;
+    List *list = NULL;
 
     if ((list = XorLinkedList_new()) == NULL)
     {
