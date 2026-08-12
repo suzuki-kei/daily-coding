@@ -1,5 +1,5 @@
-#ifndef XOR_LINKED_LIST
-#define XOR_LINKED_LIST
+#ifndef XOR_LINKED_LIST_INCLUDED
+#define XOR_LINKED_LIST_INCLUDED
 
 typedef struct Node
 {
