@@ -19,9 +19,9 @@ main =
 
 selectionWithoutReplacement ::
     (Int, Int) -> Int -> State StdGen [Int]
-selectionWithoutReplacement (min, max) n =
+selectionWithoutReplacement (minValue, maxValue) n =
     do
-        (xs, nSelected) <- foldM folder ([], 0) [min..max]
+        (xs, nSelected) <- foldM folder ([], 0) [minValue..maxValue]
         pure (reverse xs)
     where
         folder (xs, nSelected) value =
@@ -34,9 +34,10 @@ selectionWithoutReplacement (min, max) n =
             do
                 r <- uniform
                 let
-                    numerator = fromIntegral (n - nSelected) :: Double
-                    denominator = fromIntegral (max - value + 1) :: Double
-                    selected = r < numerator / denominator
+                    nRemaining = n - nSelected
+                    nCandidatesRemaining = maxValue - value + 1
+                    selectionProbability = fromIntegral nRemaining / fromIntegral nCandidatesRemaining
+                    selected = r < selectionProbability
                 pure selected
 
 -- [0, 1) の乱数を生成する
@@ -45,5 +46,5 @@ uniform ::
 uniform =
     do
         x <- state (randomR (0 :: Int, 2^53 - 1))
-        pure ((fromIntegral x) / (2 ** 53))
+        pure (fromIntegral x / 2^53)
 
