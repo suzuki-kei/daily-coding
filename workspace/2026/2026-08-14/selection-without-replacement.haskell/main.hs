@@ -13,8 +13,9 @@ main =
         gen <- getStdGen
         let
             (xs, gen') = runState run gen
-            run = selectionWithoutReplacement (10, 99) 20
-        print (xs, gen')
+        print xs
+    where
+        run = selectionWithoutReplacement (10, 99) 20
 
 selectionWithoutReplacement ::
     (Int, Int) -> Int -> State StdGen [Int]
