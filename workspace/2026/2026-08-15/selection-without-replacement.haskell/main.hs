@@ -44,7 +44,9 @@ selectionWithoutReplacement (minValue, maxValue) n =
 uniform ::
     State StdGen Double
 uniform =
-    do
-        x <- state (randomR (0 :: Int, 2^53 - 1))
-        pure (fromIntegral x / 2^53)
+    let
+        scale = 2^53 :: Int
+    in do
+        x <- state (randomR (0, scale - 1))
+        pure (fromIntegral x / scale)
 
