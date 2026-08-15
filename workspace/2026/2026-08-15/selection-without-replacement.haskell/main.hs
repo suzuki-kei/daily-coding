@@ -48,5 +48,5 @@ uniform =
         scale = 2^53 :: Int
     in do
         x <- state (randomR (0, scale - 1))
-        pure (fromIntegral x / scale)
+        pure (fromIntegral x / fromIntegral scale)
 
