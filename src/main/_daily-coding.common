@@ -217,7 +217,7 @@ function _daily-coding.generate_jsonl
             fi
 
             echo "{\"year\": \"${year}\", \"year_month\": \"${workspace:0:7}\", \"workspace\": \"${workspace}\", \"collection_base_name\": \"${collection_base_name}\", \"collection\": \"${collection}\", \"language\": \"${language}\", \"file\": \"${file}\", \"extension\": \"${extension}\", \"lines\": ${lines}}"
-        done < <(find . -type f | sort | xargs wc -l --total=never)
+        done < <(git ls-files | sort | xargs wc -l --total=never)
     )
 }
 
