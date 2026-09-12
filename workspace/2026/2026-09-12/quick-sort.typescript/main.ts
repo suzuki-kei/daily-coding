@@ -19,13 +19,13 @@ function main(): void
 function demonstration(label: string, partition: Partition): void
 {
     console.log(`==== ${label}`)
-    const array = generateRandomValues({ min: 10, max: 99, n: 20 })
+    const array = generateRandomValues(20, { min: 10, max: 99 })
     printArray(array)
     quickSort(array, partition)
     printArray(array)
 }
 
-function generateRandomValues({ min, max, n }: { min: number, max: number, n: number }): number[]
+function generateRandomValues(n: number, { min, max }: { min: number, max: number }): number[]
 {
     return Array.from({ length: n }, () => randomRange(min, max))
 }
