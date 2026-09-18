@@ -72,10 +72,10 @@ int is_sorted(const int *array, int n)
 
 void insertion_sort(int *array, int n)
 {
-    for (int n_sorted = 1; n_sorted < n; n_sorted++)
+    for (int end = 1; end < n; end++)
     {
-        int i = n_sorted;
-        const int value = array[n_sorted];
+        int i = end;
+        const int value = array[end];
 
         while (i >= 1 && value < array[i - 1])
         {
