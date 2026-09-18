@@ -50,7 +50,7 @@ void demonstration_step(const char *label, FnPartition partition)
     printf("==== %s\n", label);
 
     int array[20];
-    set_random_values(array, ARRAY_LENGTH(array), 10, 99);
+    set_random_values(array, ARRAY_LENGTH(array), 10, 100);
     print_array(array, ARRAY_LENGTH(array));
     quick_sort(array, ARRAY_LENGTH(array), partition);
     print_array(array, ARRAY_LENGTH(array));
