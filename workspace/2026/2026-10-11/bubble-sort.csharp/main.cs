@@ -1,8 +1,6 @@
-using Console = System.Console;
-using Enumerable = System.Linq.Enumerable;
-using Random = System.Random;
-using Range = System.Range;
-using static System.Linq.Enumerable;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 class Application
 {
@@ -27,7 +25,7 @@ class Application
         return random.Next(range.Start.Value, range.End.Value);
     }
 
-    private static void PrintArray(in int[] array)
+    private static void PrintArray(IReadOnlyList<int> array)
     {
         if (IsSorted(array))
             Console.WriteLine("{0} (sorted)", string.Join(" ", array));
@@ -35,9 +33,9 @@ class Application
             Console.WriteLine("{0} (not sorted)", string.Join(" ", array));
     }
 
-    private static bool IsSorted(in int[] array)
+    private static bool IsSorted(IReadOnlyList<int> array)
     {
-        for (int i = 0; i + 1 < array.Length; i++)
+        for (int i = 0; i + 1 < array.Count; i++)
             if (array[i] > array[i + 1])
                 return false;
 
