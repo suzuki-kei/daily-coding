@@ -61,10 +61,5 @@ class Application
         }
     }
 
-    private static void Swap<T>(ref T value1, ref T value2)
-    {
-        (value1, value2) = (value2, value1);
-    }
-
 }
 
