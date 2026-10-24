@@ -5,8 +5,6 @@ using System;
 class Application
 {
 
-    delegate Range Partition(int[] array, Range range);
-
     private static Random random = new();
 
     static void Main()
