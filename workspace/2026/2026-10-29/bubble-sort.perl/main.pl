@@ -55,8 +55,8 @@ sub bubble_sort
 
 sub swap
 {
-    my ($value1, $value2) = @_;
-    ($$value1, $$value2) = ($$value2, $$value1);
+    my ($ref1, $ref2) = @_;
+    ($$ref1, $$ref2) = ($$ref2, $$ref1);
 }
 
 unless (caller) {
