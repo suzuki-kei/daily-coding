@@ -6,7 +6,7 @@
 #     s  = 115
 #     LF = 10
 #     Z1 = 0    (sentinel)
-#     F  = 1    (infinite-loop flag)
+#     F  = 1    (infinite loop flag)
 #
 
 # build the text to output
