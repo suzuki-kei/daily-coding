@@ -44,15 +44,14 @@ function isSorted(array: readonly number[]): boolean
 
 function countingSort(array: number[], { begin, end }: NumberRange): void
 {
-    const nCounts = end - begin
-    const counts = Array.from({ length: nCounts }, () => 0)
+    const counts = Array.from({ length: end - begin }, () => 0)
 
     for (let i = 0; i < array.length; i++)
         counts[array[i] - begin]++
 
     let iArray = 0
 
-    for (let iCounts = 0; iCounts < nCounts; iCounts++)
+    for (let iCounts = 0; iCounts < counts.length; iCounts++)
         for (let i = 0; i < counts[iCounts]; i++)
             array[iArray++] = iCounts + begin
 }
