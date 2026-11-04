@@ -1,7 +1,7 @@
 
 type NumberRange = {
-    begin: number,
-    end: number,
+    readonly begin: number,
+    readonly end: number,
 }
 
 type Partition = (
