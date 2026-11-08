@@ -54,6 +54,7 @@ sub selection_sort
                 $minimum_index = $i;
             }
         }
+
         swap($aref->[$begin], $aref->[$minimum_index]);
     }
 }
