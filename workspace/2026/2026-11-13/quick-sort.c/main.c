@@ -12,18 +12,18 @@ typedef struct
 }
 Range;
 
-typedef Range (*FnPartition)(int *array, int begin, int end);
+typedef Range (*FnPartition)(int *array, Range range);
 
 void initialize(void);
 void demonstrate(const char *label, FnPartition partition);
-void set_random_values(int *array, int n, int begin_value, int end_value);
-int random_range(int begin, int end);
+void set_random_values(int *array, int n, Range value_range);
+int random_range(Range range);
 void print_array(const int *array, int n);
 int is_sorted(const int *array, int n);
 void quick_sort(int *array, int n, FnPartition partition);
-void quick_sort_range(int *array, int begin, int end, FnPartition partition);
-Range partition_2way(int *array, int begin, int end);
-Range partition_3way(int *array, int begin, int end);
+void quick_sort_range(int *array, Range range, FnPartition partition);
+Range partition_2way(int *array, Range range);
+Range partition_3way(int *array, Range range);
 void swap(int *value1, int *value2);
 
 int main(void)
@@ -44,21 +44,22 @@ void demonstrate(const char *label, FnPartition partition)
     printf("==== %s\n", label);
 
     int array[20];
-    set_random_values(array, ARRAY_LENGTH(array), 10, 100);
+    const Range value_range = { 10, 100 };
+    set_random_values(array, ARRAY_LENGTH(array), value_range);
     print_array(array, ARRAY_LENGTH(array));
     quick_sort(array, ARRAY_LENGTH(array), partition);
     print_array(array, ARRAY_LENGTH(array));
 }
 
-void set_random_values(int *array, int n, int begin_value, int end_value)
+void set_random_values(int *array, int n, Range value_range)
 {
     for (int i = 0; i < n; i++)
-        array[i] = random_range(begin_value, end_value);
+        array[i] = random_range(value_range);
 }
 
-int random_range(int begin, int end)
+int random_range(Range range)
 {
-    return rand() % (end - begin) + begin;
+    return rand() % (range.end - range.begin) + range.begin;
 }
 
 void print_array(const int *array, int n)
@@ -88,35 +89,35 @@ int is_sorted(const int *array, int n)
 
 void quick_sort(int *array, int n, FnPartition partition)
 {
-    quick_sort_range(array, 0, n, partition);
+    quick_sort_range(array, (Range) { 0, n }, partition);
 }
 
-void quick_sort_range(int *array, int begin, int end, FnPartition partition)
+void quick_sort_range(int *array, Range range, FnPartition partition)
 {
-    while (begin < end - 1)
+    while (range.begin < range.end - 1)
     {
-        const Range middle = partition(array, begin, end);
-        const int left_count = middle.begin - begin;
-        const int right_count = end - middle.end;
+        const Range middle = partition(array, range);
+        const int left_count = middle.begin - range.begin;
+        const int right_count = range.end - middle.end;
 
         if (left_count < right_count)
         {
-            quick_sort_range(array, begin, middle.begin, partition);
-            begin = middle.end;
+            quick_sort_range(array, (Range) { range.begin, middle.begin }, partition);
+            range.begin = middle.end;
         }
         else
         {
-            quick_sort_range(array, middle.end, end, partition);
-            end = middle.begin;
+            quick_sort_range(array, (Range) { middle.end, range.end }, partition);
+            range.end = middle.begin;
         }
     }
 }
 
-Range partition_2way(int *array, int begin, int end)
+Range partition_2way(int *array, Range range)
 {
-    int increasing_index = begin;
-    int decreasing_index = end - 1;
-    const int pivot = array[random_range(begin, end)];
+    int increasing_index = range.begin;
+    int decreasing_index = range.end - 1;
+    const int pivot = array[random_range(range)];
 
     while (increasing_index <= decreasing_index)
     {
@@ -136,12 +137,12 @@ Range partition_2way(int *array, int begin, int end)
     };
 }
 
-Range partition_3way(int *array, int begin, int end)
+Range partition_3way(int *array, Range range)
 {
-    int i = begin;
-    int less_end = begin;
-    int greater_begin = end;
-    const int pivot = array[random_range(begin, end)];
+    int i = range.begin;
+    int less_end = range.begin;
+    int greater_begin = range.end;
+    const int pivot = array[random_range(range)];
 
     while (i < greater_begin)
     {
