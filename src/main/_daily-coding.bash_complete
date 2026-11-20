@@ -12,8 +12,18 @@ function _daily-coding._bash_complete
             fi
             ;;
         commit)
-            if [[ ! "${COMP_WORDS[2]}" == '--amend' ]]; then
-                COMPREPLY=($(compgen -W '--amend' -- "${word}"))
+            if [[ ${COMP_CWORD} -le 2 ]]; then
+                # 意図しない --amend の指定を防ぐために -- を含めている.
+                #
+                # 以下の誤操作が何度か発生した:
+                #     1. 選択可能なオプションが 1 つ (--amend) しかない
+                #     2. Tab キーから指を離すことが遅れて --amend まで補完される
+                #     3. --amend まで補完されたことに気付かずに Enter を押下する
+                declare -a options=(
+                    '--'
+                    '--amend'
+                )
+                COMPREPLY=($(compgen -W "${options[*]}" -- "${word}"))
             fi
             ;;
         diff)
