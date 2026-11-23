@@ -8,7 +8,8 @@ function main()
 function demonstrate(label, partition)
 {
     console.log(`==== ${label}`)
-    const array = generateRandomValues(20, { begin: 10, end: 100 })
+    const valueRange = { begin: 10, end: 100 }
+    const array = generateRandomValues(20, valueRange)
     printArray(array)
     quickSort(array, partition)
     printArray(array)
